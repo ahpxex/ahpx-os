@@ -3,15 +3,11 @@ import type { WindowState } from '@/types/window'
 
 interface TitleBarProps {
   window: WindowState
-  onDragStart: (e: React.MouseEvent) => void
 }
 
-export function TitleBar({ window, onDragStart }: TitleBarProps) {
+export function TitleBar({ window }: TitleBarProps) {
   return (
-    <div
-      className="flex h-8 shrink-0 cursor-grab items-center bg-[#f5f5f5] px-2 active:cursor-grabbing"
-      onMouseDown={onDragStart}
-    >
+    <div className="window-drag-handle flex h-8 shrink-0 cursor-grab items-center bg-[#f5f5f5] px-2 active:cursor-grabbing">
       <TrafficLights windowId={window.id} />
       <span className="flex-1 text-center text-sm font-medium">
         {window.title}
