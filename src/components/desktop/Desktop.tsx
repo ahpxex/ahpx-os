@@ -31,7 +31,7 @@ const desktopApps = [
     title: 'Clock',
     icon: '/icons/23F0.svg',
     component: ClockApp,
-    initialSize: { width: 400, height: 350 },
+    initialSize: { width: 600, height: 550 },
   },
   {
     id: 'terminal',
