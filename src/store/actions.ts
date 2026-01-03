@@ -1,7 +1,8 @@
 import { atom } from 'jotai'
-import { windowsAtom, activeWindowIdAtom, maxZIndexAtom } from './atoms'
+import { windowsAtom, activeWindowIdAtom, maxZIndexAtom, iconPositionsAtom, selectedIconsAtom } from './atoms'
 import type { WindowState, WindowConfig, Position, Size } from '@/types/window'
 import { getWindowPosition, saveWindowPosition } from './windowCache'
+import { saveIconPosition, clearIconCache } from './iconCache'
 
 export const openWindowAtom = atom(
   null,
@@ -136,3 +137,28 @@ export const updateWindowSizeAtom = atom(
     }
   }
 )
+
+export const updateIconPositionAtom = atom(
+  null,
+  (get, set, { iconId, position }: { iconId: string; position: Position }) => {
+    const positions = get(iconPositionsAtom)
+    set(iconPositionsAtom, { ...positions, [iconId]: position })
+    saveIconPosition(iconId, position)
+  }
+)
+
+export const resetIconPositionsAtom = atom(null, (_get, set) => {
+  clearIconCache()
+  set(iconPositionsAtom, {})
+})
+
+export const setSelectedIconsAtom = atom(
+  null,
+  (_get, set, iconIds: Set<string>) => {
+    set(selectedIconsAtom, iconIds)
+  }
+)
+
+export const clearSelectedIconsAtom = atom(null, (_get, set) => {
+  set(selectedIconsAtom, new Set())
+})

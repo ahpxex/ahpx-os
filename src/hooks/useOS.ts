@@ -5,6 +5,8 @@ import {
   themeAtom,
   activeWindowAtom,
   wallpaperAtom,
+  iconPositionsAtom,
+  selectedIconsAtom,
 } from '@/store/atoms'
 import {
   openWindowAtom,
@@ -14,6 +16,10 @@ import {
   toggleMaximizeWindowAtom,
   updateWindowPositionAtom,
   updateWindowSizeAtom,
+  updateIconPositionAtom,
+  resetIconPositionsAtom,
+  setSelectedIconsAtom,
+  clearSelectedIconsAtom,
 } from '@/store/actions'
 
 export function useOS() {
@@ -22,6 +28,8 @@ export function useOS() {
   const activeWindow = useAtomValue(activeWindowAtom)
   const [theme, setTheme] = useAtom(themeAtom)
   const wallpaper = useAtomValue(wallpaperAtom)
+  const iconPositions = useAtomValue(iconPositionsAtom)
+  const selectedIcons = useAtomValue(selectedIconsAtom)
 
   const openWindow = useSetAtom(openWindowAtom)
   const closeWindow = useSetAtom(closeWindowAtom)
@@ -30,6 +38,10 @@ export function useOS() {
   const toggleMaximizeWindow = useSetAtom(toggleMaximizeWindowAtom)
   const updateWindowPosition = useSetAtom(updateWindowPositionAtom)
   const updateWindowSize = useSetAtom(updateWindowSizeAtom)
+  const updateIconPosition = useSetAtom(updateIconPositionAtom)
+  const resetIconPositions = useSetAtom(resetIconPositionsAtom)
+  const setSelectedIcons = useSetAtom(setSelectedIconsAtom)
+  const clearSelectedIcons = useSetAtom(clearSelectedIconsAtom)
 
   return {
     windows,
@@ -38,6 +50,8 @@ export function useOS() {
     theme,
     setTheme,
     wallpaper,
+    iconPositions,
+    selectedIcons,
     openWindow,
     closeWindow,
     focusWindow,
@@ -45,5 +59,9 @@ export function useOS() {
     toggleMaximizeWindow,
     updateWindowPosition,
     updateWindowSize,
+    updateIconPosition,
+    resetIconPositions,
+    setSelectedIcons,
+    clearSelectedIcons,
   }
 }
