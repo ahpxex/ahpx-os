@@ -1,6 +1,5 @@
 import { Clock } from './Clock'
 import { Menu, MenuBar } from './Menu'
-import { UserMenu } from '@/components/auth/UserMenu'
 
 export function TopBar() {
   const logoMenuItems = [
@@ -56,7 +55,6 @@ export function TopBar() {
       <div className="flex-1" />
 
       <div className="flex items-center gap-4">
-        <UserMenu />
         <Clock />
       </div>
     </header>
