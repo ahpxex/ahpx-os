@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react'
 import { useOS } from '@/hooks/useOS'
 import { DesktopIcon } from './DesktopIcon'
 import { WindowFrame } from '@/components/window/WindowFrame'
+import { ContextMenu } from './ContextMenu'
 import { AhpxApp } from '@/apps/AhpxApp'
 import { ShawnFanApp } from '@/apps/ShawnFanApp'
 import { BlogsApp } from '@/apps/BlogsApp'
@@ -44,14 +46,52 @@ const desktopApps = [
 
 export function Desktop() {
   const { windows, openWindow } = useOS()
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    // Only show context menu when clicking on the desktop background
+    if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.desktop-background')) {
+      e.preventDefault()
+      setContextMenu({ x: e.clientX, y: e.clientY })
+    }
+  }, [])
+
+  const closeContextMenu = useCallback(() => {
+    setContextMenu(null)
+  }, [])
+
+  const contextMenuItems = [
+    {
+      label: 'New File',
+      onClick: () => {
+        // TODO: Implement new file creation
+        console.log('New File')
+      },
+    },
+    {
+      label: 'New Profile',
+      onClick: () => {
+        // TODO: Implement new profile creation
+        console.log('New Profile')
+      },
+    },
+    { divider: true, label: '', onClick: () => {} },
+    {
+      label: 'Refresh',
+      onClick: () => {
+        window.location.reload()
+      },
+    },
+  ]
 
   return (
     <div
-      className="absolute inset-0 z-0 bg-[#fbf7f0]"
+      className="desktop-background absolute inset-0 z-0 bg-[#fbf7f0]"
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         backgroundBlendMode: 'soft-light',
       }}
+      onContextMenu={handleContextMenu}
     >
       <div className="z-10 grid grid-cols-1 gap-4 p-4">
         {desktopApps.map((app) => (
@@ -76,6 +116,15 @@ export function Desktop() {
       {windows.map((window) => (
         <WindowFrame key={window.id} window={window} />
       ))}
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={contextMenuItems}
+          onClose={closeContextMenu}
+        />
+      )}
     </div>
   )
 }
