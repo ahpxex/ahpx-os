@@ -32,7 +32,7 @@ export function ProjectsApp() {
         {projects.map((project) => (
           <div
             key={project.name}
-            className="border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="border border-[var(--color-border)] bg-white p-4 transition-all hover:bg-[var(--color-primary-bg)]"
           >
             <h2 className="text-lg font-bold">{project.name}</h2>
             <p className="mt-1 text-gray-700">{project.description}</p>
@@ -40,7 +40,7 @@ export function ProjectsApp() {
               {project.tech.map((t) => (
                 <span
                   key={t}
-                  className="border border-black bg-orange-100 px-2 py-0.5 text-xs font-medium"
+                  className="border border-[var(--color-border)] bg-[var(--color-primary-bg)] px-2 py-0.5 text-xs font-medium"
                 >
                   {t}
                 </span>

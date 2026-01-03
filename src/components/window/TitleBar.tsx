@@ -9,7 +9,7 @@ interface TitleBarProps {
 export function TitleBar({ window, onDragStart }: TitleBarProps) {
   return (
     <div
-      className="flex h-8 shrink-0 cursor-grab items-center border-b-2 border-black bg-[#f5f5f5] px-2 active:cursor-grabbing"
+      className="flex h-8 shrink-0 cursor-grab items-center border-b border-[var(--color-border)] bg-[#f5f5f5] px-2 active:cursor-grabbing"
       onMouseDown={onDragStart}
     >
       <TrafficLights windowId={window.id} />

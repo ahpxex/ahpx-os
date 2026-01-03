@@ -55,16 +55,21 @@ The entire OS state must be centralized.
 
 ### Colors & Backgrounds
 
-- **Wallpaper:** A subtle noise texture or a warm beige (`#f3f4f6` or PostHog's `#fbf7f0`).
+- **Wallpaper:** A subtle noise texture or a warm beige (`#fbf7f0`).
 - **Window Background:** Pure White (`#ffffff`).
-- **Accent Color:** A strong Orange or Blue for active states (PostHog style).
+- **Primary Color Theme:**
+  - **Primary:** `#FF4F00` (Vibrant Orange-Red)
+  - **Primary Light:** `#FF7A33`
+  - **Primary Dark:** `#CC3F00`
+  - **Primary Background:** `#FFF1EB` (Light tint for backgrounds/hover states)
+- Use CSS variables: `var(--color-primary)`, `var(--color-primary-light)`, `var(--color-primary-dark)`, `var(--color-primary-bg)`
 
 ### Borders & Shadows (The "Brutalist" Touch)
 
-- **Borders:** All windows and buttons must have a **1px or 2px solid black border** (`border-black` or `border-neutral-900`). No soft gray borders.
-- **Shadows:** **Hard shadows** only. No blur.
-  - _Tailwind Class:_ `shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`
-  - _Interaction:_ On click/active, translate the element `4px` down-right and remove shadow to simulate a physical button press.
+- **Borders:** Use **1px borders** with the primary color (`border border-[var(--color-border)]`).
+- **Border Color:** `#FF4F00` (same as primary) via `var(--color-border)`.
+- **Windows:** No drop shadows on window frames (cleaner, more native feel).
+- **Buttons/Cards:** Hard shadows optional for interactive elements.
 
 ### Typography
 

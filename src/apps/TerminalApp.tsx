@@ -75,7 +75,7 @@ export function TerminalApp() {
         <div key={i} className="mb-2">
           {entry.command && (
             <div>
-              <span className="text-orange-400">guest@ahpx-os</span>
+              <span className="text-[var(--color-primary)]">guest@ahpx-os</span>
               <span className="text-white">:</span>
               <span className="text-blue-400">~</span>
               <span className="text-white">$ </span>

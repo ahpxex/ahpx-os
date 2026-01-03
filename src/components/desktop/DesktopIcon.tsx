@@ -15,7 +15,7 @@ export function DesktopIcon({ title, icon, onDoubleClick }: DesktopIconProps) {
       className={`
         flex w-20 flex-col items-center gap-1 rounded p-2
         transition-colors
-        ${isSelected ? 'bg-orange-500/20' : 'hover:bg-black/5'}
+        ${isSelected ? 'bg-[var(--color-primary)]/20' : 'hover:bg-black/5'}
       `}
       onClick={() => setIsSelected(true)}
       onDoubleClick={onDoubleClick}

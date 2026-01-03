@@ -5,7 +5,16 @@
   --color-beige: #fbf7f0;
   --color-white: #ffffff;
   --color-black: #000000;
-  --color-accent: #f97316;
+
+  /* Primary color theme */
+  --color-primary: #FF4F00;
+  --color-primary-light: #FF7A33;
+  --color-primary-dark: #CC3F00;
+  --color-primary-bg: #FFF1EB;
+
+  /* Border color */
+  --color-border: #FF4F00;
+
   --shadow-brutal: 4px 4px 0px 0px rgba(0, 0, 0, 1);
 }
 

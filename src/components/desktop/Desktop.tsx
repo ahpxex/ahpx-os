@@ -9,19 +9,19 @@ const desktopApps = [
   {
     id: 'about',
     title: 'About Me',
-    icon: '/icons/1F464.svg',
+    icon: '/icons/1F44B.svg',
     component: AboutApp,
   },
   {
     id: 'projects',
     title: 'Projects',
-    icon: '/icons/1F4C2.svg',
+    icon: '/icons/1F680.svg',
     component: ProjectsApp,
   },
   {
     id: 'terminal',
     title: 'Terminal',
-    icon: '/icons/1F5A5.svg',
+    icon: '/icons/1F4BB.svg',
     component: TerminalApp,
     initialSize: { width: 700, height: 450 },
   },

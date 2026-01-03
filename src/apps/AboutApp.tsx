@@ -2,7 +2,7 @@ export function AboutApp() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <div className="h-20 w-20 rounded-full border-2 border-black bg-orange-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" />
+        <div className="h-20 w-20 rounded-full border border-[var(--color-border)] bg-[var(--color-primary)]" />
         <div>
           <h1 className="text-2xl font-bold">ahpx</h1>
           <p className="text-gray-600">Software Developer</p>
@@ -24,7 +24,7 @@ export function AboutApp() {
             {['TypeScript', 'React', 'Node.js', 'Python', 'Go'].map((skill) => (
               <span
                 key={skill}
-                className="border-2 border-black bg-white px-3 py-1 text-sm font-medium shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                className="border border-[var(--color-border)] bg-[var(--color-primary-bg)] px-3 py-1 text-sm font-medium"
               >
                 {skill}
               </span>
