@@ -19,7 +19,6 @@ interface GadgetGridProps {
   gadgets: Gadget[]
   layout: ProfileLayout
   isEditing?: boolean
-  width?: number
   onLayoutChange?: (layout: LayoutItem[]) => void
   onGadgetUpdate?: (gadgetId: string, updates: Partial<Gadget>) => void
   onGadgetDelete?: (gadgetId: string) => void
@@ -104,13 +103,13 @@ export function GadgetGrid({
   }
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="h-full w-full">
       {mounted && (
         <ReactGridLayout
           className="layout"
           layout={gridLayout}
           width={width}
-          gridConfig={{ cols: layout.columns, rowHeight: layout.rowHeight }}
+          gridConfig={{ cols: layout.columns, rowHeight: layout.rowHeight, margin: [8, 8], containerPadding: [0, 0] }}
           dragConfig={{ enabled: isEditing, handle: '.gadget-drag-handle' }}
           resizeConfig={{ enabled: isEditing }}
           onLayoutChange={handleLayoutChange}

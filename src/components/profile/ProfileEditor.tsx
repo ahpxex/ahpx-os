@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { useSetAtom } from 'jotai'
 import { v4 as uuidv4 } from 'uuid'
 import { updateProfileAtom } from '@/store/profileActions'
@@ -22,8 +22,6 @@ interface ProfileEditorProps {
 }
 
 export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = useState(600)
   const [saving, setSaving] = useState(false)
 
   const updateProfile = useSetAtom(updateProfileAtom)
@@ -32,24 +30,6 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
   const initialContent = profile.content as ProfileContent | null
   const [gadgets, setGadgets] = useState<Gadget[]>(initialContent?.gadgets || [])
   const [layout] = useState<ProfileLayout>(initialContent?.layout || DEFAULT_LAYOUT)
-
-  // Update container width on resize
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth - 32)
-      }
-    }
-
-    updateWidth()
-
-    const resizeObserver = new ResizeObserver(updateWidth)
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current)
-    }
-
-    return () => resizeObserver.disconnect()
-  }, [])
 
   const handleLayoutChange = (newLayout: LayoutItem[]) => {
     setGadgets((prev) =>
@@ -151,9 +131,20 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
   }
 
   return (
-    <div ref={containerRef} className="flex h-full flex-col">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-gray-50 px-4 py-2">
+    <div className="relative h-full overflow-auto">
+      {/* Editor Content - Full Area */}
+      <GadgetGrid
+        gadgets={gadgets}
+        layout={layout}
+        isEditing={true}
+        onLayoutChange={handleLayoutChange}
+        onGadgetUpdate={handleGadgetUpdate}
+        onGadgetDelete={handleGadgetDelete}
+      />
+
+      {/* Floating Bottom Toolbar */}
+      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4 border border-[var(--color-border)] bg-white px-4 py-2 shadow-md">
+        {/* Add Gadget Buttons */}
         <div className="flex gap-2">
           <button
             type="button"
@@ -178,6 +169,10 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
           </button>
         </div>
 
+        {/* Divider */}
+        <div className="h-6 w-px bg-gray-300" />
+
+        {/* Save/Cancel Buttons */}
         <div className="flex gap-2">
           <button
             type="button"
@@ -196,23 +191,6 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
             {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
-      </div>
-
-      {/* Editor Content */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="mb-4 rounded border border-yellow-300 bg-yellow-50 p-2 text-xs text-yellow-800">
-          Drag gadgets to rearrange. Click the X to delete. Edit content inline.
-        </div>
-
-        <GadgetGrid
-          gadgets={gadgets}
-          layout={layout}
-          width={containerWidth}
-          isEditing={true}
-          onLayoutChange={handleLayoutChange}
-          onGadgetUpdate={handleGadgetUpdate}
-          onGadgetDelete={handleGadgetDelete}
-        />
       </div>
     </div>
   )
