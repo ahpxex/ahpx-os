@@ -1,12 +1,20 @@
 import { useRef, useEffect, createContext, useContext, useState } from 'react'
 
-interface MenuItem {
-  label: string
-  shortcut?: string
-  disabled?: boolean
-  divider?: boolean
-  onClick?: () => void
-}
+type MenuItem =
+  | {
+      label: string
+      shortcut?: string
+      disabled?: boolean
+      divider?: false
+      onClick?: () => void
+    }
+  | {
+      divider: true
+      label?: never
+      shortcut?: never
+      disabled?: never
+      onClick?: never
+    }
 
 interface MenuBarContextType {
   activeMenu: string | null

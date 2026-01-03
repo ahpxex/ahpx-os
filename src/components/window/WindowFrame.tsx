@@ -41,13 +41,13 @@ export function WindowFrame({ window }: WindowFrameProps) {
     <Rnd
       position={{ x: window.position.x, y: window.position.y }}
       size={{ width: window.size.width, height: window.size.height }}
-      onDragStop={(e, d) => {
+      onDragStop={(_e, d) => {
         updateWindowPosition({
           windowId: window.id,
           position: { x: d.x, y: d.y },
         })
       }}
-      onResizeStop={(e, direction, ref, delta, position) => {
+      onResizeStop={(_e, _direction, ref, _delta, position) => {
         updateWindowSize({
           windowId: window.id,
           size: {

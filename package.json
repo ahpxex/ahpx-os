@@ -16,7 +16,10 @@
     "jotai": "^2.16.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-rnd": "^10.5.2"
+    "react-grid-layout": "^2.2.2",
+    "react-markdown": "^10.1.0",
+    "react-rnd": "^10.5.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -26,6 +29,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^11.0.0",
     "@vitejs/plugin-react": "^5.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.1",

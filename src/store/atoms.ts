@@ -6,7 +6,7 @@ export const windowsAtom = atom<WindowState[]>([])
 export const activeWindowIdAtom = atom<string | null>(null)
 export const themeAtom = atom<Theme>('light')
 export const iconPositionsAtom = atom<Record<string, Position>>(getIconCache())
-export const selectedIconsAtom = atom<Set<string>>(new Set())
+export const selectedIconsAtom = atom<Set<string>>(new Set<string>())
 
 export const activeWindowAtom = atom((get) => {
   const windows = get(windowsAtom)

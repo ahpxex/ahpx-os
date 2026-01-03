@@ -60,6 +60,8 @@ export interface Database {
           created_at: string
           updated_at: string
           name: string
+          slug: string
+          icon: string
           date: string | null
           content: Json
           is_active: boolean
@@ -71,6 +73,8 @@ export interface Database {
           created_at?: string
           updated_at?: string
           name: string
+          slug: string
+          icon?: string
           date?: string | null
           content?: Json
           is_active?: boolean
@@ -82,6 +86,8 @@ export interface Database {
           created_at?: string
           updated_at?: string
           name?: string
+          slug?: string
+          icon?: string
           date?: string | null
           content?: Json
           is_active?: boolean

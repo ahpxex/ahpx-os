@@ -17,6 +17,10 @@ export const publishedBlogPostsAtom = atom((get) =>
 // Profiles atoms (multiple per user)
 export const profilesAtom = atom<Profile[]>([])
 
+// All active profiles (for desktop icons)
+export const allProfilesAtom = atom<Profile[]>([])
+export const allProfilesLoadingAtom = atom<boolean>(true)
+
 // System info atoms
 export const systemInfoAtom = atom<SystemInfo | null>(null)
 export const wallpaperAtom = atom((get) => get(systemInfoAtom)?.wallpaper || null)

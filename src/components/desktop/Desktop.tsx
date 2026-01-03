@@ -1,27 +1,27 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
+import type { ComponentType } from 'react'
 import { useOS } from '@/hooks/useOS'
+import { useAllProfiles } from '@/hooks/useAllProfiles'
+import { useAuth } from '@/hooks/useAuth'
 import { DesktopIcon } from './DesktopIcon'
 import { WindowFrame } from '@/components/window/WindowFrame'
 import { ContextMenu } from './ContextMenu'
-import { AhpxApp } from '@/apps/AhpxApp'
-import { ShawnFanApp } from '@/apps/ShawnFanApp'
 import { BlogsApp } from '@/apps/BlogsApp'
 import { ClockApp } from '@/apps/ClockApp'
 import { TerminalApp } from '@/apps/TerminalApp'
+import { ProfileApp } from '@/apps/ProfileApp'
+import { NewProfileApp } from '@/apps/NewProfileApp'
 
-const desktopApps = [
-  {
-    id: 'ahpx',
-    title: 'ahpx.exe',
-    icon: '/icons/1F47E.svg',
-    component: AhpxApp,
-  },
-  {
-    id: 'shawnfan',
-    title: 'shawn fan.exe',
-    icon: '/icons/1F3B8.svg',
-    component: ShawnFanApp,
-  },
+interface DesktopApp {
+  id: string
+  title: string
+  icon: string
+  component: ComponentType
+  initialSize?: { width: number; height: number }
+}
+
+// Static apps (non-profile)
+const staticApps: DesktopApp[] = [
   {
     id: 'blogs',
     title: 'Blogs',
@@ -43,15 +43,6 @@ const desktopApps = [
     initialSize: { width: 700, height: 450 },
   },
 ]
-
-// Default positions for icons (column layout)
-const DEFAULT_ICON_POSITIONS = desktopApps.reduce(
-  (acc, app, index) => {
-    acc[app.id] = { x: 16, y: 16 + index * 100 }
-    return acc
-  },
-  {} as Record<string, { x: number; y: number }>
-)
 
 // Icon size for hit detection
 const ICON_WIDTH = 80
@@ -75,14 +66,45 @@ export function Desktop() {
     setSelectedIcons,
     clearSelectedIcons,
   } = useOS()
+  const { profiles } = useAllProfiles()
+  const { isAuthenticated } = useAuth()
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null)
   const desktopRef = useRef<HTMLDivElement>(null)
 
+  // Create dynamic profile apps from database
+  const profileApps: DesktopApp[] = useMemo(
+    () =>
+      profiles.map((profile) => ({
+        id: `profile-${profile.slug}`,
+        title: `${profile.name}.exe`,
+        icon: profile.icon,
+        component: () => <ProfileApp profileId={profile.id} />,
+      })),
+    [profiles]
+  )
+
+  // Merge static and profile apps
+  const desktopApps = useMemo(
+    () => [...profileApps, ...staticApps],
+    [profileApps]
+  )
+
+  // Calculate default positions for all apps
+  const defaultPositions = useMemo(() => {
+    return desktopApps.reduce(
+      (acc, app, index) => {
+        acc[app.id] = { x: 16, y: 16 + index * 100 }
+        return acc
+      },
+      {} as Record<string, { x: number; y: number }>
+    )
+  }, [desktopApps])
+
   // Merge cached positions with defaults
   const mergedPositions = useMemo(() => {
-    return { ...DEFAULT_ICON_POSITIONS, ...iconPositions }
-  }, [iconPositions])
+    return { ...defaultPositions, ...iconPositions }
+  }, [defaultPositions, iconPositions])
 
   // Check if a rectangle intersects with an icon
   const getIconsInSelection = useCallback(
@@ -116,7 +138,7 @@ export function Desktop() {
 
       return selected
     },
-    [mergedPositions]
+    [mergedPositions, desktopApps]
   )
 
   const handleMouseDown = useCallback(
@@ -192,35 +214,47 @@ export function Desktop() {
     [clearSelectedIcons]
   )
 
-  const contextMenuItems = [
-    {
-      label: 'Sort Icons',
-      onClick: () => {
-        resetIconPositions()
-        closeContextMenu()
+  const handleNewProfile = useCallback(() => {
+    openWindow({
+      id: 'new-profile',
+      title: 'New Profile',
+      icon: '/icons/1F464.svg',
+      component: NewProfileApp,
+      initialSize: { width: 500, height: 400 },
+    })
+    closeContextMenu()
+  }, [openWindow, closeContextMenu])
+
+  const contextMenuItems = useMemo(() => {
+    const items = [
+      {
+        label: 'Sort Icons',
+        onClick: () => {
+          resetIconPositions()
+          closeContextMenu()
+        },
       },
-    },
-    { divider: true, label: '', onClick: () => {} },
-    {
-      label: 'New File',
-      onClick: () => {
-        console.log('New File')
-      },
-    },
-    {
-      label: 'New Profile',
-      onClick: () => {
-        console.log('New Profile')
-      },
-    },
-    { divider: true, label: '', onClick: () => {} },
-    {
+      { divider: true, label: '', onClick: () => {} },
+    ]
+
+    // Only show "New Profile" for authenticated users
+    if (isAuthenticated) {
+      items.push({
+        label: 'New Profile',
+        onClick: handleNewProfile,
+      })
+      items.push({ divider: true, label: '', onClick: () => {} })
+    }
+
+    items.push({
       label: 'Refresh',
       onClick: () => {
         window.location.reload()
       },
-    },
-  ]
+    })
+
+    return items
+  }, [isAuthenticated, resetIconPositions, closeContextMenu, handleNewProfile])
 
   // Calculate selection box styles
   const selectionBoxStyle = selectionBox

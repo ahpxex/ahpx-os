@@ -3,7 +3,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { format } from 'date-fns'
 
 export function BlogsApp() {
-  const { posts, loading, refetch } = useBlogPosts()
+  const { posts, loading } = useBlogPosts()
 
   if (loading) {
     return (

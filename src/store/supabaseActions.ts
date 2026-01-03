@@ -13,7 +13,7 @@ import type { LoginCredentials } from '@/types/auth'
 // Auth actions (admin only, no signup)
 export const loginAtom = atom(
   null,
-  async (get, set, credentials: LoginCredentials) => {
+  async (_get, set, credentials: LoginCredentials) => {
     set(authLoadingAtom, true)
     const { data, error } = await supabase.auth.signInWithPassword(credentials)
     if (!error) {
@@ -25,13 +25,13 @@ export const loginAtom = atom(
   }
 )
 
-export const logoutAtom = atom(null, async (get, set) => {
+export const logoutAtom = atom(null, async (_get, set) => {
   await supabase.auth.signOut()
   set(userAtom, null)
   set(sessionAtom, null)
 })
 
-export const initAuthAtom = atom(null, async (get, set) => {
+export const initAuthAtom = atom(null, async (_get, set) => {
   const {
     data: { session },
   } = await supabase.auth.getSession()
@@ -45,7 +45,7 @@ export const initAuthAtom = atom(null, async (get, set) => {
 // Data fetching actions
 export const fetchBlogPostsAtom = atom(
   null,
-  async (get, set, onlyPublished = false) => {
+  async (_get, set, onlyPublished = false) => {
     let query = supabase
       .from('blog_posts')
       .select('*')
@@ -72,7 +72,7 @@ export const fetchProfilesAtom = atom(null, async (get, set, userId?: string) =>
   set(profilesAtom, data || [])
 })
 
-export const fetchSystemInfoAtom = atom(null, async (get, set) => {
+export const fetchSystemInfoAtom = atom(null, async (_get, set) => {
   const { data } = await supabase
     .from('system_info')
     .select('*')

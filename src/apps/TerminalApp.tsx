@@ -66,8 +66,8 @@ GitHub: github.com/ahpx`,
         try {
           await login({ email, password })
           output = 'Login successful. Session expires in 30 days.'
-        } catch (err: any) {
-          output = `Login failed: ${err.message || 'Invalid credentials'}`
+        } catch (err) {
+          output = `Login failed: ${err instanceof Error ? err.message : 'Invalid credentials'}`
         }
       }
     } else if (cmd === 'logout') {
