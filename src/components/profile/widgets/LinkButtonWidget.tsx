@@ -1,19 +1,19 @@
-import type { LinkButtonGadget as LinkButtonGadgetType } from '@/types/profile'
+import type { LinkButtonWidget as LinkButtonWidgetType } from '@/types/profile'
 
-interface LinkButtonGadgetProps {
-  gadget: LinkButtonGadgetType
+interface LinkButtonWidgetProps {
+  widget: LinkButtonWidgetType
   isEditing?: boolean
   onLabelChange?: (label: string) => void
   onUrlChange?: (url: string) => void
 }
 
-export function LinkButtonGadget({
-  gadget,
+export function LinkButtonWidget({
+  widget,
   isEditing,
   onLabelChange,
   onUrlChange,
-}: LinkButtonGadgetProps) {
-  const variant = gadget.variant || 'primary'
+}: LinkButtonWidgetProps) {
+  const variant = widget.variant || 'primary'
 
   const variantStyles = {
     primary:
@@ -31,14 +31,14 @@ export function LinkButtonGadget({
           type="text"
           className="w-full border border-gray-300 px-2 py-1 text-sm"
           placeholder="Button label"
-          value={gadget.label}
+          value={widget.label}
           onChange={(e) => onLabelChange?.(e.target.value)}
         />
         <input
           type="text"
           className="w-full border border-gray-300 px-2 py-1 text-sm"
           placeholder="URL"
-          value={gadget.url}
+          value={widget.url}
           onChange={(e) => onUrlChange?.(e.target.value)}
         />
       </div>
@@ -48,15 +48,15 @@ export function LinkButtonGadget({
   return (
     <div className="flex h-full w-full items-center justify-center p-2">
       <a
-        href={gadget.url}
+        href={widget.url}
         target="_blank"
         rel="noopener noreferrer"
         className={`inline-flex items-center justify-center gap-2 border px-4 py-2 text-sm font-medium transition-colors ${variantStyles[variant]}`}
       >
-        {gadget.icon && (
-          <img src={gadget.icon} alt="" className="h-4 w-4" />
+        {widget.icon && (
+          <img src={widget.icon} alt="" className="h-4 w-4" />
         )}
-        {gadget.label}
+        {widget.label}
       </a>
     </div>
   )

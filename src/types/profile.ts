@@ -1,31 +1,31 @@
-export type GadgetType = 'text' | 'image' | 'link-button'
+export type WidgetType = 'text' | 'image' | 'link-button'
 
-export interface GadgetPosition {
+export interface WidgetPosition {
   x: number
   y: number
   width: number
   height: number
 }
 
-export interface GadgetBase {
+export interface WidgetBase {
   id: string
-  type: GadgetType
-  position: GadgetPosition
+  type: WidgetType
+  position: WidgetPosition
 }
 
-export interface TextGadget extends GadgetBase {
+export interface TextWidget extends WidgetBase {
   type: 'text'
   content: string // markdown
 }
 
-export interface ImageGadget extends GadgetBase {
+export interface ImageWidget extends WidgetBase {
   type: 'image'
   url: string
   alt?: string
   caption?: string
 }
 
-export interface LinkButtonGadget extends GadgetBase {
+export interface LinkButtonWidget extends WidgetBase {
   type: 'link-button'
   label: string
   url: string
@@ -33,7 +33,7 @@ export interface LinkButtonGadget extends GadgetBase {
   variant?: 'primary' | 'secondary' | 'outline'
 }
 
-export type Gadget = TextGadget | ImageGadget | LinkButtonGadget
+export type Widget = TextWidget | ImageWidget | LinkButtonWidget
 
 export interface ProfileLayout {
   columns: number
@@ -41,7 +41,7 @@ export interface ProfileLayout {
 }
 
 export interface ProfileContent {
-  gadgets: Gadget[]
+  widgets: Widget[]
   layout: ProfileLayout
   // Legacy fields for backward compatibility
   about?: string
@@ -74,8 +74,8 @@ export const DEFAULT_LAYOUT: ProfileLayout = {
   rowHeight: 30,
 }
 
-// Default gadget sizes by type
-export const DEFAULT_GADGET_SIZES: Record<GadgetType, { width: number; height: number }> = {
+// Default widget sizes by type
+export const DEFAULT_WIDGET_SIZES: Record<WidgetType, { width: number; height: number }> = {
   text: { width: 12, height: 4 },
   image: { width: 6, height: 6 },
   'link-button': { width: 4, height: 2 },

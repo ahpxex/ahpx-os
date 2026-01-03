@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { ProfileView } from '@/components/profile/ProfileView'
 import { ProfileEditor } from '@/components/profile/ProfileEditor'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { ContextMenu } from '@/components/desktop/ContextMenu'
 import type { Profile as DBProfile } from '@/types/database'
 
 interface ProfileAppProps {
@@ -16,6 +17,7 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [profile, setProfile] = useState<DBProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const { isAuthenticated } = useAuth()
 
   // Try to get profile from cached state first
@@ -70,6 +72,13 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     )
   }
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (!isAuthenticated) return
+    e.preventDefault()
+    e.stopPropagation()
+    setContextMenu({ x: e.clientX, y: e.clientY })
+  }
+
   if (isEditing) {
     return (
       <ProfileEditor
@@ -81,10 +90,24 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
   }
 
   return (
-    <ProfileView
-      profile={profile}
-      isAuthenticated={isAuthenticated}
-      onEdit={() => setIsEditing(true)}
-    />
+    <>
+      <ProfileView
+        profile={profile}
+        onContextMenu={handleContextMenu}
+      />
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={[
+            {
+              label: 'Edit Widgets',
+              onClick: () => setIsEditing(true),
+            },
+          ]}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+    </>
   )
 }

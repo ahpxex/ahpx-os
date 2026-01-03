@@ -46,7 +46,7 @@ export const createProfileAtom = atom(
     if (!user) throw new Error('Must be authenticated to create profile')
 
     const defaultContent: ProfileContent = {
-      gadgets: [],
+      widgets: [],
       layout: { columns: 12, rowHeight: 30 },
     }
 

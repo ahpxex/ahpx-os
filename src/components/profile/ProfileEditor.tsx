@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { useSetAtom } from 'jotai'
 import { v4 as uuidv4 } from 'uuid'
 import { updateProfileAtom } from '@/store/profileActions'
-import { GadgetGrid } from './GadgetGrid'
+import { WidgetGrid } from './WidgetGrid'
 import type { Profile } from '@/types/database'
-import type { ProfileContent, Gadget, GadgetType, ProfileLayout } from '@/types/profile'
+import type { ProfileContent, Widget, WidgetType, ProfileLayout } from '@/types/profile'
 import { DEFAULT_LAYOUT } from '@/types/profile'
 
 interface LayoutItem {
@@ -28,16 +28,16 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
 
   // Initialize draft content from profile
   const initialContent = profile.content as ProfileContent | null
-  const [gadgets, setGadgets] = useState<Gadget[]>(initialContent?.gadgets || [])
+  const [widgets, setWidgets] = useState<Widget[]>(initialContent?.widgets || [])
   const [layout] = useState<ProfileLayout>(initialContent?.layout || DEFAULT_LAYOUT)
 
   const handleLayoutChange = (newLayout: LayoutItem[]) => {
-    setGadgets((prev) =>
-      prev.map((gadget) => {
-        const layoutItem = newLayout.find((l) => l.i === gadget.id)
+    setWidgets((prev) =>
+      prev.map((widget) => {
+        const layoutItem = newLayout.find((l) => l.i === widget.id)
         if (layoutItem) {
           return {
-            ...gadget,
+            ...widget,
             position: {
               x: layoutItem.x,
               y: layoutItem.y,
@@ -46,27 +46,27 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
             },
           }
         }
-        return gadget
+        return widget
       })
     )
   }
 
-  const handleGadgetUpdate = (gadgetId: string, updates: Partial<Gadget>) => {
-    setGadgets((prev) =>
-      prev.map((g) => {
-        if (g.id !== gadgetId) return g
-        // Merge updates while preserving the gadget type
-        return { ...g, ...updates } as Gadget
+  const handleWidgetUpdate = (widgetId: string, updates: Partial<Widget>) => {
+    setWidgets((prev) =>
+      prev.map((w) => {
+        if (w.id !== widgetId) return w
+        // Merge updates while preserving the widget type
+        return { ...w, ...updates } as Widget
       })
     )
   }
 
-  const handleGadgetDelete = (gadgetId: string) => {
-    setGadgets((prev) => prev.filter((g) => g.id !== gadgetId))
+  const handleWidgetDelete = (widgetId: string) => {
+    setWidgets((prev) => prev.filter((w) => w.id !== widgetId))
   }
 
-  const addGadget = (type: GadgetType) => {
-    const defaultSizes: Record<GadgetType, { width: number; height: number }> = {
+  const addWidget = (type: WidgetType) => {
+    const defaultSizes: Record<WidgetType, { width: number; height: number }> = {
       text: { width: 12, height: 4 },
       image: { width: 6, height: 6 },
       'link-button': { width: 4, height: 2 },
@@ -75,19 +75,19 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
     const size = defaultSizes[type]
 
     // Find next available y position
-    const maxY = gadgets.reduce((max, g) => Math.max(max, g.position.y + g.position.height), 0)
+    const maxY = widgets.reduce((max, w) => Math.max(max, w.position.y + w.position.height), 0)
 
-    let newGadget: Gadget
+    let newWidget: Widget
 
     if (type === 'text') {
-      newGadget = {
+      newWidget = {
         id: uuidv4(),
         type: 'text',
         position: { x: 0, y: maxY, ...size },
         content: '',
       }
     } else if (type === 'image') {
-      newGadget = {
+      newWidget = {
         id: uuidv4(),
         type: 'image',
         position: { x: 0, y: maxY, ...size },
@@ -95,7 +95,7 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
         alt: '',
       }
     } else {
-      newGadget = {
+      newWidget = {
         id: uuidv4(),
         type: 'link-button',
         position: { x: 0, y: maxY, ...size },
@@ -105,14 +105,14 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
       }
     }
 
-    setGadgets((prev) => [...prev, newGadget])
+    setWidgets((prev) => [...prev, newWidget])
   }
 
   const handleSave = async () => {
     setSaving(true)
     try {
       const newContent: ProfileContent = {
-        gadgets,
+        widgets,
         layout,
       }
 
@@ -133,36 +133,36 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
   return (
     <div className="relative h-full overflow-auto">
       {/* Editor Content - Full Area */}
-      <GadgetGrid
-        gadgets={gadgets}
+      <WidgetGrid
+        widgets={widgets}
         layout={layout}
         isEditing={true}
         onLayoutChange={handleLayoutChange}
-        onGadgetUpdate={handleGadgetUpdate}
-        onGadgetDelete={handleGadgetDelete}
+        onWidgetUpdate={handleWidgetUpdate}
+        onWidgetDelete={handleWidgetDelete}
       />
 
       {/* Floating Bottom Toolbar */}
       <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4 border border-[var(--color-border)] bg-white px-4 py-2 shadow-md">
-        {/* Add Gadget Buttons */}
+        {/* Add Widget Buttons */}
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => addGadget('text')}
+            onClick={() => addWidget('text')}
             className="border border-[var(--color-border)] bg-white px-2 py-1 text-xs hover:bg-[var(--color-primary-bg)]"
           >
             + Text
           </button>
           <button
             type="button"
-            onClick={() => addGadget('image')}
+            onClick={() => addWidget('image')}
             className="border border-[var(--color-border)] bg-white px-2 py-1 text-xs hover:bg-[var(--color-primary-bg)]"
           >
             + Image
           </button>
           <button
             type="button"
-            onClick={() => addGadget('link-button')}
+            onClick={() => addWidget('link-button')}
             className="border border-[var(--color-border)] bg-white px-2 py-1 text-xs hover:bg-[var(--color-primary-bg)]"
           >
             + Link

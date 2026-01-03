@@ -1,18 +1,18 @@
 import ReactMarkdown from 'react-markdown'
-import type { TextGadget as TextGadgetType } from '@/types/profile'
+import type { TextWidget as TextWidgetType } from '@/types/profile'
 
-interface TextGadgetProps {
-  gadget: TextGadgetType
+interface TextWidgetProps {
+  widget: TextWidgetType
   isEditing?: boolean
   onContentChange?: (content: string) => void
 }
 
-export function TextGadget({ gadget, isEditing, onContentChange }: TextGadgetProps) {
+export function TextWidget({ widget, isEditing, onContentChange }: TextWidgetProps) {
   if (isEditing) {
     return (
       <textarea
         className="h-full w-full resize-none border-0 bg-transparent p-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
-        value={gadget.content}
+        value={widget.content}
         onChange={(e) => onContentChange?.(e.target.value)}
         placeholder="Enter markdown content..."
       />
@@ -35,7 +35,7 @@ export function TextGadget({ gadget, isEditing, onContentChange }: TextGadgetPro
           ),
         }}
       >
-        {gadget.content || ''}
+        {widget.content || ''}
       </ReactMarkdown>
     </div>
   )

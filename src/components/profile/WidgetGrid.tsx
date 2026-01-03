@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import ReactGridLayout, { useContainerWidth, noCompactor } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
-import type { Gadget, ProfileLayout } from '@/types/profile'
-import { TextGadget, ImageGadget, LinkButtonGadget, GadgetWrapper } from './gadgets'
+import type { Widget, ProfileLayout } from '@/types/profile'
+import { TextWidget, ImageWidget, LinkButtonWidget, WidgetWrapper } from './widgets'
 
 interface LayoutItem {
   i: string
@@ -15,38 +15,38 @@ interface LayoutItem {
   minH?: number
 }
 
-interface GadgetGridProps {
-  gadgets: Gadget[]
+interface WidgetGridProps {
+  widgets: Widget[]
   layout: ProfileLayout
   isEditing?: boolean
   onLayoutChange?: (layout: LayoutItem[]) => void
-  onGadgetUpdate?: (gadgetId: string, updates: Partial<Gadget>) => void
-  onGadgetDelete?: (gadgetId: string) => void
+  onWidgetUpdate?: (widgetId: string, updates: Partial<Widget>) => void
+  onWidgetDelete?: (widgetId: string) => void
 }
 
-export function GadgetGrid({
-  gadgets,
+export function WidgetGrid({
+  widgets,
   layout,
   isEditing = false,
   onLayoutChange,
-  onGadgetUpdate,
-  onGadgetDelete,
-}: GadgetGridProps) {
+  onWidgetUpdate,
+  onWidgetDelete,
+}: WidgetGridProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { width, containerRef, mounted } = useContainerWidth() as any
 
   const gridLayout = useMemo(
     () =>
-      gadgets.map((gadget) => ({
-        i: gadget.id,
-        x: gadget.position.x,
-        y: gadget.position.y,
-        w: gadget.position.width,
-        h: gadget.position.height,
+      widgets.map((widget) => ({
+        i: widget.id,
+        x: widget.position.x,
+        y: widget.position.y,
+        w: widget.position.width,
+        h: widget.position.height,
         minW: 2,
         minH: 1,
       })),
-    [gadgets]
+    [widgets]
   )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,38 +54,38 @@ export function GadgetGrid({
     onLayoutChange?.(newLayout as LayoutItem[])
   }
 
-  const renderGadget = (gadget: Gadget) => {
-    switch (gadget.type) {
+  const renderWidget = (widget: Widget) => {
+    switch (widget.type) {
       case 'text':
         return (
-          <TextGadget
-            gadget={gadget}
+          <TextWidget
+            widget={widget}
             isEditing={isEditing}
             onContentChange={(content) =>
-              onGadgetUpdate?.(gadget.id, { content } as Partial<Gadget>)
+              onWidgetUpdate?.(widget.id, { content } as Partial<Widget>)
             }
           />
         )
       case 'image':
         return (
-          <ImageGadget
-            gadget={gadget}
+          <ImageWidget
+            widget={widget}
             isEditing={isEditing}
             onUrlChange={(url) =>
-              onGadgetUpdate?.(gadget.id, { url } as Partial<Gadget>)
+              onWidgetUpdate?.(widget.id, { url } as Partial<Widget>)
             }
           />
         )
       case 'link-button':
         return (
-          <LinkButtonGadget
-            gadget={gadget}
+          <LinkButtonWidget
+            widget={widget}
             isEditing={isEditing}
             onLabelChange={(label) =>
-              onGadgetUpdate?.(gadget.id, { label } as Partial<Gadget>)
+              onWidgetUpdate?.(widget.id, { label } as Partial<Widget>)
             }
             onUrlChange={(url) =>
-              onGadgetUpdate?.(gadget.id, { url } as Partial<Gadget>)
+              onWidgetUpdate?.(widget.id, { url } as Partial<Widget>)
             }
           />
         )
@@ -94,10 +94,10 @@ export function GadgetGrid({
     }
   }
 
-  if (gadgets.length === 0 && !isEditing) {
+  if (widgets.length === 0 && !isEditing) {
     return (
       <div className="flex h-32 items-center justify-center text-gray-400">
-        No gadgets yet
+        No widgets yet
       </div>
     )
   }
@@ -110,20 +110,20 @@ export function GadgetGrid({
           layout={gridLayout}
           width={width}
           gridConfig={{ cols: layout.columns, rowHeight: layout.rowHeight, margin: [8, 8], containerPadding: [0, 0] }}
-          dragConfig={{ enabled: isEditing, handle: '.gadget-drag-handle' }}
+          dragConfig={{ enabled: isEditing, handle: '.widget-drag-handle' }}
           resizeConfig={{ enabled: isEditing }}
           onLayoutChange={handleLayoutChange}
           compactor={noCompactor}
         >
-          {gadgets.map((gadget) => (
-            <div key={gadget.id} className={isEditing ? 'gadget-drag-handle cursor-move' : ''}>
-              <GadgetWrapper
-                gadget={gadget}
+          {widgets.map((widget) => (
+            <div key={widget.id} className={isEditing ? 'widget-drag-handle cursor-move' : ''}>
+              <WidgetWrapper
+                widget={widget}
                 isEditing={isEditing}
-                onDelete={() => onGadgetDelete?.(gadget.id)}
+                onDelete={() => onWidgetDelete?.(widget.id)}
               >
-                {renderGadget(gadget)}
-              </GadgetWrapper>
+                {renderWidget(widget)}
+              </WidgetWrapper>
             </div>
           ))}
         </ReactGridLayout>

@@ -1,20 +1,20 @@
-import type { ImageGadget as ImageGadgetType } from '@/types/profile'
+import type { ImageWidget as ImageWidgetType } from '@/types/profile'
 
-interface ImageGadgetProps {
-  gadget: ImageGadgetType
+interface ImageWidgetProps {
+  widget: ImageWidgetType
   isEditing?: boolean
   onUrlChange?: (url: string) => void
 }
 
-export function ImageGadget({ gadget, isEditing, onUrlChange }: ImageGadgetProps) {
-  if (isEditing && !gadget.url) {
+export function ImageWidget({ widget, isEditing, onUrlChange }: ImageWidgetProps) {
+  if (isEditing && !widget.url) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-dashed border-gray-300 bg-gray-50 p-4">
         <input
           type="text"
           className="w-full border border-gray-300 px-2 py-1 text-sm"
           placeholder="Enter image URL..."
-          value={gadget.url}
+          value={widget.url}
           onChange={(e) => onUrlChange?.(e.target.value)}
         />
         <p className="text-xs text-gray-500">Paste an image URL</p>
@@ -24,16 +24,16 @@ export function ImageGadget({ gadget, isEditing, onUrlChange }: ImageGadgetProps
 
   return (
     <div className="relative h-full w-full overflow-hidden">
-      {gadget.url ? (
+      {widget.url ? (
         <>
           <img
-            src={gadget.url}
-            alt={gadget.alt || ''}
+            src={widget.url}
+            alt={widget.alt || ''}
             className="h-full w-full object-cover"
           />
-          {gadget.caption && (
+          {widget.caption && (
             <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-2 py-1 text-xs text-white">
-              {gadget.caption}
+              {widget.caption}
             </div>
           )}
         </>
