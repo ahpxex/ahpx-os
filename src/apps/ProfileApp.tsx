@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { allProfilesAtom } from '@/store/supabaseAtoms'
 import { getProfileByIdAtom } from '@/store/profileActions'
@@ -95,7 +96,7 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
         profile={profile}
         onContextMenu={handleContextMenu}
       />
-      {contextMenu && (
+      {contextMenu && createPortal(
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
@@ -106,7 +107,8 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
             },
           ]}
           onClose={() => setContextMenu(null)}
-        />
+        />,
+        document.body
       )}
     </>
   )
