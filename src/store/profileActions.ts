@@ -16,7 +16,10 @@ export const fetchAllProfilesAtom = atom(null, async (_get, set) => {
     .order('created_at', { ascending: true })
 
   if (error) {
-    console.error('Error fetching profiles:', error)
+    // PGRST116 = table not found, silently handle for dev environments
+    if (error.code !== 'PGRST116' && error.code !== '42P01') {
+      console.error('Error fetching profiles:', error)
+    }
     set(allProfilesLoadingAtom, false)
     return
   }

@@ -14,10 +14,11 @@ This is an OS-alike web app serving as my personal homepage/portfolio.
 
 - **Framework:** React 19 + Vite
 - **Router:** tan stack router
-- **State Management:** `Jotai'
+- **State Management:** `Jotai`
 - **Utils:** `date-fns` (for Top Bar time formatting).
 - **Styling:** Tailwind CSS
 - **Icons:** OpenMoji (SVG format)
+- **Database:** Supabase - MUST use `@supabase/supabase-js` SDK only. NO ORMs, NO raw SQL queries.
 
 ## 3. Architecture & Data Model
 

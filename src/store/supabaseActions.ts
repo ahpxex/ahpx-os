@@ -73,11 +73,16 @@ export const fetchProfilesAtom = atom(null, async (get, set, userId?: string) =>
 })
 
 export const fetchSystemInfoAtom = atom(null, async (_get, set) => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('system_info')
     .select('*')
     .eq('is_active', true)
     .single()
+
+  // Silently handle missing table errors (PGRST116 = relation not found)
+  if (error && error.code !== 'PGRST116' && error.code !== '42P01') {
+    console.error('Error fetching system info:', error)
+  }
 
   set(systemInfoAtom, data)
 })
