@@ -69,7 +69,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
       ref={frameRef}
       className={`
         absolute flex flex-col
-        border border-[var(--color-border)] bg-white
+        border border-[var(--color-border)] bg-white rounded-lg overflow-hidden
         ${isDragging ? 'cursor-grabbing' : ''}
       `}
       style={{
