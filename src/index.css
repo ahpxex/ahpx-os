@@ -22,3 +22,18 @@ body,
 body {
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+/* Prevent selection for native feel */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Allow selection in specific contexts */
+input,
+textarea,
+[contenteditable="true"],
+.selectable {
+  user-select: text;
+  -webkit-user-select: text;
+}
