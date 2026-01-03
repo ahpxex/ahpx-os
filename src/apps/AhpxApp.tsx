@@ -1,8 +1,10 @@
-export function AboutApp() {
+export function AhpxApp() {
   return (
     <div className="space-y-6 p-4">
       <div className="flex items-center gap-4">
-        <div className="h-20 w-20 rounded-full border border-[var(--color-border)] bg-[var(--color-primary)]" />
+        <div className="h-20 w-20 rounded-full border border-[var(--color-border)] bg-[var(--color-primary)] flex items-center justify-center text-3xl text-white font-bold">
+          A
+        </div>
         <div>
           <h1 className="text-2xl font-bold">ahpx</h1>
           <p className="text-gray-600">Software Developer</p>

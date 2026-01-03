@@ -1,22 +1,37 @@
 import { useOS } from '@/hooks/useOS'
 import { DesktopIcon } from './DesktopIcon'
 import { WindowFrame } from '@/components/window/WindowFrame'
-import { AboutApp } from '@/apps/AboutApp'
-import { ProjectsApp } from '@/apps/ProjectsApp'
+import { AhpxApp } from '@/apps/AhpxApp'
+import { ShawnFanApp } from '@/apps/ShawnFanApp'
+import { BlogsApp } from '@/apps/BlogsApp'
+import { ClockApp } from '@/apps/ClockApp'
 import { TerminalApp } from '@/apps/TerminalApp'
 
 const desktopApps = [
   {
-    id: 'about',
-    title: 'About Me',
-    icon: '/icons/1F44B.svg',
-    component: AboutApp,
+    id: 'ahpx',
+    title: 'ahpx.exe',
+    icon: '/icons/1F47E.svg',
+    component: AhpxApp,
   },
   {
-    id: 'projects',
-    title: 'Projects',
-    icon: '/icons/1F680.svg',
-    component: ProjectsApp,
+    id: 'shawnfan',
+    title: 'shawn fan.exe',
+    icon: '/icons/1F3B8.svg',
+    component: ShawnFanApp,
+  },
+  {
+    id: 'blogs',
+    title: 'Blogs',
+    icon: '/icons/1F4DD.svg',
+    component: BlogsApp,
+  },
+  {
+    id: 'clock',
+    title: 'Clock',
+    icon: '/icons/23F0.svg',
+    component: ClockApp,
+    initialSize: { width: 400, height: 350 },
   },
   {
     id: 'terminal',
