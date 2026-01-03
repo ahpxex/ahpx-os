@@ -4,6 +4,7 @@ import {
   activeWindowIdAtom,
   themeAtom,
   activeWindowAtom,
+  wallpaperAtom,
 } from '@/store/atoms'
 import {
   openWindowAtom,
@@ -20,6 +21,7 @@ export function useOS() {
   const activeWindowId = useAtomValue(activeWindowIdAtom)
   const activeWindow = useAtomValue(activeWindowAtom)
   const [theme, setTheme] = useAtom(themeAtom)
+  const wallpaper = useAtomValue(wallpaperAtom)
 
   const openWindow = useSetAtom(openWindowAtom)
   const closeWindow = useSetAtom(closeWindowAtom)
@@ -35,6 +37,7 @@ export function useOS() {
     activeWindow,
     theme,
     setTheme,
+    wallpaper,
     openWindow,
     closeWindow,
     focusWindow,

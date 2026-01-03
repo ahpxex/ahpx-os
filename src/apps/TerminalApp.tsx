@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
+import { useAuth } from '@/hooks/useAuth'
 
 interface HistoryEntry {
   command: string
   output: string
 }
 
-const COMMANDS: Record<string, string> = {
-  help: `Available commands:
+export function TerminalApp() {
+  const { user, login, logout } = useAuth()
+
+  const COMMANDS: Record<string, string | (() => string)> = {
+    help: `Available commands:
   help     - Show this help message
   about    - About me
   skills   - List my skills
@@ -14,20 +18,22 @@ const COMMANDS: Record<string, string> = {
   projects - List projects
   clear    - Clear terminal
   date     - Show current date
-  whoami   - Display current user`,
-  about:
-    'Hi! I am ahpx, a software developer who enjoys building things for the web.',
-  skills: 'TypeScript, React, Node.js, Python, Go, PostgreSQL, Docker',
-  contact: `Email: hello@ahpx.dev
+  whoami   - Display current user
+  login    - Login as admin (usage: login <email> <password>)
+  logout   - Logout`,
+    about:
+      'Hi! I am ahpx, a software developer who enjoys building things for the web.',
+    skills: 'TypeScript, React, Node.js, Python, Go, PostgreSQL, Docker',
+    contact: `Email: hello@ahpx.dev
 GitHub: github.com/ahpx`,
-  projects: `1. ahpx-os - Web-based OS interface
+    projects: `1. ahpx-os - Web-based OS interface
 2. Project Two - Description here
 3. Project Three - Description here`,
-  whoami: 'guest@ahpx-os',
-  date: () => new Date().toString(),
-}
+    whoami: () =>
+      user?.email ? `Logged in as: ${user.email}` : 'Not logged in',
+    date: () => new Date().toString(),
+  }
 
-export function TerminalApp() {
   const [history, setHistory] = useState<HistoryEntry[]>([
     { command: '', output: 'Welcome to ahpx-os terminal. Type "help" for commands.' },
   ])
@@ -39,17 +45,34 @@ export function TerminalApp() {
     containerRef.current?.scrollTo(0, containerRef.current.scrollHeight)
   }, [history])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const cmd = input.trim().toLowerCase()
+    const trimmedInput = input.trim()
+    const [cmd, ...args] = trimmedInput.split(' ')
 
     let output = ''
+
     if (cmd === '') {
       output = ''
     } else if (cmd === 'clear') {
       setHistory([])
       setInput('')
       return
+    } else if (cmd === 'login') {
+      const [email, password] = args
+      if (!email || !password) {
+        output = 'Usage: login <email> <password>'
+      } else {
+        try {
+          await login({ email, password })
+          output = 'Login successful. Session expires in 30 days.'
+        } catch (err: any) {
+          output = `Login failed: ${err.message || 'Invalid credentials'}`
+        }
+      }
+    } else if (cmd === 'logout') {
+      await logout()
+      output = 'Logged out successfully.'
     } else if (cmd in COMMANDS) {
       const result = COMMANDS[cmd]
       output = typeof result === 'function' ? result() : result
@@ -57,13 +80,15 @@ export function TerminalApp() {
       output = `Command not found: ${cmd}. Type "help" for available commands.`
     }
 
-    setHistory((prev) => [...prev, { command: input, output }])
+    setHistory((prev) => [...prev, { command: trimmedInput, output }])
     setInput('')
   }
 
   const handleContainerClick = () => {
     inputRef.current?.focus()
   }
+
+  const promptUser = user?.email ? user.email.split('@')[0] : 'guest'
 
   return (
     <div
@@ -75,7 +100,7 @@ export function TerminalApp() {
         <div key={i} className="mb-2">
           {entry.command && (
             <div>
-              <span className="text-[var(--color-primary)]">guest@ahpx-os</span>
+              <span className="text-[var(--color-primary)]">{promptUser}@ahpx-os</span>
               <span className="text-white">:</span>
               <span className="text-blue-400">~</span>
               <span className="text-white">$&nbsp;</span>
@@ -91,7 +116,7 @@ export function TerminalApp() {
       ))}
 
       <form onSubmit={handleSubmit} className="flex">
-        <span className="text-[var(--color-primary)]">guest@ahpx-os</span>
+        <span className="text-[var(--color-primary)]">{promptUser}@ahpx-os</span>
         <span className="text-white">:</span>
         <span className="text-blue-400">~</span>
         <span className="text-white">$&nbsp;</span>

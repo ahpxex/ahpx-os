@@ -1,5 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { Provider } from 'jotai'
+import { Provider, useSetAtom } from 'jotai'
+import { useEffect } from 'react'
+import { initAuthAtom, fetchSystemInfoAtom } from '@/store/supabaseActions'
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -8,7 +10,21 @@ export const Route = createRootRoute({
 function RootLayout() {
   return (
     <Provider>
-      <Outlet />
+      <AppInitializer>
+        <Outlet />
+      </AppInitializer>
     </Provider>
   )
+}
+
+function AppInitializer({ children }: { children: React.ReactNode }) {
+  const initAuth = useSetAtom(initAuthAtom)
+  const fetchSystemInfo = useSetAtom(fetchSystemInfoAtom)
+
+  useEffect(() => {
+    initAuth()
+    fetchSystemInfo()
+  }, [initAuth, fetchSystemInfo])
+
+  return <>{children}</>
 }

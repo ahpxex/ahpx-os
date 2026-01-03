@@ -16,3 +16,6 @@ export const maxZIndexAtom = atom((get) => {
   if (windows.length === 0) return 100
   return Math.max(...windows.map((w) => w.zIndex))
 })
+
+// Export Supabase atoms
+export * from './supabaseAtoms'
