@@ -79,7 +79,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
       onMouseDown={handleMouseDown}
     >
       <TitleBar window={window} onDragStart={handleDragStart} />
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-auto">
         <WindowComponent />
       </div>
     </div>

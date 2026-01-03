@@ -78,7 +78,7 @@ export function TerminalApp() {
               <span className="text-[var(--color-primary)]">guest@ahpx-os</span>
               <span className="text-white">:</span>
               <span className="text-blue-400">~</span>
-              <span className="text-white">$ </span>
+              <span className="text-white">$&nbsp;</span>
               <span>{entry.command}</span>
             </div>
           )}
@@ -91,10 +91,10 @@ export function TerminalApp() {
       ))}
 
       <form onSubmit={handleSubmit} className="flex">
-        <span className="text-orange-400">guest@ahpx-os</span>
+        <span className="text-[var(--color-primary)]">guest@ahpx-os</span>
         <span className="text-white">:</span>
         <span className="text-blue-400">~</span>
-        <span className="text-white">$ </span>
+        <span className="text-white">$&nbsp;</span>
         <input
           ref={inputRef}
           type="text"
