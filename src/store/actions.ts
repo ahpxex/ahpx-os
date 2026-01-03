@@ -1,6 +1,7 @@
 import { atom } from 'jotai'
 import { windowsAtom, activeWindowIdAtom, maxZIndexAtom } from './atoms'
 import type { WindowState, WindowConfig, Position, Size } from '@/types/window'
+import { getWindowPosition, saveWindowPosition } from './windowCache'
 
 export const openWindowAtom = atom(
   null,
@@ -22,6 +23,8 @@ export const openWindowAtom = atom(
     }
 
     const maxZ = get(maxZIndexAtom)
+    const cached = getWindowPosition(config.id)
+
     const newWindow: WindowState = {
       id: config.id,
       title: config.title,
@@ -31,8 +34,8 @@ export const openWindowAtom = atom(
       isMinimized: false,
       isMaximized: false,
       zIndex: maxZ + 1,
-      position: config.initialPosition ?? { x: 100, y: 100 },
-      size: config.initialSize ?? { width: 600, height: 400 },
+      position: cached?.position ?? config.initialPosition ?? { x: 100, y: 100 },
+      size: cached?.size ?? config.initialSize ?? { width: 600, height: 400 },
     }
 
     set(windowsAtom, [...windows, newWindow])
@@ -42,6 +45,12 @@ export const openWindowAtom = atom(
 
 export const closeWindowAtom = atom(null, (get, set, windowId: string) => {
   const windows = get(windowsAtom)
+  const window = windows.find((w) => w.id === windowId)
+
+  if (window) {
+    saveWindowPosition(windowId, window.position, window.size)
+  }
+
   set(
     windowsAtom,
     windows.filter((w) => w.id !== windowId)
@@ -98,10 +107,16 @@ export const updateWindowPositionAtom = atom(
     { windowId, position }: { windowId: string; position: Position }
   ) => {
     const windows = get(windowsAtom)
+    const window = windows.find((w) => w.id === windowId)
+
     set(
       windowsAtom,
       windows.map((w) => (w.id === windowId ? { ...w, position } : w))
     )
+
+    if (window) {
+      saveWindowPosition(windowId, position, window.size)
+    }
   }
 )
 
@@ -109,9 +124,15 @@ export const updateWindowSizeAtom = atom(
   null,
   (get, set, { windowId, size }: { windowId: string; size: Size }) => {
     const windows = get(windowsAtom)
+    const window = windows.find((w) => w.id === windowId)
+
     set(
       windowsAtom,
       windows.map((w) => (w.id === windowId ? { ...w, size } : w))
     )
+
+    if (window) {
+      saveWindowPosition(windowId, window.position, size)
+    }
   }
 )
