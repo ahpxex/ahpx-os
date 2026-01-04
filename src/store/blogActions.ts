@@ -85,11 +85,7 @@ export const updateBlogPostAtom = atom(
 
     if (params.updates.title !== undefined) {
       updateData.title = params.updates.title
-      // Update slug if title changes
-      updateData.slug = params.updates.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
+      // Note: Don't update slug to avoid conflicts - slug is immutable after creation
     }
     if (params.updates.summary !== undefined) updateData.summary = params.updates.summary
     if (params.updates.date !== undefined) updateData.date = params.updates.date

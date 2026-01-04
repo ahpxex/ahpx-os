@@ -44,7 +44,7 @@ export function BlogPostView({ post, onBack, onEdit, canEdit }: BlogPostViewProp
           </time>
 
           {/* Title */}
-          <h1 className="mt-2 text-2xl font-bold">{post.title}</h1>
+          <h1 className="mt-2 text-2xl font-bold selectable">{post.title}</h1>
 
           {/* Tags */}
           {post.tags.length > 0 && (
@@ -62,11 +62,11 @@ export function BlogPostView({ post, onBack, onEdit, canEdit }: BlogPostViewProp
 
           {/* Summary */}
           {post.summary && (
-            <p className="mt-4 text-gray-600 italic">{post.summary}</p>
+            <p className="mt-4 text-gray-600 italic selectable">{post.summary}</p>
           )}
 
           {/* Content */}
-          <div className="prose prose-sm mt-6 max-w-none">
+          <div className="prose prose-sm mt-6 max-w-none selectable">
             <ReactMarkdown
               components={{
                 a: ({ href, children }) => (

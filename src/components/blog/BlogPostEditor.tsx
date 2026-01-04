@@ -72,29 +72,6 @@ export function BlogPostEditor({ post, onSave, onCancel }: BlogPostEditorProps) 
     }
   }
 
-  const FullscreenEditor = () =>
-    createPortal(
-      <div className="fixed inset-0 z-[2500] flex flex-col bg-white">
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2">
-          <span className="text-sm font-medium">Content Editor (Fullscreen)</span>
-          <button
-            onClick={() => setIsFullscreen(false)}
-            className="border border-[var(--color-border)] bg-white px-3 py-1 text-sm hover:bg-gray-100"
-          >
-            Exit Fullscreen
-          </button>
-        </div>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Write your post content here..."
-          className="flex-1 resize-none border-0 p-4 font-mono text-sm focus:outline-none"
-          autoFocus
-        />
-      </div>,
-      document.body
-    )
-
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto p-4">
@@ -195,7 +172,26 @@ export function BlogPostEditor({ post, onSave, onCancel }: BlogPostEditorProps) 
         </button>
       </div>
 
-      {isFullscreen && <FullscreenEditor />}
+      {isFullscreen && createPortal(
+        <div className="fixed inset-0 z-[2500] flex flex-col bg-white">
+          <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2">
+            <span className="text-sm font-medium">Content Editor (Fullscreen)</span>
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="border border-[var(--color-border)] bg-white px-3 py-1 text-sm hover:bg-gray-100"
+            >
+              Exit Fullscreen
+            </button>
+          </div>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Write your post content here..."
+            className="flex-1 resize-none border-0 p-4 font-mono text-sm focus:outline-none"
+          />
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
