@@ -5,17 +5,16 @@ import { DEFAULT_LAYOUT } from '@/types/profile'
 
 interface ProfileViewProps {
   profile: Profile
-  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-export function ProfileView({ profile, onContextMenu }: ProfileViewProps) {
+export function ProfileView({ profile }: ProfileViewProps) {
   // Get content with type safety
   const content = profile.content as ProfileContent | null
   const widgets = content?.widgets || []
   const layout = content?.layout || DEFAULT_LAYOUT
 
   return (
-    <div className="h-full overflow-auto" onContextMenu={onContextMenu}>
+    <div className="h-full overflow-auto">
       {widgets.length > 0 ? (
         <WidgetGrid
           widgets={widgets}

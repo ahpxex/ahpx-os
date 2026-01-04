@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { allProfilesAtom } from '@/store/supabaseAtoms'
 import { getProfileByIdAtom } from '@/store/profileActions'
 import { useAuth } from '@/hooks/useAuth'
+import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { ProfileView } from '@/components/profile/ProfileView'
 import { ProfileEditor } from '@/components/profile/ProfileEditor'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
-import { ContextMenu } from '@/components/desktop/ContextMenu'
 import type { Profile as DBProfile } from '@/types/database'
 
 interface ProfileAppProps {
@@ -18,8 +17,8 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [profile, setProfile] = useState<DBProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const { isAuthenticated } = useAuth()
+  const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
 
   // Try to get profile from cached state first
   const allProfiles = useAtomValue(allProfilesAtom)
@@ -57,6 +56,24 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     }
   }, [allProfiles, profileId])
 
+  // Set up context menu items when authenticated
+  useEffect(() => {
+    if (isAuthenticated && !isEditing) {
+      setContextMenuItems([
+        {
+          label: 'Edit Widgets',
+          onClick: () => setIsEditing(true),
+        },
+      ])
+    } else {
+      clearContextMenuItems()
+    }
+
+    return () => {
+      clearContextMenuItems()
+    }
+  }, [isAuthenticated, isEditing, setContextMenuItems, clearContextMenuItems])
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -73,13 +90,6 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     )
   }
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    if (!isAuthenticated) return
-    e.preventDefault()
-    e.stopPropagation()
-    setContextMenu({ x: e.clientX, y: e.clientY })
-  }
-
   if (isEditing) {
     return (
       <ProfileEditor
@@ -90,26 +100,5 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     )
   }
 
-  return (
-    <>
-      <ProfileView
-        profile={profile}
-        onContextMenu={handleContextMenu}
-      />
-      {contextMenu && createPortal(
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          items={[
-            {
-              label: 'Edit Widgets',
-              onClick: () => setIsEditing(true),
-            },
-          ]}
-          onClose={() => setContextMenu(null)}
-        />,
-        document.body
-      )}
-    </>
-  )
+  return <ProfileView profile={profile} />
 }

@@ -97,6 +97,28 @@ The entire OS state must be centralized.
   - Must handle `onMouseDown` for dragging.
   - Contains "Traffic Lights" (Close/Minimize/Maximize) - styled as simple circles with black borders.
 - Handles the **Resize** handles (corners).
+- Provides `WindowContextMenuProvider` for right-click context menus.
+
+### Window Context Menu
+
+Use `useWindowContextMenu` hook to add right-click menu to any window:
+
+```tsx
+import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
+
+function MyApp() {
+  const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
+
+  useEffect(() => {
+    setContextMenuItems([
+      { label: 'Action', onClick: () => {} },
+      { label: 'Disabled', onClick: () => {}, disabled: true },
+      { divider: true, label: '', onClick: () => {} },
+    ])
+    return () => clearContextMenuItems()
+  }, [])
+}
+```
 
 ### `Dock` / `Taskbar`
 

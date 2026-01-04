@@ -1,6 +1,7 @@
 import { Rnd } from 'react-rnd'
 import { useOS } from '@/hooks/useOS'
 import { TitleBar } from './TitleBar'
+import { WindowContextMenuProvider } from '@/contexts/WindowContextMenuContext'
 import type { WindowState } from '@/types/window'
 
 interface WindowFrameProps {
@@ -31,7 +32,9 @@ export function WindowFrame({ window }: WindowFrameProps) {
       >
         <TitleBar window={window} />
         <div className="flex-1 overflow-auto">
-          <WindowComponent />
+          <WindowContextMenuProvider>
+            <WindowComponent />
+          </WindowContextMenuProvider>
         </div>
       </div>
     )
@@ -80,7 +83,9 @@ export function WindowFrame({ window }: WindowFrameProps) {
       <div className="flex h-full flex-col border border-[var(--color-border)] bg-white rounded-lg overflow-hidden">
         <TitleBar window={window} />
         <div className="flex-1 overflow-auto">
-          <WindowComponent />
+          <WindowContextMenuProvider>
+            <WindowComponent />
+          </WindowContextMenuProvider>
         </div>
       </div>
     </Rnd>
