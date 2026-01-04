@@ -131,18 +131,20 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
   }
 
   return (
-    <div className="relative h-full overflow-auto">
-      {/* Editor Content - Full Area */}
-      <WidgetGrid
-        widgets={widgets}
-        layout={layout}
-        isEditing={true}
-        onLayoutChange={handleLayoutChange}
-        onWidgetUpdate={handleWidgetUpdate}
-        onWidgetDelete={handleWidgetDelete}
-      />
+    <div className="relative flex h-full flex-col">
+      {/* Editor Content - Scrollable Area */}
+      <div className="flex-1 overflow-auto pb-16">
+        <WidgetGrid
+          widgets={widgets}
+          layout={layout}
+          isEditing={true}
+          onLayoutChange={handleLayoutChange}
+          onWidgetUpdate={handleWidgetUpdate}
+          onWidgetDelete={handleWidgetDelete}
+        />
+      </div>
 
-      {/* Floating Bottom Toolbar */}
+      {/* Sticky Bottom Toolbar */}
       <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4 border border-[var(--color-border)] bg-white px-4 py-2 shadow-md">
         {/* Add Widget Buttons */}
         <div className="flex gap-2">
