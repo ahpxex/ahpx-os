@@ -333,7 +333,7 @@ export function WidgetGrid({
   }
 
   return (
-    <div ref={containerRef} className="h-full w-full">
+    <div ref={containerRef} className="h-full w-full p-4">
       {mounted && (
         <ReactGridLayout
           className="layout"

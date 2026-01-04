@@ -71,6 +71,18 @@ export function NewProfileApp() {
     { value: '/icons/1F31F.svg', label: 'Star' },
     { value: '/icons/1F525.svg', label: 'Fire' },
     { value: '/icons/1F4A1.svg', label: 'Idea' },
+    { value: '/icons/1F4DA.svg', label: 'Book' },
+    { value: '/icons/1F4BC.svg', label: 'Briefcase' },
+    { value: '/icons/2764.svg', label: 'Heart' },
+    { value: '/icons/1F4F7.svg', label: 'Camera' },
+    { value: '/icons/1F3B5.svg', label: 'Music' },
+    { value: '/icons/1F3A8.svg', label: 'Palette' },
+    { value: '/icons/1F3AE.svg', label: 'Game' },
+    { value: '/icons/2615.svg', label: 'Coffee' },
+    { value: '/icons/1F355.svg', label: 'Pizza' },
+    { value: '/icons/1F389.svg', label: 'Party' },
+    { value: '/icons/1F4AC.svg', label: 'Chat' },
+    { value: '/icons/1F310.svg', label: 'Globe' },
   ]
 
   return (
