@@ -5,6 +5,7 @@ import { loadAppData } from '@/lib/loaders'
 import { userAtom, sessionAtom, authLoadingAtom, systemInfoAtom, blogPostsAtom } from '@/store/supabaseAtoms'
 import { allProfilesAtom, allProfilesLoadingAtom } from '@/store/supabaseAtoms'
 import { ToastProvider } from '@/contexts/ToastContext'
+import { DialogProvider } from '@/contexts/DialogContext'
 
 export const Route = createRootRoute({
   loader: loadAppData,
@@ -21,11 +22,13 @@ function RootLayout() {
 
   return (
     <Provider>
-      <ToastProvider>
-        <DataHydrator data={loaderData}>
-          <Outlet />
-        </DataHydrator>
-      </ToastProvider>
+      <DialogProvider>
+        <ToastProvider>
+          <DataHydrator data={loaderData}>
+            <Outlet />
+          </DataHydrator>
+        </ToastProvider>
+      </DialogProvider>
     </Provider>
   )
 }

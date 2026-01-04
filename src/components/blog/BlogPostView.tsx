@@ -8,10 +8,11 @@ interface BlogPostViewProps {
   post: BlogPost
   onBack: () => void
   onEdit?: () => void
+  onDelete?: () => void
   canEdit?: boolean
 }
 
-export function BlogPostView({ post, onBack, onEdit, canEdit }: BlogPostViewProps) {
+export function BlogPostView({ post, onBack, onEdit, onDelete, canEdit }: BlogPostViewProps) {
   // Content is stored as JSON, could be string or object
   const content = typeof post.content === 'string' ? post.content : ''
 
@@ -25,13 +26,25 @@ export function BlogPostView({ post, onBack, onEdit, canEdit }: BlogPostViewProp
         >
           &larr; Back to posts
         </button>
-        {canEdit && onEdit && (
-          <button
-            onClick={onEdit}
-            className="border border-[var(--color-border)] bg-white px-3 py-1 text-sm hover:bg-gray-100"
-          >
-            Edit
-          </button>
+        {canEdit && (
+          <div className="flex gap-2">
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                className="border border-red-500 bg-white px-3 py-1 text-sm text-red-500 hover:bg-red-50"
+              >
+                Delete
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                className="border border-[var(--color-border)] bg-white px-3 py-1 text-sm hover:bg-gray-100"
+              >
+                Edit
+              </button>
+            )}
+          </div>
         )}
       </div>
 

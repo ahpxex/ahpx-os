@@ -1,7 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { useSetAtom } from 'jotai'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useAuth } from '@/hooks/useAuth'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
+import { useToast } from '@/contexts/ToastContext'
+import { useDialog } from '@/contexts/DialogContext'
+import { deleteBlogPostAtom } from '@/store/blogActions'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { BlogPostEditor } from '@/components/blog/BlogPostEditor'
 import { BlogPostView } from '@/components/blog/BlogPostView'
@@ -14,6 +18,9 @@ export function BlogsApp() {
   const { posts, loading, refetch } = useBlogPosts()
   const { isAuthenticated } = useAuth()
   const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
+  const deleteBlogPost = useSetAtom(deleteBlogPostAtom)
+  const toast = useToast()
+  const dialog = useDialog()
 
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
   const [isCreating, setIsCreating] = useState(false)
@@ -102,6 +109,27 @@ export function BlogsApp() {
     }
   }
 
+  // Handle deleting a post
+  const handleDeletePost = async () => {
+    if (!viewingPost) return
+
+    const confirmed = await dialog.confirm(
+      'Delete Post',
+      'Are you sure you want to delete this post? This action cannot be undone.'
+    )
+    if (!confirmed) return
+
+    try {
+      await deleteBlogPost(viewingPost.id)
+      toast.success('Post deleted successfully')
+      setViewingPost(null)
+      refetch()
+    } catch (error) {
+      console.error('Failed to delete post:', error)
+      toast.error('Failed to delete post')
+    }
+  }
+
   if (isCreating) {
     return (
       <BlogPostEditor
@@ -133,6 +161,7 @@ export function BlogsApp() {
         post={viewingPost}
         onBack={handleBackToList}
         onEdit={handleEditPost}
+        onDelete={handleDeletePost}
         canEdit={isAuthenticated}
       />
     )

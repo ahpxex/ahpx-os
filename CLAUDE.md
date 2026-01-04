@@ -50,7 +50,9 @@ The entire OS state must be centralized.
 - **Icons:** z-10
 - **Windows:** z-100 to z-999 (Dynamic, clicking a window brings it to `max(zIndexes) + 1`).
 - **Top Bar:** z-1000 (Always on top).
-- **Context Menus/Modals:** z-2000.
+- **Context Menus:** z-2000.
+- **Fullscreen Editors:** z-2500.
+- **System Dialogs:** z-3000.
 
 ## 4. Design System (Neo-Brutalism Guidelines)
 
@@ -117,6 +119,51 @@ function MyApp() {
     ])
     return () => clearContextMenuItems()
   }, [])
+}
+```
+
+### System Dialog
+
+Use `useDialog` hook for confirmation dialogs and alerts (replaces native `window.confirm`/`window.alert`):
+
+```tsx
+import { useDialog } from '@/contexts/DialogContext'
+
+function MyComponent() {
+  const dialog = useDialog()
+
+  const handleDelete = async () => {
+    const confirmed = await dialog.confirm('Delete Item', 'Are you sure?')
+    if (confirmed) {
+      // proceed with delete
+    }
+  }
+
+  const showMessage = async () => {
+    await dialog.alert('Notice', 'Operation completed.')
+  }
+}
+```
+
+Methods:
+- `confirm(title, message)` - Returns `Promise<boolean>`, shows Cancel/Confirm buttons
+- `alert(title, message)` - Returns `Promise<void>`, shows OK button
+- `showDialog(options)` - Custom dialog with custom actions
+
+### Toast Notifications
+
+Use `useToast` hook for feedback messages:
+
+```tsx
+import { useToast } from '@/contexts/ToastContext'
+
+function MyComponent() {
+  const toast = useToast()
+
+  toast.success('Saved!')
+  toast.error('Failed to save')
+  toast.warning('Check your input')
+  toast.info('Processing...')
 }
 ```
 
