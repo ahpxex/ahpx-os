@@ -43,7 +43,8 @@ body {
 input,
 textarea,
 [contenteditable="true"],
-.selectable {
+.selectable,
+.selectable * {
   user-select: text;
   -webkit-user-select: text;
 }

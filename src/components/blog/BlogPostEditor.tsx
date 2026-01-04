@@ -187,7 +187,7 @@ export function BlogPostEditor({ post, onSave, onCancel }: BlogPostEditorProps) 
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write your post content here..."
-            className="flex-1 resize-none border-0 p-4 font-mono text-sm focus:outline-none"
+            className="mx-auto flex-1 w-full max-w-3xl resize-none border-0 px-8 py-4 font-mono text-sm focus:outline-none"
           />
         </div>,
         document.body
