@@ -22,11 +22,13 @@ export const createBlogPostAtom = atom(
     const user = get(userAtom)
     if (!user) throw new Error('Must be authenticated to create blog post')
 
-    // Generate slug from title
-    const slug = params.title
+    // Generate unique slug from title + timestamp suffix
+    const baseSlug = params.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
+    const uniqueSuffix = Date.now().toString(36)
+    const slug = `${baseSlug}-${uniqueSuffix}`
 
     const insertData = {
       author_id: user.id,

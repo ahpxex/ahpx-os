@@ -1,21 +1,29 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useAuth } from '@/hooks/useAuth'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { BlogPostEditor } from '@/components/blog/BlogPostEditor'
+import { BlogPostView } from '@/components/blog/BlogPostView'
 import { BlogSearch } from '@/components/blog/BlogSearch'
 import { BlogTagFilter } from '@/components/blog/BlogTagFilter'
 import { format } from 'date-fns'
+import type { BlogPost } from '@/types/database'
 
 export function BlogsApp() {
   const { posts, loading, refetch } = useBlogPosts()
   const { isAuthenticated } = useAuth()
   const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
 
-  const [isEditing, setIsEditing] = useState(false)
+  const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
+  const [isCreating, setIsCreating] = useState(false)
+  const [viewingPost, setViewingPost] = useState<BlogPost | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
+
+  // Track scroll position for restoration
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const savedScrollPosition = useRef(0)
 
   // Get all unique tags from posts
   const allTags = useMemo(() => {
@@ -42,11 +50,11 @@ export function BlogsApp() {
 
   // Set up context menu
   useEffect(() => {
-    if (isAuthenticated && !isEditing) {
+    if (isAuthenticated && !isCreating && !editingPost && !viewingPost) {
       setContextMenuItems([
         {
           label: 'Create Post',
-          onClick: () => setIsEditing(true),
+          onClick: () => setIsCreating(true),
         },
       ])
     } else {
@@ -56,7 +64,27 @@ export function BlogsApp() {
     return () => {
       clearContextMenuItems()
     }
-  }, [isAuthenticated, isEditing, setContextMenuItems, clearContextMenuItems])
+  }, [isAuthenticated, isCreating, editingPost, viewingPost, setContextMenuItems, clearContextMenuItems])
+
+  // Handle opening a post
+  const handleOpenPost = (post: BlogPost) => {
+    // Save scroll position before navigating
+    if (scrollRef.current) {
+      savedScrollPosition.current = scrollRef.current.scrollTop
+    }
+    setViewingPost(post)
+  }
+
+  // Handle going back to list
+  const handleBackToList = () => {
+    setViewingPost(null)
+    // Restore scroll position after render
+    requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = savedScrollPosition.current
+      }
+    })
+  }
 
   if (loading) {
     return (
@@ -66,14 +94,46 @@ export function BlogsApp() {
     )
   }
 
-  if (isEditing) {
+  // Handle editing a post from view
+  const handleEditPost = () => {
+    if (viewingPost) {
+      setEditingPost(viewingPost)
+      setViewingPost(null)
+    }
+  }
+
+  if (isCreating) {
     return (
       <BlogPostEditor
         onSave={() => {
-          setIsEditing(false)
+          setIsCreating(false)
           refetch()
         }}
-        onCancel={() => setIsEditing(false)}
+        onCancel={() => setIsCreating(false)}
+      />
+    )
+  }
+
+  if (editingPost) {
+    return (
+      <BlogPostEditor
+        post={editingPost}
+        onSave={() => {
+          setEditingPost(null)
+          refetch()
+        }}
+        onCancel={() => setEditingPost(null)}
+      />
+    )
+  }
+
+  if (viewingPost) {
+    return (
+      <BlogPostView
+        post={viewingPost}
+        onBack={handleBackToList}
+        onEdit={handleEditPost}
+        canEdit={isAuthenticated}
       />
     )
   }
@@ -99,7 +159,7 @@ export function BlogsApp() {
       </div>
 
       {/* Post list */}
-      <div className="flex-1 overflow-auto p-4">
+      <div ref={scrollRef} className="flex-1 overflow-auto p-4">
         <div className="space-y-4">
           {filteredPosts.length === 0 ? (
             <p className="text-gray-500">
@@ -109,6 +169,7 @@ export function BlogsApp() {
             filteredPosts.map((post) => (
               <article
                 key={post.id}
+                onClick={() => handleOpenPost(post)}
                 className="cursor-pointer border border-[var(--color-border)] bg-white p-4 transition-all hover:bg-[var(--color-primary-bg)]"
               >
                 <time className="text-xs text-gray-500">

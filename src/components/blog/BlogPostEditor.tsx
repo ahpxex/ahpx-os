@@ -1,49 +1,99 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useSetAtom } from 'jotai'
 import { format } from 'date-fns'
-import { createBlogPostAtom } from '@/store/blogActions'
+import { createBlogPostAtom, updateBlogPostAtom } from '@/store/blogActions'
+import { useToast } from '@/contexts/ToastContext'
 import { TagInput } from './TagInput'
+import type { BlogPost } from '@/types/database'
 
 interface BlogPostEditorProps {
+  post?: BlogPost
   onSave: () => void
   onCancel: () => void
 }
 
-export function BlogPostEditor({ onSave, onCancel }: BlogPostEditorProps) {
-  const [title, setTitle] = useState('')
-  const [summary, setSummary] = useState('')
-  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'))
-  const [tags, setTags] = useState<string[]>([])
-  const [content, setContent] = useState('')
-  const [published, setPublished] = useState(false)
+export function BlogPostEditor({ post, onSave, onCancel }: BlogPostEditorProps) {
+  const isEditing = !!post
+
+  const [title, setTitle] = useState(post?.title || '')
+  const [summary, setSummary] = useState(post?.summary || '')
+  const [date, setDate] = useState(post?.date || format(new Date(), 'yyyy-MM-dd'))
+  const [tags, setTags] = useState<string[]>(post?.tags || [])
+  const [content, setContent] = useState(
+    typeof post?.content === 'string' ? post.content : ''
+  )
+  const [published, setPublished] = useState(post?.published || false)
   const [saving, setSaving] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const createBlogPost = useSetAtom(createBlogPostAtom)
+  const updateBlogPost = useSetAtom(updateBlogPostAtom)
+  const toast = useToast()
 
   const handleSave = async () => {
     if (!title.trim()) {
-      alert('Title is required')
+      toast.warning('Title is required')
       return
     }
 
     setSaving(true)
     try {
-      await createBlogPost({
-        title: title.trim(),
-        summary: summary.trim(),
-        date,
-        tags,
-        content,
-        published,
-      })
+      if (isEditing && post) {
+        await updateBlogPost({
+          id: post.id,
+          updates: {
+            title: title.trim(),
+            summary: summary.trim(),
+            date,
+            tags,
+            content,
+            published,
+          },
+        })
+        toast.success('Post updated successfully')
+      } else {
+        await createBlogPost({
+          title: title.trim(),
+          summary: summary.trim(),
+          date,
+          tags,
+          content,
+          published,
+        })
+        toast.success('Post created successfully')
+      }
       onSave()
     } catch (error) {
-      console.error('Failed to create blog post:', error)
-      alert('Failed to create blog post. Please try again.')
+      console.error('Failed to save blog post:', error)
+      toast.error(isEditing ? 'Failed to update post' : 'Failed to create post')
     } finally {
       setSaving(false)
     }
   }
+
+  const FullscreenEditor = () =>
+    createPortal(
+      <div className="fixed inset-0 z-[2500] flex flex-col bg-white">
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2">
+          <span className="text-sm font-medium">Content Editor (Fullscreen)</span>
+          <button
+            onClick={() => setIsFullscreen(false)}
+            className="border border-[var(--color-border)] bg-white px-3 py-1 text-sm hover:bg-gray-100"
+          >
+            Exit Fullscreen
+          </button>
+        </div>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write your post content here..."
+          className="flex-1 resize-none border-0 p-4 font-mono text-sm focus:outline-none"
+          autoFocus
+        />
+      </div>,
+      document.body
+    )
 
   return (
     <div className="flex h-full flex-col">
@@ -106,7 +156,16 @@ export function BlogPostEditor({ onSave, onCancel }: BlogPostEditorProps) {
 
           {/* Content */}
           <div className="flex-1">
-            <label className="mb-1 block text-sm font-medium">Content (Markdown)</label>
+            <div className="mb-1 flex items-center justify-between">
+              <label className="text-sm font-medium">Content (Markdown)</label>
+              <button
+                type="button"
+                onClick={() => setIsFullscreen(true)}
+                className="text-xs text-[var(--color-primary)] hover:underline"
+              >
+                Fullscreen
+              </button>
+            </div>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -132,9 +191,11 @@ export function BlogPostEditor({ onSave, onCancel }: BlogPostEditorProps) {
           disabled={saving}
           className="border border-[var(--color-primary)] bg-[var(--color-primary)] px-3 py-1 text-sm text-white hover:bg-[var(--color-primary-dark)]"
         >
-          {saving ? 'Saving...' : 'Save'}
+          {saving ? 'Saving...' : isEditing ? 'Update' : 'Save'}
         </button>
       </div>
+
+      {isFullscreen && <FullscreenEditor />}
     </div>
   )
 }

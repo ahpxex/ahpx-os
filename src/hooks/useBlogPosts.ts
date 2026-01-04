@@ -1,5 +1,4 @@
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useEffect } from 'react'
 import {
   blogPostsAtom,
   publishedBlogPostsAtom,
@@ -13,9 +12,7 @@ export function useBlogPosts() {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom)
   const fetchPosts = useSetAtom(fetchBlogPostsAtom)
 
-  useEffect(() => {
-    fetchPosts(!isAuthenticated)
-  }, [fetchPosts, isAuthenticated])
+  // Posts are preloaded via TanStack Router loader, no need to fetch on mount
 
   return {
     posts: isAuthenticated ? posts : publishedPosts,
