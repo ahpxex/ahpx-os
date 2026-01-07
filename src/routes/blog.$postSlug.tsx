@@ -5,8 +5,8 @@ import { Desktop } from '@/components/desktop/Desktop'
 export const Route = createFileRoute('/blog/$postSlug')({
   component: BlogPostPage,
   beforeLoad: ({ params }) => {
-    // Store the post slug in sessionStorage so BlogsApp can access it
-    sessionStorage.setItem('initialPostSlug', params.postSlug)
+    // Store the post identifier in sessionStorage so BlogsApp can access it
+    sessionStorage.setItem('initialPostIdentifier', params.postSlug)
   },
 })
 

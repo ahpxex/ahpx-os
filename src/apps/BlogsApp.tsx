@@ -12,6 +12,7 @@ import { BlogPostEditor } from '@/components/blog/BlogPostEditor'
 import { BlogPostView } from '@/components/blog/BlogPostView'
 import { BlogSearch } from '@/components/blog/BlogSearch'
 import { BlogTagFilter } from '@/components/blog/BlogTagFilter'
+import { titleToUrl, urlToTitle } from '@/lib/urlHelpers'
 import { format } from 'date-fns'
 import type { BlogPost } from '@/types/database'
 
@@ -32,15 +33,23 @@ export function BlogsApp() {
 
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Check for initial post slug from URL
+  // Check for initial post identifier from URL
   useEffect(() => {
-    const initialSlug = sessionStorage.getItem('initialPostSlug')
-    if (initialSlug && posts.length > 0 && !viewingPost) {
-      const post = posts.find((p) => p.slug === initialSlug)
+    const initialIdentifier = sessionStorage.getItem('initialPostIdentifier')
+    if (initialIdentifier && posts.length > 0 && !viewingPost) {
+      // Try to match by title first (convert URL format back to match title)
+      const searchTitle = urlToTitle(initialIdentifier)
+      let post = posts.find((p) => urlToTitle(titleToUrl(p.title)) === searchTitle)
+
+      // Fallback to slug if no title match
+      if (!post) {
+        post = posts.find((p) => p.slug === initialIdentifier)
+      }
+
       if (post) {
         setViewingPost(post)
         // Clear the sessionStorage after using it
-        sessionStorage.removeItem('initialPostSlug')
+        sessionStorage.removeItem('initialPostIdentifier')
       }
     }
   }, [posts, viewingPost])
@@ -88,8 +97,10 @@ export function BlogsApp() {
 
   // Handle opening a post
   const handleOpenPost = (post: BlogPost) => {
-    // Navigate to the direct URL instead of just showing in app
-    navigate({ to: '/blog/$postSlug', params: { postSlug: post.slug } })
+    // Navigate to the direct URL using title
+    // If there are duplicate titles, we could fall back to slug, but for now use title
+    const urlIdentifier = titleToUrl(post.title)
+    navigate({ to: '/blog/$postSlug', params: { postSlug: urlIdentifier } })
   }
 
   // Handle going back to list
