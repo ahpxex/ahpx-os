@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSetAtom } from 'jotai'
+import { useNavigate } from '@tanstack/react-router'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useAuth } from '@/hooks/useAuth'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
@@ -21,6 +22,7 @@ export function BlogsApp() {
   const deleteBlogPost = useSetAtom(deleteBlogPostAtom)
   const toast = useToast()
   const dialog = useDialog()
+  const navigate = useNavigate()
 
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
   const [isCreating, setIsCreating] = useState(false)
@@ -28,9 +30,20 @@ export function BlogsApp() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
-  // Track scroll position for restoration
   const scrollRef = useRef<HTMLDivElement>(null)
-  const savedScrollPosition = useRef(0)
+
+  // Check for initial post slug from URL
+  useEffect(() => {
+    const initialSlug = sessionStorage.getItem('initialPostSlug')
+    if (initialSlug && posts.length > 0 && !viewingPost) {
+      const post = posts.find((p) => p.slug === initialSlug)
+      if (post) {
+        setViewingPost(post)
+        // Clear the sessionStorage after using it
+        sessionStorage.removeItem('initialPostSlug')
+      }
+    }
+  }, [posts, viewingPost])
 
   // Get all unique tags from posts
   const allTags = useMemo(() => {
@@ -75,22 +88,14 @@ export function BlogsApp() {
 
   // Handle opening a post
   const handleOpenPost = (post: BlogPost) => {
-    // Save scroll position before navigating
-    if (scrollRef.current) {
-      savedScrollPosition.current = scrollRef.current.scrollTop
-    }
-    setViewingPost(post)
+    // Navigate to the direct URL instead of just showing in app
+    navigate({ to: '/blog/$postSlug', params: { postSlug: post.slug } })
   }
 
   // Handle going back to list
   const handleBackToList = () => {
-    setViewingPost(null)
-    // Restore scroll position after render
-    requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = savedScrollPosition.current
-      }
-    })
+    // Navigate back to home
+    navigate({ to: '/' })
   }
 
   if (loading) {
@@ -122,8 +127,9 @@ export function BlogsApp() {
     try {
       await deleteBlogPost(viewingPost.id)
       toast.success('Post deleted successfully')
-      setViewingPost(null)
       refetch()
+      // Navigate back to home after deletion
+      navigate({ to: '/' })
     } catch (error) {
       console.error('Failed to delete post:', error)
       toast.error('Failed to delete post')

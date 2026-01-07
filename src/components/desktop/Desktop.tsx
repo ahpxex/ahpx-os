@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import type { ComponentType } from 'react'
 import { useOS } from '@/hooks/useOS'
 import { useAllProfiles } from '@/hooks/useAllProfiles'
@@ -55,7 +55,11 @@ interface SelectionBox {
   currentY: number
 }
 
-export function Desktop() {
+interface DesktopProps {
+  initialOpenApp?: string
+}
+
+export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   const {
     windows,
     openWindow,
@@ -71,6 +75,7 @@ export function Desktop() {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null)
   const desktopRef = useRef<HTMLDivElement>(null)
+  const hasOpenedInitialApp = useRef(false)
 
   // Create dynamic profile apps from database
   const profileApps: DesktopApp[] = useMemo(
@@ -105,6 +110,23 @@ export function Desktop() {
   const mergedPositions = useMemo(() => {
     return { ...defaultPositions, ...iconPositions }
   }, [defaultPositions, iconPositions])
+
+  // Auto-open initial app if specified
+  useEffect(() => {
+    if (initialOpenApp && !hasOpenedInitialApp.current && desktopApps.length > 0) {
+      const app = desktopApps.find((a) => a.id === initialOpenApp)
+      if (app) {
+        openWindow({
+          id: app.id,
+          title: app.title,
+          icon: app.icon,
+          component: app.component,
+          initialSize: 'initialSize' in app ? app.initialSize : undefined,
+        })
+        hasOpenedInitialApp.current = true
+      }
+    }
+  }, [initialOpenApp, desktopApps, openWindow])
 
   // Check if a rectangle intersects with an icon
   const getIconsInSelection = useCallback(
