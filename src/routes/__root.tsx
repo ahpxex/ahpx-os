@@ -11,8 +11,13 @@ export const Route = createRootRoute({
   loader: loadAppData,
   component: RootLayout,
   pendingComponent: () => (
-    <div className="flex h-screen w-screen items-center justify-center bg-[#fbf7f0]">
-      <div className="text-sm text-gray-500">Loading...</div>
+    <div
+      className="flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: 'url(/xp.png)' }}
+    >
+      <div className="rounded border border-[var(--color-border)] bg-white/80 px-3 py-2 text-sm text-gray-700 shadow-[var(--shadow-brutal)] backdrop-blur-sm">
+        Loading...
+      </div>
     </div>
   ),
 })
