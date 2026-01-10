@@ -43,7 +43,7 @@ export function Clock({ variant = 'topbar', dropdownPlacement = 'below' }: Clock
         onClick={() => setShowCalendar(!showCalendar)}
         className={
           isTaskbar
-            ? `rounded px-2 py-1 text-xs font-medium text-white hover:bg-white/10 ${showCalendar ? 'bg-white/10' : ''}`
+            ? `min-h-0 min-w-0 border-0 bg-transparent shadow-none rounded px-2 py-1 text-xs font-medium text-white hover:bg-white/10 ${showCalendar ? 'bg-white/10' : ''}`
             : `text-sm font-medium hover:bg-[var(--color-primary-bg)] px-2 py-1 ${showCalendar ? 'bg-[var(--color-primary-bg)]' : ''}`
         }
         title={format(time, 'EEE MMM d  h:mm a')}

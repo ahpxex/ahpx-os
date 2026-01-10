@@ -93,12 +93,12 @@ export function Taskbar() {
   )
 
   return (
-    <footer className="relative z-[2500] flex h-12 w-full shrink-0 items-center gap-2 border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-2 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
+    <footer className="xp-taskbar relative z-[2500] flex h-12 w-full shrink-0 items-center gap-2 border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-2 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
       <div ref={startAreaRef} className="relative shrink-0">
         <button
           type="button"
           onClick={() => setIsStartOpen((v) => !v)}
-          className="flex h-10 items-center gap-2 rounded-r-full border border-black/35 bg-gradient-to-b from-[#5ad64b] via-[#2ea621] to-[#1a7a15] px-3 pr-5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98]"
+          className="min-h-0 min-w-0 border border-black/35 bg-gradient-to-b from-[#5ad64b] via-[#2ea621] to-[#1a7a15] flex h-10 items-center gap-2 rounded-r-full px-3 pr-5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98]"
         >
           <WindowsLogo className="h-4 w-4" />
           <span className="text-sm font-bold italic tracking-wide drop-shadow-[0_1px_0_rgba(0,0,0,0.55)]">
@@ -107,11 +107,11 @@ export function Taskbar() {
         </button>
 
         {isStartOpen && (
-          <div className="absolute bottom-full left-0 z-[3000] mb-1 w-72 overflow-hidden rounded-tr-lg border border-black/35 bg-[#ece9d8] shadow-[0_14px_40px_rgba(0,0,0,0.35)]">
-            <div className="flex h-10 items-center bg-gradient-to-r from-[#2a5bd6] to-[#1b46b3] px-3 text-sm font-bold text-white">
-              ahpx-os
+          <div className="window absolute bottom-full left-0 z-[3000] mb-1 w-72">
+            <div className="title-bar">
+              <div className="title-bar-text">ahpx-os</div>
             </div>
-            <div className="py-1">
+            <div className="window-body">
               {startMenuItems.map((item, index) =>
                 item.divider ? (
                   <div key={index} className="my-1 h-px bg-black/10" />
@@ -125,7 +125,7 @@ export function Taskbar() {
                       item.onClick?.()
                       setIsStartOpen(false)
                     }}
-                    className={`flex w-full items-center px-3 py-1.5 text-left text-sm ${
+                    className={`min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
                       item.disabled
                         ? 'cursor-not-allowed text-black/40'
                         : 'hover:bg-[#2a5bd6] hover:text-white'
@@ -148,7 +148,7 @@ export function Taskbar() {
               key={windowState.id}
               type="button"
               onClick={() => handleTaskClick(windowState)}
-              className={`flex h-9 min-w-0 flex-1 items-center gap-2 rounded-sm border border-black/35 px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
+              className={`min-h-0 min-w-0 border border-black/35 flex h-9 flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
                 isActive
                   ? 'bg-white/25'
                   : windowState.isMinimized
@@ -177,4 +177,3 @@ export function Taskbar() {
     </footer>
   )
 }
-

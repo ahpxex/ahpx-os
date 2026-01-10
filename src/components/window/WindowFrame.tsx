@@ -11,12 +11,13 @@ interface WindowFrameProps {
 }
 
 export function WindowFrame({ window }: WindowFrameProps) {
-  const { focusWindow, updateWindowPosition, updateWindowSize, finalizeCloseWindow } = useOS()
+  const { focusWindow, updateWindowPosition, updateWindowSize, finalizeCloseWindow, activeWindowId } = useOS()
   const isVisible = window.isOpen && !window.isMinimized
   const [shouldRender, setShouldRender] = useState(isVisible)
   const previousIsMaximizedRef = useRef(window.isMaximized)
   const skipInitial = previousIsMaximizedRef.current !== window.isMaximized
   previousIsMaximizedRef.current = window.isMaximized
+  const isActive = activeWindowId === window.id && isVisible
 
   useEffect(() => {
     if (isVisible) {
@@ -57,7 +58,6 @@ export function WindowFrame({ window }: WindowFrameProps) {
         opacity: 1,
         scale: 1,
         y: 0,
-        borderRadius: window.isMaximized ? 0 : 8,
         filter: 'blur(0px)',
       }}
       exit={
@@ -66,11 +66,10 @@ export function WindowFrame({ window }: WindowFrameProps) {
           : { opacity: 0, scale: 0.98, y: 10, filter: 'blur(2px)' }
       }
       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-      className="flex h-full flex-col border border-[var(--color-border)] bg-white overflow-hidden"
-      style={{ borderRadius: window.isMaximized ? 0 : 8 }}
+      className={`window flex h-full flex-col overflow-hidden ${window.isMaximized ? 'xp-window-maximized' : ''}`}
     >
-      <TitleBar window={window} />
-      <div className="flex-1 overflow-auto">
+      <TitleBar window={window} isActive={isActive} />
+      <div className="window-body flex-1 overflow-auto">
         <WindowContextMenuProvider>
           <WindowComponent />
         </WindowContextMenuProvider>

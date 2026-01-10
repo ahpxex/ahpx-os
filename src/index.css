@@ -54,3 +54,24 @@ textarea,
   user-select: text;
   -webkit-user-select: text;
 }
+
+/* XP.css integration tweaks */
+.xp-window-maximized.window {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.xp-title-bar-inactive.title-bar {
+  background: linear-gradient(
+    180deg,
+    rgba(180, 190, 210, 1) 0%,
+    rgba(140, 150, 170, 1) 8%,
+    rgba(130, 140, 160, 1) 40%,
+    rgba(160, 170, 190, 1) 88%,
+    rgba(160, 170, 190, 1) 93%,
+    rgba(150, 160, 180, 1) 95%,
+    rgba(120, 130, 150, 1) 96%,
+    rgba(120, 130, 150, 1) 100%
+  );
+  text-shadow: none;
+}

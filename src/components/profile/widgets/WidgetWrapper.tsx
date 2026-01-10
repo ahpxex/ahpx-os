@@ -25,7 +25,7 @@ export function WidgetWrapper({ widget, isEditing, onDelete, children }: WidgetW
           <button
             type="button"
             onClick={onDelete}
-            className="flex h-5 w-5 items-center justify-center bg-red-500 text-xs text-white hover:bg-red-600"
+            className="flex h-5 w-5 min-h-0 min-w-0 items-center justify-center border-0 bg-red-500 p-0 text-xs text-white shadow-none hover:bg-red-600"
             title="Delete widget"
           >
             x

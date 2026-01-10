@@ -67,7 +67,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
               }
             }}
             disabled={item.disabled}
-            className={`flex w-full px-4 py-1.5 text-left text-sm ${
+            className={`min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full px-4 py-1.5 text-left text-sm ${
               item.disabled
                 ? 'cursor-not-allowed text-gray-400'
                 : 'hover:bg-[var(--color-primary)] hover:text-white'

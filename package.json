@@ -22,13 +22,15 @@
     "react-markdown": "^10.1.0",
     "react-rnd": "^10.5.2",
     "react-syntax-highlighter": "^16.1.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "xp.css": "^0.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/router-devtools": "^1.144.0",
     "@tanstack/router-plugin": "^1.145.2",
+    "@types/bun": "latest",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
@@ -44,7 +46,6 @@
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4",
-    "@types/bun": "latest"
+    "vite": "^7.2.4"
   }
 }

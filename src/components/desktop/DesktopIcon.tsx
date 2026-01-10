@@ -89,9 +89,9 @@ export function DesktopIcon({
     <button
       className={`
         absolute flex w-20 flex-col items-center gap-1 rounded p-2
-        transition-colors select-none group
+        bg-transparent shadow-none transition-colors select-none group
         ${isDragging ? 'cursor-grabbing opacity-80' : 'cursor-grab'}
-        ${isSelected ? 'bg-[var(--color-primary)]/20' : ''}
+        ${isSelected ? 'bg-[#316ac5]/30' : ''}
       `}
       style={{
         left: position?.x ?? 0,

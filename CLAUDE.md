@@ -5,10 +5,8 @@ This is an OS-alike web app serving as my personal homepage/portfolio.
 ## 1. Overview
 
 - **Concept:** A "Web OS" interface running in the browser.
-- **Layout:** macOS-inspired (Top Bar + Desktop Icons + Window Management).
-- **Aesthetic:** "Light Neo-Brutalism". Inspired by PostHog's homepage but cleaner.
-  - **Keywords:** High contrast, hard borders, raw materials, playful but professional.
-  - **Vibe:** Retro-modern, functional, "Geeky".
+- **Layout:** Windows XP-inspired (Desktop Icons + Taskbar + Window Management).
+- **Aesthetic:** Windows XP UI (via XP.css), with Tailwind used for layout and positioning.
 
 ## 2. Technical Stack (The "Hard" Rules)
 
@@ -16,7 +14,7 @@ This is an OS-alike web app serving as my personal homepage/portfolio.
 - **Router:** tan stack router
 - **State Management:** `Jotai`
 - **Utils:** `date-fns` (for Top Bar time formatting).
-- **Styling:** Tailwind CSS
+- **Styling:** `XP.css` for component look + Tailwind CSS for layout
 - **Icons:** OpenMoji (SVG format)
 - **Database:** Supabase - MUST use `@supabase/supabase-js` SDK only. NO ORMs, NO raw SQL queries.
 
@@ -49,7 +47,7 @@ The entire OS state must be centralized.
 - **Base Desktop:** z-0
 - **Icons:** z-10
 - **Windows:** z-100 to z-999 (Dynamic, clicking a window brings it to `max(zIndexes) + 1`).
-- **Top Bar:** z-1000 (Always on top).
+- **Taskbar:** z-2500 (Always on top).
 - **Context Menus:** z-2000.
 - **Fullscreen Editors:** z-2500.
 - **System Dialogs:** z-3000.
@@ -88,9 +86,7 @@ The entire OS state must be centralized.
 
 ### `TopBar`
 
-- **Left:** Apple Logo equivalent (Home/About).
-- **Center:** (Optional) Current App Name.
-- **Right:** System Tray (Clock, Volume, Wifi - static or simulated).
+Deprecated (Windows XP layout uses a bottom Taskbar).
 
 ### `WindowFrame` (The Wrapper)
 
@@ -167,6 +163,6 @@ function MyComponent() {
 }
 ```
 
-### `Dock` / `Taskbar`
+### `Taskbar`
 
-- Don't need
+- Bottom bar with Start button, task buttons for open windows, and system tray (clock).

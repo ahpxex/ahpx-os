@@ -45,8 +45,9 @@ function Toast({ toast, onDismiss }: ToastProps) {
       <span className="font-mono text-xs">{typeIcons[toast.type]}</span>
       <span className="flex-1">{toast.message}</span>
       <button
+        type="button"
         onClick={() => onDismiss(toast.id)}
-        className="ml-2 opacity-70 hover:opacity-100"
+        className="ml-2 min-h-0 min-w-0 border-0 bg-transparent p-0 shadow-none opacity-70 hover:opacity-100"
       >
         x
       </button>
