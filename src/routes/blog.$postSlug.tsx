@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
-import { TopBar } from '@/components/topbar/TopBar'
 import { Desktop } from '@/components/desktop/Desktop'
+import { Taskbar } from '@/components/taskbar/Taskbar'
 import { useOS } from '@/hooks/useOS'
 
 export const Route = createFileRoute('/blog/$postSlug')({
@@ -34,10 +34,10 @@ function BlogPostPage() {
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden">
-      <TopBar />
       <main className="relative flex-1">
         <Desktop initialOpenApp="blogs" />
       </main>
+      <Taskbar />
     </div>
   )
 }
