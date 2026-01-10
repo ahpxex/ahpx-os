@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import type { ComponentType } from 'react'
+import { LayoutGroup } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
 import { useAllProfiles } from '@/hooks/useAllProfiles'
 import { useAuth } from '@/hooks/useAuth'
@@ -342,9 +343,11 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         />
       )}
 
-      {windows.map((window) => (
-        <WindowFrame key={window.id} window={window} />
-      ))}
+      <LayoutGroup id="windows">
+        {windows.map((window) => (
+          <WindowFrame key={window.id} window={window} />
+        ))}
+      </LayoutGroup>
 
       {contextMenu && (
         <ContextMenu

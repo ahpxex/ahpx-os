@@ -11,15 +11,15 @@ export const openWindowAtom = atom(
     const existing = windows.find((w) => w.id === config.id)
 
     if (existing) {
-      set(focusWindowAtom, config.id)
-      if (existing.isMinimized) {
+      if (!existing.isOpen || existing.isMinimized) {
         set(
           windowsAtom,
           windows.map((w) =>
-            w.id === config.id ? { ...w, isMinimized: false } : w
+            w.id === config.id ? { ...w, isOpen: true, isMinimized: false } : w
           )
         )
       }
+      set(focusWindowAtom, config.id)
       return
     }
 
@@ -48,17 +48,17 @@ export const closeWindowAtom = atom(null, (get, set, windowId: string) => {
   const windows = get(windowsAtom)
   const window = windows.find((w) => w.id === windowId)
 
-  if (window) {
-    saveWindowPosition(windowId, window.position, window.size)
-  }
+  if (!window) return
 
   set(
     windowsAtom,
-    windows.filter((w) => w.id !== windowId)
+    windows.map((w) => (w.id === windowId ? { ...w, isOpen: false } : w))
   )
 
   if (get(activeWindowIdAtom) === windowId) {
-    const remaining = get(windowsAtom)
+    const remaining = windows.filter(
+      (w) => w.id !== windowId && w.isOpen && !w.isMinimized
+    )
     if (remaining.length > 0) {
       const topmost = remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b))
       set(activeWindowIdAtom, topmost.id)
@@ -67,6 +67,33 @@ export const closeWindowAtom = atom(null, (get, set, windowId: string) => {
     }
   }
 })
+
+export const finalizeCloseWindowAtom = atom(
+  null,
+  (get, set, windowId: string) => {
+    const windows = get(windowsAtom)
+    const window = windows.find((w) => w.id === windowId)
+
+    if (window) {
+      saveWindowPosition(windowId, window.position, window.size)
+    }
+
+    set(
+      windowsAtom,
+      windows.filter((w) => w.id !== windowId)
+    )
+
+    if (get(activeWindowIdAtom) === windowId) {
+      const remaining = get(windowsAtom).filter((w) => w.isOpen && !w.isMinimized)
+      if (remaining.length > 0) {
+        const topmost = remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b))
+        set(activeWindowIdAtom, topmost.id)
+      } else {
+        set(activeWindowIdAtom, null)
+      }
+    }
+  }
+)
 
 export const focusWindowAtom = atom(null, (get, set, windowId: string) => {
   const windows = get(windowsAtom)

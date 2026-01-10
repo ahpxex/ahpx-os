@@ -1,4 +1,6 @@
+import { useEffect, useRef, useState } from 'react'
 import { Rnd } from 'react-rnd'
+import { AnimatePresence, motion } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
 import { TitleBar } from './TitleBar'
 import { WindowContextMenuProvider } from '@/contexts/WindowContextMenuContext'
@@ -9,33 +11,90 @@ interface WindowFrameProps {
 }
 
 export function WindowFrame({ window }: WindowFrameProps) {
-  const { focusWindow, updateWindowPosition, updateWindowSize } = useOS()
+  const { focusWindow, updateWindowPosition, updateWindowSize, finalizeCloseWindow } = useOS()
+  const isVisible = window.isOpen && !window.isMinimized
+  const [shouldRender, setShouldRender] = useState(isVisible)
+  const previousIsMaximizedRef = useRef(window.isMaximized)
+  const skipInitial = previousIsMaximizedRef.current !== window.isMaximized
+  previousIsMaximizedRef.current = window.isMaximized
 
-  if (!window.isOpen || window.isMinimized) {
-    return null
+  useEffect(() => {
+    if (isVisible) {
+      setShouldRender(true)
+    }
+  }, [isVisible])
+
+  const handleExitComplete = () => {
+    if (!window.isOpen) {
+      finalizeCloseWindow(window.id)
+      return
+    }
+
+    if (window.isMinimized) {
+      setShouldRender(false)
+    }
   }
 
   const WindowComponent = window.component
 
+  if (!shouldRender) {
+    return null
+  }
+
+  const windowBody = (
+    <motion.div
+      layoutId={`window-${window.id}`}
+      initial={
+        skipInitial
+          ? false
+          : {
+              opacity: 0,
+              scale: window.isMinimized ? 0.95 : 0.98,
+              y: window.isMinimized ? 30 : 10,
+            }
+      }
+      animate={{
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        borderRadius: window.isMaximized ? 0 : 8,
+        filter: 'blur(0px)',
+      }}
+      exit={
+        window.isMinimized
+          ? { opacity: 0, scale: 0.95, y: 30, filter: 'blur(2px)' }
+          : { opacity: 0, scale: 0.98, y: 10, filter: 'blur(2px)' }
+      }
+      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+      className="flex h-full flex-col border border-[var(--color-border)] bg-white overflow-hidden"
+      style={{ borderRadius: window.isMaximized ? 0 : 8 }}
+    >
+      <TitleBar window={window} />
+      <div className="flex-1 overflow-auto">
+        <WindowContextMenuProvider>
+          <WindowComponent />
+        </WindowContextMenuProvider>
+      </div>
+    </motion.div>
+  )
+
   if (window.isMaximized) {
     return (
       <div
-        className="absolute flex flex-col border border-[var(--color-border)] bg-white overflow-hidden"
+        className="absolute overflow-hidden"
         style={{
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
           zIndex: window.zIndex,
+          pointerEvents: isVisible ? 'auto' : 'none',
         }}
         onMouseDown={() => focusWindow(window.id)}
       >
-        <TitleBar window={window} />
-        <div className="flex-1 overflow-auto">
-          <WindowContextMenuProvider>
-            <WindowComponent />
-          </WindowContextMenuProvider>
-        </div>
+        <AnimatePresence onExitComplete={handleExitComplete}>
+          {isVisible ? windowBody : null}
+        </AnimatePresence>
       </div>
     )
   }
@@ -67,27 +126,27 @@ export function WindowFrame({ window }: WindowFrameProps) {
       dragHandleClassName="window-drag-handle"
       minWidth={300}
       minHeight={200}
-      style={{ zIndex: window.zIndex }}
+      style={{ zIndex: window.zIndex, pointerEvents: isVisible ? 'auto' : 'none' }}
       onMouseDown={() => focusWindow(window.id)}
-      enableResizing={{
-        top: false,
-        right: true,
-        bottom: true,
-        left: false,
-        topRight: false,
-        bottomRight: true,
-        bottomLeft: false,
-        topLeft: false,
-      }}
+      disableDragging={!isVisible}
+      enableResizing={
+        isVisible
+          ? {
+              top: false,
+              right: true,
+              bottom: true,
+              left: false,
+              topRight: false,
+              bottomRight: true,
+              bottomLeft: false,
+              topLeft: false,
+            }
+          : false
+      }
     >
-      <div className="flex h-full flex-col border border-[var(--color-border)] bg-white rounded-lg overflow-hidden">
-        <TitleBar window={window} />
-        <div className="flex-1 overflow-auto">
-          <WindowContextMenuProvider>
-            <WindowComponent />
-          </WindowContextMenuProvider>
-        </div>
-      </div>
+      <AnimatePresence onExitComplete={handleExitComplete}>
+        {isVisible ? windowBody : null}
+      </AnimatePresence>
     </Rnd>
   )
 }

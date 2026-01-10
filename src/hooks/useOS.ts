@@ -11,6 +11,7 @@ import {
 import {
   openWindowAtom,
   closeWindowAtom,
+  finalizeCloseWindowAtom,
   focusWindowAtom,
   minimizeWindowAtom,
   toggleMaximizeWindowAtom,
@@ -33,6 +34,7 @@ export function useOS() {
 
   const openWindow = useSetAtom(openWindowAtom)
   const closeWindow = useSetAtom(closeWindowAtom)
+  const finalizeCloseWindow = useSetAtom(finalizeCloseWindowAtom)
   const focusWindow = useSetAtom(focusWindowAtom)
   const minimizeWindow = useSetAtom(minimizeWindowAtom)
   const toggleMaximizeWindow = useSetAtom(toggleMaximizeWindowAtom)
@@ -54,6 +56,7 @@ export function useOS() {
     selectedIcons,
     openWindow,
     closeWindow,
+    finalizeCloseWindow,
     focusWindow,
     minimizeWindow,
     toggleMaximizeWindow,
