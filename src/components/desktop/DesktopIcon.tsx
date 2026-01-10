@@ -83,9 +83,9 @@ export function DesktopIcon({
     <button
       className={`
         absolute flex w-20 flex-col items-center gap-1 rounded p-2
-        transition-colors select-none
+        transition-colors select-none group
         ${isDragging ? 'cursor-grabbing opacity-80' : 'cursor-grab'}
-        ${isSelected ? 'bg-[var(--color-primary)]/20' : 'hover:bg-black/5'}
+        ${isSelected ? 'bg-[var(--color-primary)]/20' : ''}
       `}
       style={{
         left: position?.x ?? 0,
@@ -94,8 +94,15 @@ export function DesktopIcon({
       onDoubleClick={handleDoubleClick}
       onMouseDown={handleMouseDown}
     >
-      <img src={icon} alt={title} className="h-12 w-12 pointer-events-none" draggable={false} />
-      <span className="text-xs font-medium text-black pointer-events-none">{title}</span>
+      <div className="p-1 group-hover:scale-105 transition-transform">
+        <img src={icon} alt={title} className="h-12 w-12 pointer-events-none" draggable={false} />
+      </div>
+      <span
+        className="text-xs font-medium text-black pointer-events-none px-1 rounded group-hover:bg-gray-200/80 group-hover:scale-105 transition-all"
+        style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.3), 0 0 4px rgba(255, 255, 255, 0.9)' }}
+      >
+        {title}
+      </span>
     </button>
   )
 }
