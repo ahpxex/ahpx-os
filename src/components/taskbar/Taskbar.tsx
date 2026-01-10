@@ -3,21 +3,6 @@ import type { WindowState } from '@/types/window'
 import { useOS } from '@/hooks/useOS'
 import { Clock } from '@/components/topbar/Clock'
 
-interface WindowsLogoProps {
-  className?: string
-}
-
-function WindowsLogo({ className }: WindowsLogoProps) {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" className={className}>
-      <path fill="#F25022" d="M1 2.1 7.2 1v6.2H1V2.1Z" />
-      <path fill="#7FBA00" d="M8.2 1 15 0v7.2H8.2V1Z" />
-      <path fill="#00A4EF" d="M1 8.2h6.2V15L1 13.9V8.2Z" />
-      <path fill="#FFB900" d="M8.2 8.2H15V16l-6.8-1.1V8.2Z" />
-    </svg>
-  )
-}
-
 interface StartMenuItem {
   label: string
   onClick?: () => void
@@ -93,17 +78,24 @@ export function Taskbar() {
   )
 
   return (
-    <footer className="xp-taskbar relative z-[2500] flex h-12 w-full shrink-0 items-center gap-2 border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-2 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
-      <div ref={startAreaRef} className="relative shrink-0">
+    <footer className="xp-taskbar relative z-[2500] flex h-[34px] w-full shrink-0 items-stretch border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-0 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
+      <div ref={startAreaRef} className="relative h-full shrink-0">
         <button
           type="button"
           onClick={() => setIsStartOpen((v) => !v)}
-          className="min-h-0 min-w-0 border border-black/35 bg-gradient-to-b from-[#5ad64b] via-[#2ea621] to-[#1a7a15] flex h-10 items-center gap-2 rounded-r-full px-3 pr-5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98]"
+          className="min-h-0 min-w-0 m-0 flex h-full items-center rounded-r-full rounded-l-none border border-black/35 bg-gradient-to-b from-[#5ad64b] via-[#2ea621] to-[#1a7a15] p-0 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98]"
         >
-          <WindowsLogo className="h-4 w-4" />
-          <span className="text-sm font-bold italic tracking-wide drop-shadow-[0_1px_0_rgba(0,0,0,0.55)]">
-            start
-          </span>
+          <div className="flex items-center gap-1 pl-2 pr-4">
+            <img
+              src="/places/distributor-logo.png"
+              alt=""
+              className="h-5 w-5"
+              draggable={false}
+            />
+            <span className="text-[13px] font-bold italic leading-none tracking-wide drop-shadow-[0_1px_0_rgba(0,0,0,0.55)]">
+              start
+            </span>
+          </div>
         </button>
 
         {isStartOpen && (
@@ -140,7 +132,7 @@ export function Taskbar() {
         )}
       </div>
 
-      <div className="flex min-w-0 flex-1 items-center gap-1">
+      <div className="flex min-w-0 flex-1 items-stretch gap-1 px-1">
         {taskbarWindows.map((windowState) => {
           const isActive = windowState.id === activeWindowId && !windowState.isMinimized
           return (
@@ -148,7 +140,7 @@ export function Taskbar() {
               key={windowState.id}
               type="button"
               onClick={() => handleTaskClick(windowState)}
-              className={`min-h-0 min-w-0 border border-black/35 flex h-9 flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
+              className={`min-h-0 min-w-0 my-[2px] border border-black/35 flex h-full flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
                 isActive
                   ? 'bg-white/25'
                   : windowState.isMinimized
@@ -171,8 +163,23 @@ export function Taskbar() {
         })}
       </div>
 
-      <div className="shrink-0 rounded border border-black/20 bg-white/10 px-1.5 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
-        <Clock variant="taskbar" dropdownPlacement="above" />
+      <div className="shrink-0">
+        <div className="flex h-full items-center gap-1 rounded-l-md rounded-r-md bg-gradient-to-b from-[#59b2ff] via-[#2f8cf0] to-[#1d6fdc] px-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
+          <img
+            src="/notifications/notification-network-wireless.png"
+            alt=""
+            className="h-4 w-4"
+            draggable={false}
+          />
+          <img
+            src="/status/audio-volume-medium.png"
+            alt=""
+            className="h-4 w-4"
+            draggable={false}
+          />
+          <div className="mx-1 h-4 w-px bg-white/25" />
+          <Clock variant="taskbar" dropdownPlacement="above" />
+        </div>
       </div>
     </footer>
   )

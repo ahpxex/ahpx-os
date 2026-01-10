@@ -27,20 +27,20 @@ const staticApps: DesktopApp[] = [
   {
     id: 'blogs',
     title: 'Blogs',
-    icon: '/icons/1F4DD.svg',
+    icon: '/apps/web-browser.png',
     component: BlogsApp,
   },
   {
     id: 'clock',
     title: 'Clock',
-    icon: '/icons/23F0.svg',
+    icon: '/apps/clock.png',
     component: ClockApp,
     initialSize: { width: 600, height: 550 },
   },
   {
     id: 'terminal',
     title: 'Terminal',
-    icon: '/icons/1F4BB.svg',
+    icon: '/apps/terminal.png',
     component: TerminalApp,
     initialSize: { width: 700, height: 450 },
   },
@@ -242,7 +242,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     openWindow({
       id: 'new-profile',
       title: 'New Profile',
-      icon: '/icons/1F464.svg',
+      icon: '/apps/cs-user.png',
       component: NewProfileApp,
       initialSize: { width: 500, height: 400 },
     })

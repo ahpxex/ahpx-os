@@ -57,7 +57,7 @@ export const createProfileAtom = atom(
       user_id: user.id,
       name: params.name,
       slug: params.slug.toLowerCase().replace(/\s+/g, '-'),
-      icon: params.icon || '/icons/1F464.svg',
+      icon: params.icon || '/apps/cs-user.png',
       content: content as unknown as Json,
       avatar_url: params.avatar_url || null,
       is_active: true,
