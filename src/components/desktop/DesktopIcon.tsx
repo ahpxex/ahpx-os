@@ -7,7 +7,7 @@ interface DesktopIconProps {
   icon: string
   position?: Position
   isSelected?: boolean
-  onDoubleClick: () => void
+  onOpen: () => void
   onPositionChange: (position: Position) => void
 }
 
@@ -16,10 +16,11 @@ export function DesktopIcon({
   icon,
   position,
   isSelected = false,
-  onDoubleClick,
+  onOpen,
   onPositionChange,
 }: DesktopIconProps) {
   const [isDragging, setIsDragging] = useState(false)
+  const didDragRef = useRef(false)
   const dragRef = useRef<{
     startX: number
     startY: number
@@ -31,6 +32,7 @@ export function DesktopIcon({
     (e: React.MouseEvent) => {
       if (e.button !== 0) return // Only left click
       e.preventDefault()
+      didDragRef.current = false
 
       const currentX = position?.x ?? 0
       const currentY = position?.y ?? 0
@@ -49,11 +51,13 @@ export function DesktopIcon({
         const deltaY = moveEvent.clientY - dragRef.current.startY
 
         // Only start dragging after moving 5px to prevent accidental drags
-        if (!isDragging && (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5)) {
+        const movedEnough = Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5
+        if (!isDragging && movedEnough) {
           setIsDragging(true)
         }
 
-        if (isDragging || Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+        if (isDragging || movedEnough) {
+          didDragRef.current = true
           const newX = Math.max(0, dragRef.current.initialX + deltaX)
           const newY = Math.max(0, dragRef.current.initialY + deltaY)
           onPositionChange({ x: newX, y: newY })
@@ -73,11 +77,13 @@ export function DesktopIcon({
     [position, isDragging, onPositionChange]
   )
 
-  const handleDoubleClick = useCallback(() => {
-    if (!isDragging) {
-      onDoubleClick()
+  const handleClick = useCallback(() => {
+    if (didDragRef.current) {
+      didDragRef.current = false
+      return
     }
-  }, [isDragging, onDoubleClick])
+    onOpen()
+  }, [onOpen])
 
   return (
     <button
@@ -91,7 +97,7 @@ export function DesktopIcon({
         left: position?.x ?? 0,
         top: position?.y ?? 0,
       }}
-      onDoubleClick={handleDoubleClick}
+      onClick={handleClick}
       onMouseDown={handleMouseDown}
     >
       <div className="p-1 group-hover:scale-105 transition-transform">

@@ -314,7 +314,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
             position={mergedPositions[app.id]}
             isSelected={selectedIcons.has(app.id)}
             onPositionChange={(position) => updateIconPosition({ iconId: app.id, position })}
-            onDoubleClick={() =>
+            onOpen={() =>
               openWindow({
                 id: app.id,
                 title: app.title,
@@ -328,6 +328,11 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       </div>
 
       <DesktopCornerWidget />
+
+      <div
+        className="window-drag-bounds absolute pointer-events-none opacity-0"
+        style={{ top: 0, left: -10000, width: 20000, height: 20000 }}
+      />
 
       {/* Selection box */}
       {selectionBox && selectionBoxStyle && (

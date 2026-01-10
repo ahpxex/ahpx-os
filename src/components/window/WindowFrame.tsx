@@ -44,10 +44,11 @@ export function WindowFrame({ window }: WindowFrameProps) {
     <Rnd
       position={{ x: window.position.x, y: window.position.y }}
       size={{ width: window.size.width, height: window.size.height }}
+      bounds=".window-drag-bounds"
       onDragStop={(_e, d) => {
         updateWindowPosition({
           windowId: window.id,
-          position: { x: d.x, y: d.y },
+          position: { x: d.x, y: Math.max(0, d.y) },
         })
       }}
       onResizeStop={(_e, _direction, ref, _delta, position) => {
@@ -60,13 +61,12 @@ export function WindowFrame({ window }: WindowFrameProps) {
         })
         updateWindowPosition({
           windowId: window.id,
-          position,
+          position: { x: position.x, y: Math.max(0, position.y) },
         })
       }}
       dragHandleClassName="window-drag-handle"
       minWidth={300}
       minHeight={200}
-      bounds="parent"
       style={{ zIndex: window.zIndex }}
       onMouseDown={() => focusWindow(window.id)}
       enableResizing={{
