@@ -5,7 +5,6 @@ import { useOS } from '@/hooks/useOS'
 import { useAllProfiles } from '@/hooks/useAllProfiles'
 import { useAuth } from '@/hooks/useAuth'
 import { DesktopIcon } from './DesktopIcon'
-import { DesktopCornerWidget } from './DesktopCornerWidget'
 import { WindowFrame } from '@/components/window/WindowFrame'
 import { ContextMenu } from './ContextMenu'
 import { BlogsApp } from '@/apps/BlogsApp'
@@ -324,8 +323,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
           />
         ))}
       </div>
-
-      <DesktopCornerWidget />
 
       <div
         className="window-drag-bounds absolute pointer-events-none opacity-0"

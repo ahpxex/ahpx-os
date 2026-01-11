@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "xp.css/dist/XP.css" layer(components);
 @plugin "@tailwindcss/typography";
 
 /* Neo-Brutalism Design System */

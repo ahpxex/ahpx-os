@@ -102,7 +102,7 @@ export function Taskbar() {
                       item.onClick?.()
                       setIsStartOpen(false)
                     }}
-                    className={`xp-reset-button min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
+                    className={`xp-reset-button bg-none min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
                       item.disabled
                         ? 'cursor-not-allowed text-black/40'
                         : 'hover:bg-[#2a5bd6] hover:text-white'
@@ -125,7 +125,7 @@ export function Taskbar() {
               key={windowState.id}
               type="button"
               onClick={() => handleTaskClick(windowState)}
-              className={`xp-reset-button min-h-0 min-w-0 my-[2px] border border-black/35 flex h-[26px] flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
+              className={`xp-reset-button bg-none min-h-0 min-w-0 my-[2px] border border-black/35 flex h-[26px] flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
                 isActive
                   ? 'bg-white/25'
                   : windowState.isMinimized
@@ -163,7 +163,7 @@ export function Taskbar() {
             draggable={false}
           />
           <div className="mx-1 h-4 w-px bg-white/25" />
-          <Clock variant="taskbar" dropdownPlacement="above" />
+          <Clock variant="taskbar" />
         </div>
       </div>
     </footer>

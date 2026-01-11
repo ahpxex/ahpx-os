@@ -10,7 +10,7 @@ export function StartButton({ isOpen, className = '', ...props }: StartButtonPro
       type="button"
       aria-haspopup="menu"
       aria-expanded={isOpen}
-      className={`xp-reset-button min-h-0 min-w-0 m-0 flex h-full items-center justify-start rounded-r-full rounded-l-none border border-black/35 bg-[#62aa52] p-0 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${className}`}
+      className={`xp-reset-button bg-none min-h-0 min-w-0 m-0 flex h-full min-w-[110px] items-center justify-start rounded-r-full rounded-l-none border border-black/35 bg-[#62aa52] p-0 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${className}`}
       {...props}
     >
       <div className="flex items-center gap-1 pl-2 pr-4">
@@ -22,4 +22,3 @@ export function StartButton({ isOpen, className = '', ...props }: StartButtonPro
     </button>
   )
 }
-
