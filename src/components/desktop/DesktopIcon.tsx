@@ -91,10 +91,10 @@ export function DesktopIcon({
       tabIndex={0}
       aria-label={title}
       className={`
-        absolute flex w-20 flex-col items-center gap-1 rounded p-2
-        bg-transparent shadow-none transition-colors select-none group
+        absolute flex w-20 flex-col items-center gap-1 rounded border border-transparent p-2
+        bg-transparent shadow-none select-none
         ${isDragging ? 'cursor-grabbing opacity-80' : 'cursor-grab'}
-        ${isSelected ? 'bg-[#316ac5]/30' : ''}
+        ${isSelected ? 'bg-[rgba(0,0,150,0.3)] border-[#000096]' : 'hover:bg-[rgba(0,0,150,0.3)] hover:border-[#000096]'}
       `}
       style={{
         left: position?.x ?? 0,
@@ -109,12 +109,12 @@ export function DesktopIcon({
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className="p-1 group-hover:scale-105 transition-transform">
+      <div className="p-1">
         <img src={icon} alt={title} className="h-12 w-12 pointer-events-none" draggable={false} />
       </div>
       <span
-        className="text-xs font-medium text-black pointer-events-none px-1 rounded group-hover:bg-gray-200/80 group-hover:scale-105 transition-all"
-        style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.3), 0 0 4px rgba(255, 255, 255, 0.9)' }}
+        className="text-xs font-normal text-white pointer-events-none px-1"
+        style={{ textShadow: '1px 1px 0px #000000' }}
       >
         {title}
       </span>

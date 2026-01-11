@@ -31,7 +31,10 @@ body,
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: auto;
   background-color: var(--color-beige);
   background-image: url('/xp.png');
   background-size: cover;
@@ -40,7 +43,7 @@ body {
   background-attachment: fixed;
 }
 
-@layer base {
+@layer components {
   /* Prevent XP.css from styling specific interactive elements as classic buttons */
   .xp-reset-button {
     appearance: none;
@@ -53,6 +56,60 @@ body {
     padding: 0;
     font: inherit;
     color: inherit;
+  }
+
+  button.xp-reset-button:hover,
+  button.xp-reset-button:active,
+  button.xp-reset-button:focus {
+    box-shadow: none;
+  }
+
+  .xp-taskbar-luna {
+    background: linear-gradient(
+      to bottom,
+      #5aa7ff 0%,
+      #3a7af4 40%,
+      #2a6de0 50%,
+      #1e5ed6 52%,
+      #1247ad 100%
+    );
+  }
+
+  .xp-taskbar-start-area::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 2px;
+    width: 14px;
+    background-image:
+      radial-gradient(circle, rgba(255, 255, 255, 0.55) 1px, transparent 1.5px),
+      radial-gradient(circle, rgba(0, 0, 0, 0.35) 1px, transparent 1.5px);
+    background-size: 4px 4px;
+    background-position: 0 0, 1px 1px;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .xp-start-button-luna {
+    background: linear-gradient(
+      to bottom,
+      #7eea78 0%,
+      #5ad64b 28%,
+      #2ea621 64%,
+      #1a7a15 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .xp-tray-inset {
+    background: #1290e8;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    box-shadow:
+      inset 1px 1px 0 rgba(0, 0, 0, 0.25),
+      inset -1px -1px 0 rgba(255, 255, 255, 0.25);
   }
 }
 

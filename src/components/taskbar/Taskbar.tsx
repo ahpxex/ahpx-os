@@ -79,8 +79,8 @@ export function Taskbar() {
   )
 
   return (
-    <footer className="xp-taskbar relative z-[2500] flex h-[30px] w-full shrink-0 items-stretch border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-0 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
-      <div ref={startAreaRef} className="relative h-full shrink-0">
+    <footer className="xp-taskbar xp-taskbar-luna relative z-[2500] flex h-[30px] w-full shrink-0 items-stretch border-t border-black/25 px-0 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
+      <div ref={startAreaRef} className="xp-taskbar-start-area relative h-full shrink-0 pr-[18px]">
         <StartButton isOpen={isStartOpen} onClick={() => setIsStartOpen((v) => !v)} />
 
         {isStartOpen && (
@@ -149,7 +149,7 @@ export function Taskbar() {
       </div>
 
       <div className="shrink-0">
-        <div className="flex h-full items-center gap-1 rounded-l-md rounded-r-md bg-gradient-to-b from-[#59b2ff] via-[#2f8cf0] to-[#1d6fdc] px-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
+        <div className="xp-tray-inset flex h-[26px] items-center gap-1 rounded-md px-2">
           <img
             src="/notifications/notification-network-wireless.png"
             alt=""
