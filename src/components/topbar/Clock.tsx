@@ -40,11 +40,12 @@ export function Clock({ variant = 'topbar', dropdownPlacement = 'below' }: Clock
   return (
     <div ref={clockRef} className="relative">
       <button
+        type="button"
         onClick={() => setShowCalendar(!showCalendar)}
         className={
           isTaskbar
-            ? `min-h-0 min-w-0 border-0 bg-transparent shadow-none rounded px-2 py-1 text-xs font-medium text-white hover:bg-white/10 ${showCalendar ? 'bg-white/10' : ''}`
-            : `text-sm font-medium hover:bg-[var(--color-primary-bg)] px-2 py-1 ${showCalendar ? 'bg-[var(--color-primary-bg)]' : ''}`
+            ? `xp-reset-button min-h-0 min-w-0 border-0 bg-transparent shadow-none active:!shadow-none rounded px-2 py-1 text-xs font-medium text-white hover:bg-white/10 ${showCalendar ? 'bg-white/10' : ''}`
+            : `xp-reset-button text-sm font-medium hover:bg-[var(--color-primary-bg)] px-2 py-1 ${showCalendar ? 'bg-[var(--color-primary-bg)]' : ''}`
         }
         title={format(time, 'EEE MMM d  h:mm a')}
       >

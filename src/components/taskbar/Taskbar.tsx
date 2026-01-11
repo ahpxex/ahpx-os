@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { WindowState } from '@/types/window'
 import { useOS } from '@/hooks/useOS'
 import { Clock } from '@/components/topbar/Clock'
+import { StartButton } from './StartButton'
 
 interface StartMenuItem {
   label: string
@@ -78,25 +79,9 @@ export function Taskbar() {
   )
 
   return (
-    <footer className="xp-taskbar relative z-[2500] flex h-[34px] w-full shrink-0 items-stretch border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-0 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
+    <footer className="xp-taskbar relative z-[2500] flex h-[30px] w-full shrink-0 items-stretch border-t border-black/25 bg-gradient-to-b from-[#3a7af4] via-[#1e5ed6] to-[#1247ad] px-0 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
       <div ref={startAreaRef} className="relative h-full shrink-0">
-        <button
-          type="button"
-          onClick={() => setIsStartOpen((v) => !v)}
-          className="min-h-0 min-w-0 m-0 flex h-full items-center rounded-r-full rounded-l-none border border-black/35 bg-gradient-to-b from-[#5ad64b] via-[#2ea621] to-[#1a7a15] p-0 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:brightness-[1.03] active:brightness-[0.98]"
-        >
-          <div className="flex items-center gap-1 pl-2 pr-4">
-            <img
-              src="/places/distributor-logo.png"
-              alt=""
-              className="h-5 w-5"
-              draggable={false}
-            />
-            <span className="text-[13px] font-bold italic leading-none tracking-wide drop-shadow-[0_1px_0_rgba(0,0,0,0.55)]">
-              start
-            </span>
-          </div>
-        </button>
+        <StartButton isOpen={isStartOpen} onClick={() => setIsStartOpen((v) => !v)} />
 
         {isStartOpen && (
           <div className="window absolute bottom-full left-0 z-[3000] mb-1 w-72">
@@ -117,7 +102,7 @@ export function Taskbar() {
                       item.onClick?.()
                       setIsStartOpen(false)
                     }}
-                    className={`min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
+                    className={`xp-reset-button min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
                       item.disabled
                         ? 'cursor-not-allowed text-black/40'
                         : 'hover:bg-[#2a5bd6] hover:text-white'
@@ -140,7 +125,7 @@ export function Taskbar() {
               key={windowState.id}
               type="button"
               onClick={() => handleTaskClick(windowState)}
-              className={`min-h-0 min-w-0 my-[2px] border border-black/35 flex h-full flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
+              className={`xp-reset-button min-h-0 min-w-0 my-[2px] border border-black/35 flex h-[26px] flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
                 isActive
                   ? 'bg-white/25'
                   : windowState.isMinimized

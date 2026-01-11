@@ -27,20 +27,20 @@ const staticApps: DesktopApp[] = [
   {
     id: 'blogs',
     title: 'Blogs',
-    icon: '/apps/web-browser.png',
+    icon: '/places/document-open-recent.png',
     component: BlogsApp,
   },
   {
     id: 'clock',
     title: 'Clock',
-    icon: '/apps/clock.png',
+    icon: '/apps/config-date.png',
     component: ClockApp,
     initialSize: { width: 600, height: 550 },
   },
   {
     id: 'terminal',
     title: 'Terminal',
-    icon: '/apps/terminal.png',
+    icon: '/apps/utilities-terminal.png',
     component: TerminalApp,
     initialSize: { width: 700, height: 450 },
   },

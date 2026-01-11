@@ -86,7 +86,10 @@ export function DesktopIcon({
   }, [onOpen])
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={title}
       className={`
         absolute flex w-20 flex-col items-center gap-1 rounded p-2
         bg-transparent shadow-none transition-colors select-none group
@@ -98,6 +101,12 @@ export function DesktopIcon({
         top: position?.y ?? 0,
       }}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleClick()
+        }
+      }}
       onMouseDown={handleMouseDown}
     >
       <div className="p-1 group-hover:scale-105 transition-transform">
@@ -109,6 +118,6 @@ export function DesktopIcon({
       >
         {title}
       </span>
-    </button>
+    </div>
   )
 }
