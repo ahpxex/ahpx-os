@@ -132,12 +132,12 @@ export function Taskbar() {
               key={windowState.id}
               type="button"
               onClick={() => handleTaskClick(windowState)}
-              className={`xp-reset-button bg-none min-h-0 min-w-0 my-[2px] border border-black/35 flex h-[26px] flex-1 items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
+              className={`xp-reset-button bg-none min-h-0 min-w-0 my-[2px] border border-black/35 flex h-[26px] flex-[0_1_200px] max-w-[240px] items-center gap-2 rounded-sm px-2 text-left text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] active:!shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] ${
                 isActive
-                  ? 'bg-white/25'
+                  ? 'bg-gradient-to-b from-[#5aa7ff] via-[#3a7af4] to-[#2a6de0]'
                   : windowState.isMinimized
-                    ? 'bg-white/10 opacity-90'
-                    : 'bg-white/15 hover:bg-white/20'
+                    ? 'bg-gradient-to-b from-[#2a6de0] via-[#1e5ed6] to-[#1541b2] opacity-90'
+                    : 'bg-gradient-to-b from-[#3c8bf6] via-[#2f7ae6] to-[#1b55c8] hover:brightness-[1.05]'
               }`}
               title={windowState.title}
             >
@@ -156,7 +156,7 @@ export function Taskbar() {
       </div>
 
       <div className="shrink-0">
-        <div className="xp-tray-inset flex h-[26px] items-center gap-1 rounded-md m-0 p-0">
+        <div className="xp-tray-inset flex h-full items-center gap-1 px-2 rounded-r-[14px]">
           <img
             src="/notifications/notification-network-wireless.png"
             alt=""
@@ -169,7 +169,6 @@ export function Taskbar() {
             className="h-4 w-4"
             draggable={false}
           />
-          <div className="h-4 w-px bg-white/25" />
           <Clock variant="taskbar" />
         </div>
       </div>

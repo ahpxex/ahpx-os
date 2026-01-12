@@ -67,12 +67,14 @@ body {
   .xp-taskbar-luna {
     background: linear-gradient(
       to bottom,
-      #5aa7ff 0%,
-      #3a7af4 40%,
-      #2a6de0 50%,
+      #3c8bf6 0%,
+      #2f7ae6 35%,
+      #2366dc 50%,
       #1e5ed6 52%,
-      #1247ad 100%
+      #1b55c8 80%,
+      #1541b2 100%
     );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
 
   .xp-start-button-luna {
@@ -89,11 +91,10 @@ body {
   }
 
   .xp-tray-inset {
-    background: #1290e8;
-    border: 1px solid rgba(0, 0, 0, 0.35);
-    box-shadow:
-      inset 1px 1px 0 rgba(0, 0, 0, 0.25),
-      inset -1px -1px 0 rgba(255, 255, 255, 0.25);
+    background: linear-gradient(to bottom, #3aa4ff 0%, #1d8fe8 45%, #0e6bd0 100%);
+    border: 0;
+    border-left: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: none;
   }
 }
 
