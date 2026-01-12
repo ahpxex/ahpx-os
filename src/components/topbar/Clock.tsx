@@ -20,7 +20,7 @@ export function Clock({ variant = 'topbar' }: ClockProps) {
   return (
     <span
       className={
-        isTaskbar ? 'px-2 text-xs font-medium text-white tabular-nums' : 'text-sm font-medium'
+        isTaskbar ? 'text-xs font-medium text-white tabular-nums' : 'text-sm font-medium'
       }
       title={format(time, 'EEE MMM d  h:mm a')}
     >

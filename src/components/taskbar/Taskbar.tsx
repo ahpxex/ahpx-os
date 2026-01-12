@@ -14,7 +14,8 @@ interface StartMenuItem {
 export function Taskbar() {
   const { windows, activeWindowId, openWindow, focusWindow, minimizeWindow } = useOS()
   const [isStartOpen, setIsStartOpen] = useState(false)
-  const startAreaRef = useRef<HTMLDivElement>(null)
+  const startButtonRef = useRef<HTMLButtonElement>(null)
+  const startMenuRef = useRef<HTMLDivElement>(null)
 
   const taskbarWindows = useMemo(() => windows.filter((w) => w.isOpen), [windows])
 
@@ -32,7 +33,11 @@ export function Taskbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (startAreaRef.current && !startAreaRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      const isInsideStart =
+        startButtonRef.current?.contains(target) || startMenuRef.current?.contains(target)
+
+      if (!isInsideStart) {
         setIsStartOpen(false)
       }
     }
@@ -80,42 +85,44 @@ export function Taskbar() {
 
   return (
     <footer className="xp-taskbar xp-taskbar-luna relative z-[2500] flex h-[30px] w-full shrink-0 items-stretch border-t border-black/25 px-0 shadow-[0_-1px_0_rgba(255,255,255,0.25)]">
-      <div ref={startAreaRef} className="xp-taskbar-start-area relative h-full shrink-0 pr-[18px]">
-        <StartButton isOpen={isStartOpen} onClick={() => setIsStartOpen((v) => !v)} />
+      <StartButton
+        ref={startButtonRef}
+        isOpen={isStartOpen}
+        onClick={() => setIsStartOpen((v) => !v)}
+      />
 
-        {isStartOpen && (
-          <div className="window absolute bottom-full left-0 z-[3000] mb-1 w-72">
-            <div className="title-bar">
-              <div className="title-bar-text">ahpx-os</div>
-            </div>
-            <div className="window-body">
-              {startMenuItems.map((item, index) =>
-                item.divider ? (
-                  <div key={index} className="my-1 h-px bg-black/10" />
-                ) : (
-                  <button
-                    key={index}
-                    type="button"
-                    disabled={item.disabled}
-                    onClick={() => {
-                      if (item.disabled) return
-                      item.onClick?.()
-                      setIsStartOpen(false)
-                    }}
-                    className={`xp-reset-button bg-none min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
-                      item.disabled
-                        ? 'cursor-not-allowed text-black/40'
-                        : 'hover:bg-[#2a5bd6] hover:text-white'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                )
-              )}
-            </div>
+      {isStartOpen && (
+        <div ref={startMenuRef} className="window absolute bottom-full left-0 z-[3000] mb-1 w-72">
+          <div className="title-bar">
+            <div className="title-bar-text">ahpx-os</div>
           </div>
-        )}
-      </div>
+          <div className="window-body">
+            {startMenuItems.map((item, index) =>
+              item.divider ? (
+                <div key={index} className="my-1 h-px bg-black/10" />
+              ) : (
+                <button
+                  key={index}
+                  type="button"
+                  disabled={item.disabled}
+                  onClick={() => {
+                    if (item.disabled) return
+                    item.onClick?.()
+                    setIsStartOpen(false)
+                  }}
+                  className={`xp-reset-button bg-none min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${
+                    item.disabled
+                      ? 'cursor-not-allowed text-black/40'
+                      : 'hover:bg-[#2a5bd6] hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="flex min-w-0 flex-1 items-stretch gap-1 px-1">
         {taskbarWindows.map((windowState) => {
@@ -149,7 +156,7 @@ export function Taskbar() {
       </div>
 
       <div className="shrink-0">
-        <div className="xp-tray-inset flex h-[26px] items-center gap-1 rounded-md px-2">
+        <div className="xp-tray-inset flex h-[26px] items-center gap-1 rounded-md m-0 p-0">
           <img
             src="/notifications/notification-network-wireless.png"
             alt=""
@@ -162,7 +169,7 @@ export function Taskbar() {
             className="h-4 w-4"
             draggable={false}
           />
-          <div className="mx-1 h-4 w-px bg-white/25" />
+          <div className="h-4 w-px bg-white/25" />
           <Clock variant="taskbar" />
         </div>
       </div>

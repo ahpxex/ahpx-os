@@ -75,22 +75,6 @@ body {
     );
   }
 
-  .xp-taskbar-start-area::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 2px;
-    width: 14px;
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.55) 1px, transparent 1.5px),
-      radial-gradient(circle, rgba(0, 0, 0, 0.35) 1px, transparent 1.5px);
-    background-size: 4px 4px;
-    background-position: 0 0, 1px 1px;
-    opacity: 0.9;
-    pointer-events: none;
-  }
-
   .xp-start-button-luna {
     background: linear-gradient(
       to bottom,
