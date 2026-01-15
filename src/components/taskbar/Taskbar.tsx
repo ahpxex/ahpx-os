@@ -124,7 +124,7 @@ export function Taskbar() {
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 items-stretch gap-1 px-1">
+      <div className="flex min-w-0 flex-1 items-stretch px-0">
         {taskbarWindows.map((windowState) => {
           const isActive = windowState.id === activeWindowId && !windowState.isMinimized
           return (
@@ -132,12 +132,12 @@ export function Taskbar() {
               key={windowState.id}
               type="button"
               onClick={() => handleTaskClick(windowState)}
-              className={`xp-reset-button bg-none min-h-0 min-w-0 my-[2px] border border-black/35 flex h-[26px] flex-[0_1_200px] max-w-[240px] items-center gap-2 rounded-sm px-2 text-left text-xs text-white focus:outline-none focus-visible:outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.45),inset_0_-1px_0_rgba(255,255,255,0.12)] ${
+              className={`xp-reset-button relative z-0 min-h-0 min-w-0 my-[2px] border border-black/35 -ml-px first:ml-0 first:border-l-0 flex h-[26px] flex-[0_1_200px] max-w-[240px] items-center gap-2 rounded-sm px-2 text-left text-xs text-white focus:outline-none focus-visible:outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:z-10 active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.45),inset_0_-1px_0_rgba(255,255,255,0.12)] ${
                 isActive
-                  ? 'bg-gradient-to-b from-[#2f7ae6] via-[#1e5ed6] to-[#1541b2] border-black/50 !shadow-[inset_0_2px_5px_rgba(0,0,0,0.45),inset_0_-1px_0_rgba(255,255,255,0.12)]'
+                  ? 'z-20 bg-gradient-to-b from-[#2f7ae6] via-[#1e5ed6] to-[#1541b2] border-black/50 !shadow-[inset_0_2px_5px_rgba(0,0,0,0.45),inset_0_-1px_0_rgba(255,255,255,0.12)]'
                   : windowState.isMinimized
-                    ? 'bg-gradient-to-b from-[#2a6de0] via-[#1e5ed6] to-[#1541b2] opacity-90'
-                    : 'bg-gradient-to-b from-[#3c8bf6] via-[#2f7ae6] to-[#1b55c8] hover:brightness-[1.05]'
+                    ? 'bg-[#4e80eb]'
+                    : 'bg-[#4e80eb] hover:brightness-[1.05]'
               }`}
               title={windowState.title}
             >
