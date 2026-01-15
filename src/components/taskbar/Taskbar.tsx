@@ -156,7 +156,7 @@ export function Taskbar() {
       </div>
 
       <div className="shrink-0">
-        <div className="xp-tray-inset flex h-full items-center gap-1 px-2 rounded-r-[14px]">
+        <div className="xp-tray-inset flex h-full items-center gap-1 px-2">
           <img
             src="/notifications/notification-network-wireless.png"
             alt=""
