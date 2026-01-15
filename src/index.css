@@ -77,6 +77,15 @@ body {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
 
+  /* Ensure pressed taskbar items stay blue (XP-style) instead of falling back to default button backgrounds. */
+  .xp-taskbar-luna .xp-task-button:active {
+    background: #4e80eb !important;
+  }
+
+  .xp-taskbar-luna .xp-task-button.xp-task-button--active:active {
+    background: #1541b2 !important;
+  }
+
   .xp-start-button-luna {
     background: linear-gradient(
       to bottom,
