@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Rnd } from 'react-rnd'
 import { AnimatePresence, motion } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
@@ -14,9 +14,9 @@ export function WindowFrame({ window }: WindowFrameProps) {
   const { focusWindow, updateWindowPosition, updateWindowSize, finalizeCloseWindow, activeWindowId } = useOS()
   const isVisible = window.isOpen && !window.isMinimized
   const [shouldRender, setShouldRender] = useState(isVisible)
-  const previousIsMaximizedRef = useRef(window.isMaximized)
-  const skipInitial = previousIsMaximizedRef.current !== window.isMaximized
-  previousIsMaximizedRef.current = window.isMaximized
+  const [previousIsMaximized, setPreviousIsMaximized] = useState(window.isMaximized)
+  const skipInitial = previousIsMaximized !== window.isMaximized
+  const isProfileWindow = window.id.startsWith('profile-') || window.id === 'new-profile'
   const isActive = activeWindowId === window.id && isVisible
 
   useEffect(() => {
@@ -24,6 +24,10 @@ export function WindowFrame({ window }: WindowFrameProps) {
       setShouldRender(true)
     }
   }, [isVisible])
+
+  useEffect(() => {
+    setPreviousIsMaximized(window.isMaximized)
+  }, [window.isMaximized])
 
   const handleExitComplete = () => {
     if (!window.isOpen) {
@@ -66,10 +70,10 @@ export function WindowFrame({ window }: WindowFrameProps) {
           : { opacity: 0, scale: 0.98, y: 10, filter: 'blur(2px)' }
       }
       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-      className={`window flex h-full flex-col overflow-hidden ${window.isMaximized ? 'xp-window-maximized' : ''}`}
+      className={`window flex h-full flex-col overflow-hidden ${window.isMaximized ? 'xp-window-maximized' : ''} ${isProfileWindow ? '' : 'p-0'}`}
     >
       <TitleBar window={window} isActive={isActive} />
-      <div className="window-body flex-1 overflow-auto">
+      <div className={`window-body flex-1 overflow-auto ${isProfileWindow ? '' : 'm-0 p-0'}`}>
         <WindowContextMenuProvider>
           <WindowComponent />
         </WindowContextMenuProvider>
