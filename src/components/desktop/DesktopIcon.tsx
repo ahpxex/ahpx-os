@@ -8,6 +8,7 @@ interface DesktopIconProps {
   icon: string
   position?: Position
   isSelected?: boolean
+  onSelect: () => void
   onOpen: () => void
   onPositionChange: (position: Position) => void
 }
@@ -17,6 +18,7 @@ export function DesktopIcon({
   icon,
   position,
   isSelected = false,
+  onSelect,
   onOpen,
   onPositionChange,
 }: DesktopIconProps) {
@@ -80,11 +82,19 @@ export function DesktopIcon({
     [position, onPositionChange, setIsDragging]
   )
 
-  const handleClick = useCallback(() => {
-    if (didDragRef.current) {
-      didDragRef.current = false
-      return
-    }
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (didDragRef.current) {
+        didDragRef.current = false
+        return
+      }
+      e.stopPropagation()
+      onSelect()
+    },
+    [onSelect]
+  )
+
+  const handleDoubleClick = useCallback(() => {
     onOpen()
   }, [onOpen])
 
@@ -94,30 +104,36 @@ export function DesktopIcon({
       tabIndex={0}
       aria-label={title}
       className={`
-        absolute flex w-20 flex-col items-center gap-1 rounded border border-transparent p-2
-        bg-transparent shadow-none select-none
-        ${isDragging ? 'cursor-grabbing opacity-80' : 'cursor-grab'}
-        ${isSelected ? 'bg-[rgba(0,0,150,0.3)] border-[#000096]' : 'hover:bg-[rgba(0,0,150,0.3)] hover:border-[#000096]'}
+        absolute flex w-20 flex-col items-center gap-1 rounded p-2
+        bg-transparent shadow-none select-none cursor-default
+        ${isDragging ? 'opacity-80' : ''}
       `}
       style={{
         left: position?.x ?? 0,
         top: position?.y ?? 0,
       }}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          handleClick()
+          onOpen()
         }
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className="p-1">
+      <div className={`p-1 ${isSelected ? 'xp-icon-selected' : ''}`}>
         <img src={icon} alt={title} className="h-12 w-12 pointer-events-none" draggable={false} />
       </div>
       <span
-        className="text-xs font-normal text-white pointer-events-none px-1"
-        style={{ textShadow: '1px 1px 0px #000000' }}
+        className={`text-xs pointer-events-none px-[2px] leading-tight text-center
+          ${isSelected ? 'bg-[#2b60f6] text-white' : 'text-white'}
+        `}
+        style={{
+          fontFamily: 'Tahoma, Verdana, sans-serif',
+          fontSize: '11px',
+          textShadow: isSelected ? 'none' : '1px 1px 1px rgba(0,0,0,0.8)',
+        }}
       >
         {title}
       </span>

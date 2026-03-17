@@ -285,6 +285,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
             icon={app.icon}
             position={mergedPositions[app.id]}
             isSelected={selectedIcons.has(app.id)}
+            onSelect={() => setSelectedIcons(new Set([app.id]))}
             onPositionChange={(position) => updateIconPosition({ iconId: app.id, position })}
             onOpen={() =>
               openWindow({
@@ -305,10 +306,26 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       />
 
       {selectionBox && selectionBoxStyle && (
-        <div
-          className="absolute border border-[var(--color-primary)] bg-[var(--color-primary)]/10 pointer-events-none z-50"
-          style={selectionBoxStyle}
-        />
+        <svg
+          className="absolute pointer-events-none z-50"
+          style={{
+            left: selectionBoxStyle.left,
+            top: selectionBoxStyle.top,
+            width: selectionBoxStyle.width,
+            height: selectionBoxStyle.height,
+          }}
+        >
+          <rect
+            x="0.5"
+            y="0.5"
+            width={Math.max(0, selectionBoxStyle.width - 1)}
+            height={Math.max(0, selectionBoxStyle.height - 1)}
+            fill="none"
+            stroke="#808080"
+            strokeWidth="1"
+            strokeDasharray="2,2"
+          />
+        </svg>
       )}
 
       <LayoutGroup id="windows">

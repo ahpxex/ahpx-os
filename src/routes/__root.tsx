@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       className="flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: 'url(/xp.png)' }}
     >
-      <div className="rounded border border-[var(--color-border)] bg-white/80 px-3 py-2 text-sm text-gray-700 shadow-[var(--shadow-brutal)] backdrop-blur-sm">
+      <div className="rounded border border-[var(--color-border)] bg-white/80 px-3 py-2 text-sm text-gray-700 shadow-sm backdrop-blur-sm">
         Loading...
       </div>
     </div>

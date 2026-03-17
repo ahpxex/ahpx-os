@@ -52,30 +52,44 @@ The entire OS state must be centralized.
 - **Fullscreen Editors:** z-2500.
 - **System Dialogs:** z-3000.
 
-## 4. Design System (Neo-Brutalism Guidelines)
+## 4. Design System (Windows XP Faithful)
 
 ### Colors & Backgrounds
 
-- **Wallpaper:** A subtle noise texture or a warm beige (`#fbf7f0`).
+- **Wallpaper:** Classic Windows XP "Bliss" wallpaper (`/xp.png`).
 - **Window Background:** Pure White (`#ffffff`).
-- **Primary Color Theme:**
-  - **Primary:** `#FF4F00` (Vibrant Orange-Red)
-  - **Primary Light:** `#FF7A33`
-  - **Primary Dark:** `#CC3F00`
-  - **Primary Background:** `#FFF1EB` (Light tint for backgrounds/hover states)
-- Use CSS variables: `var(--color-primary)`, `var(--color-primary-light)`, `var(--color-primary-dark)`, `var(--color-primary-bg)`
+- **Accent Color Theme (XP Blue):**
+  - **Primary:** `#316AC5` (XP selection/highlight blue)
+  - **Primary Light:** `#4A86D9`
+  - **Primary Dark:** `#245099`
+  - **Primary Background:** `#EBF0F9`
+- **Border Color:** `#ACA899` (XP classic gray border)
+- Use CSS variables: `var(--color-primary)`, `var(--color-primary-light)`, `var(--color-primary-dark)`, `var(--color-primary-bg)`, `var(--color-border)`
 
-### Borders & Shadows (The "Brutalist" Touch)
+### Windows & Components
 
-- **Borders:** Use **1px borders** with the primary color (`border border-[var(--color-border)]`).
-- **Border Color:** `#FF4F00` (same as primary) via `var(--color-border)`.
-- **Windows:** No drop shadows on window frames (cleaner, more native feel).
-- **Buttons/Cards:** Hard shadows optional for interactive elements.
+- **Windows:** Use XP.css for authentic window chrome (title bar gradients, buttons).
+- **Taskbar:** Luna blue gradient at the bottom, green Start button.
+- **Context Menus:** White background, gray border, blue highlight on hover.
+
+### Desktop Icons
+
+- **No hover effect.** Icons only respond to click/selection.
+- **Single click:** Selects the icon (blue tint on image, blue background on text label).
+- **Double click:** Opens the associated window/app.
+- **Selection box:** Dashed hollow outline (not filled), using `mix-blend-mode: difference`.
 
 ### Typography
 
-- **Font:** System UI font or a monospaced font for code vibes (e.g., `JetBrains Mono` or `Inter`).
-- **Headings:** Bold, high contrast.
+- **System Font:** `Tahoma, Verdana, Arial, sans-serif` (authentic XP system font).
+- **Desktop icon labels:** 11px Tahoma, white text with dark shadow, blue background when selected.
+- **Anti-aliasing:** Disabled (`-webkit-font-smoothing: none`) for authentic XP pixel rendering.
+
+### Borders & Shadows
+
+- **Borders:** Use XP classic gray borders (`var(--color-border)`) for most UI elements.
+- **Windows:** XP.css handles window borders and title bar styling natively.
+- **No neo-brutalism.** No hard shadows, no thick colored borders.
 
 ## 5. Component Breakdown
 
@@ -91,9 +105,9 @@ Deprecated (Windows XP layout uses a bottom Taskbar).
 ### `WindowFrame` (The Wrapper)
 
 - Wraps every "App" content.
-- Contains the **TitleBar**:
+- Contains the **TitleBar** (XP.css styled with Luna blue gradient):
   - Must handle `onMouseDown` for dragging.
-  - Contains "Traffic Lights" (Close/Minimize/Maximize) - styled as simple circles with black borders.
+  - Contains Minimize/Maximize/Close buttons (XP.css native styling).
 - Handles the **Resize** handles (corners).
 - Provides `WindowContextMenuProvider` for right-click context menus.
 

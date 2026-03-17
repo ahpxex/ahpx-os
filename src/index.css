@@ -2,22 +2,20 @@
 @import "xp.css/dist/XP.css" layer(components);
 @plugin "@tailwindcss/typography";
 
-/* Neo-Brutalism Design System */
+/* Windows XP Design System */
 :root {
   --color-beige: #fbf7f0;
   --color-white: #ffffff;
   --color-black: #000000;
 
-  /* Primary color theme */
-  --color-primary: #FF4F00;
-  --color-primary-light: #FF7A33;
-  --color-primary-dark: #CC3F00;
-  --color-primary-bg: #FFF1EB;
+  /* Accent colors (used across app components) */
+  --color-primary: #316AC5;
+  --color-primary-light: #4A86D9;
+  --color-primary-dark: #245099;
+  --color-primary-bg: #EBF0F9;
 
   /* Border color */
-  --color-border: #FF4F00;
-
-  --shadow-brutal: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --color-border: #ACA899;
 }
 
 /* Base reset for OS environment */
@@ -166,4 +164,9 @@ textarea,
     rgba(120, 130, 150, 1) 100%
   );
   text-shadow: none;
+}
+
+/* XP desktop icon selected state - blue tint filter on icon image */
+.xp-icon-selected img {
+  filter: brightness(0.6) sepia(1) saturate(5) hue-rotate(200deg);
 }
