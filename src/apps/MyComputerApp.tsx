@@ -1,7 +1,121 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useSetAtom } from 'jotai'
 import { openWindowAtom } from '@/store/actions'
 import { getDesktopApp } from '@/lib/desktopApps'
+
+interface MenuItem {
+  label: string
+  disabled?: boolean
+  divider?: boolean
+  onClick?: () => void
+}
+
+interface MenuDef {
+  label: string
+  items: MenuItem[]
+}
+
+const MENU_FONT = { fontSize: 11, fontFamily: 'Tahoma, Verdana, Arial, sans-serif' } as const
+
+function MenuBar({ menus }: { menus: MenuDef[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (openIndex === null) return
+    const handleClick = (e: MouseEvent) => {
+      if (barRef.current && !barRef.current.contains(e.target as Node)) {
+        setOpenIndex(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [openIndex])
+
+  return (
+    <div
+      ref={barRef}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '1px 2px',
+        background: 'linear-gradient(to bottom, #F6F8FB, #E8ECF4)',
+        borderBottom: '1px solid #ACA899',
+        position: 'relative',
+        ...MENU_FONT,
+      }}
+    >
+      {menus.map((menu, i) => (
+        <div key={menu.label} style={{ position: 'relative' }}>
+          <div
+            style={{
+              padding: '2px 6px',
+              cursor: 'default',
+              background: openIndex === i ? '#395fed' : 'transparent',
+              color: openIndex === i ? '#fff' : '#000',
+            }}
+            onMouseDown={() => setOpenIndex(openIndex === i ? null : i)}
+            onMouseEnter={() => { if (openIndex !== null) setOpenIndex(i) }}
+          >
+            {menu.label}
+          </div>
+          {openIndex === i && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                background: '#fff',
+                border: '1px solid #ACA899',
+                boxShadow: '2px 2px 4px rgba(0,0,0,0.15)',
+                padding: '2px 0',
+                minWidth: 160,
+                zIndex: 100,
+              }}
+            >
+              {menu.items.map((item, j) =>
+                item.divider ? (
+                  <div key={j} style={{ height: 1, background: '#E0E0E0', margin: '3px 2px' }} />
+                ) : (
+                  <MenuItemRow
+                    key={j}
+                    item={item}
+                    onClose={() => setOpenIndex(null)}
+                  />
+                )
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function MenuItemRow({ item, onClose }: { item: MenuItem; onClose: () => void }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div
+      style={{
+        padding: '3px 24px 3px 24px',
+        cursor: item.disabled ? 'default' : 'pointer',
+        background: hovered && !item.disabled ? '#395fed' : 'transparent',
+        color: item.disabled ? '#ACA899' : hovered ? '#fff' : '#000',
+        ...MENU_FONT,
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => {
+        if (!item.disabled && item.onClick) {
+          item.onClick()
+          onClose()
+        }
+      }}
+    >
+      {item.label}
+    </div>
+  )
+}
 
 interface TaskPanelProps {
   title: string
@@ -210,6 +324,69 @@ export function MyComputerApp() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff' }}>
+      {/* Menu bar */}
+      <MenuBar
+        menus={[
+          {
+            label: 'File',
+            items: [
+              { label: 'Create Shortcut', disabled: true },
+              { label: 'Delete', disabled: true },
+              { label: 'Rename', disabled: true },
+              { label: 'Properties', disabled: true },
+              { divider: true, label: '' },
+              { label: 'Close' },
+            ],
+          },
+          {
+            label: 'Edit',
+            items: [
+              { label: 'Undo', disabled: true },
+              { divider: true, label: '' },
+              { label: 'Cut', disabled: true },
+              { label: 'Copy', disabled: true },
+              { label: 'Paste', disabled: true },
+              { divider: true, label: '' },
+              { label: 'Select All', disabled: true },
+            ],
+          },
+          {
+            label: 'View',
+            items: [
+              { label: 'Thumbnails', disabled: true },
+              { label: 'Tiles', disabled: true },
+              { label: 'Icons', disabled: true },
+              { label: 'List', disabled: true },
+              { label: 'Details', disabled: true },
+            ],
+          },
+          {
+            label: 'Favorites',
+            items: [
+              { label: 'Add to Favorites...', disabled: true },
+              { label: 'Organize Favorites...', disabled: true },
+            ],
+          },
+          {
+            label: 'Tools',
+            items: [
+              { label: 'Map Network Drive...', disabled: true },
+              { label: 'Disconnect Network Drive...', disabled: true },
+              { divider: true, label: '' },
+              { label: 'Folder Options...', disabled: true },
+            ],
+          },
+          {
+            label: 'Help',
+            items: [
+              { label: 'Help and Support Center', disabled: true },
+              { divider: true, label: '' },
+              { label: 'About ahpx-os', onClick: () => openApp('clock') },
+            ],
+          },
+        ]}
+      />
+
       {/* Toolbar */}
       <div
         style={{
