@@ -46,15 +46,19 @@ function SubMenu({ items, parentRect, onClose }: { items: ContextMenuItem[]; par
 function MenuRow({ item, onClose }: { item: ContextMenuItem; onClose: () => void }) {
   const rowRef = useRef<HTMLDivElement>(null)
   const [subOpen, setSubOpen] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const openSub = useCallback(() => {
-    clearTimeout(timerRef.current)
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current)
+    }
     timerRef.current = setTimeout(() => setSubOpen(true), 200)
   }, [])
 
   const closeSub = useCallback(() => {
-    clearTimeout(timerRef.current)
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current)
+    }
     timerRef.current = setTimeout(() => setSubOpen(false), 300)
   }, [])
 
