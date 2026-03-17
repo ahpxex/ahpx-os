@@ -26,9 +26,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   const {
     windows,
     openWindow,
-    iconPositions,
-    updateIconPosition,
-    resetIconPositions,
     selectedIcons,
     setSelectedIcons,
     clearSelectedIcons,
@@ -47,10 +44,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       {} as Record<string, { x: number; y: number }>
     )
   }, [])
-
-  const mergedPositions = useMemo(() => {
-    return { ...defaultPositions, ...iconPositions }
-  }, [defaultPositions, iconPositions])
 
   useEffect(() => {
     if (initialOpenApp && !hasOpenedInitialApp.current && desktopApps.length > 0) {
@@ -72,7 +65,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       const selected = new Set<string>()
 
       for (const app of desktopApps) {
-        const pos = mergedPositions[app.id]
+        const pos = defaultPositions[app.id]
         if (!pos) continue
 
         const iconLeft = pos.x
@@ -87,7 +80,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
 
       return selected
     },
-    [mergedPositions]
+    [defaultPositions]
   )
 
   const handleMouseDown = useCallback(
@@ -167,20 +160,13 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   const contextMenuItems = useMemo<ContextMenuItem[]>(() => {
     return [
       {
-        label: 'Sort Icons',
-        onClick: () => {
-          resetIconPositions()
-        },
-      },
-      { divider: true },
-      {
         label: 'Refresh',
         onClick: () => {
           window.location.reload()
         },
       },
     ]
-  }, [resetIconPositions])
+  }, [])
 
   const selectionBoxStyle = selectionBox
     ? {
@@ -209,10 +195,9 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
             key={app.id}
             title={app.title}
             icon={app.icon}
-            position={mergedPositions[app.id]}
+            position={defaultPositions[app.id]}
             isSelected={selectedIcons.has(app.id)}
             onSelect={() => setSelectedIcons(new Set([app.id]))}
-            onPositionChange={(position) => updateIconPosition({ iconId: app.id, position })}
             onOpen={() => openWindow(app)}
           />
         ))}
