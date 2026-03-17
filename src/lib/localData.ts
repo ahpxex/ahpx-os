@@ -173,14 +173,14 @@ function uniqueProfileSlug(slug: string, profiles: Profile[], currentId?: string
   return candidate
 }
 
-export async function getBootstrapData(): Promise<AppBootstrapData> {
+export function getBootstrapData(): AppBootstrapData {
   return {
-    profiles: await getAllProfiles(),
+    profiles: getAllProfiles(),
     systemInfo: readSystemInfo(),
   }
 }
 
-async function getAllProfiles(): Promise<Profile[]> {
+function getAllProfiles(): Profile[] {
   return readProfiles().filter((profile) => profile.is_active)
 }
 

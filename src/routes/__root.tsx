@@ -9,16 +9,6 @@ import { DialogProvider } from '@/contexts/DialogContext'
 export const Route = createRootRoute({
   loader: loadAppData,
   component: RootLayout,
-  pendingComponent: () => (
-    <div
-      className="flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: 'url(/xp.png)' }}
-    >
-      <div className="rounded border border-[var(--color-border)] bg-white/80 px-3 py-2 text-sm text-gray-700 shadow-sm backdrop-blur-sm">
-        Loading...
-      </div>
-    </div>
-  ),
 })
 
 function RootLayout() {
