@@ -2,14 +2,8 @@
 import { createContext, useContext, useCallback, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { ContextMenu } from '@/components/desktop/ContextMenu'
+import type { ContextMenuItem } from '@/components/desktop/ContextMenu'
 import { useLocalAtom } from '@/hooks/useLocalAtom'
-
-export interface ContextMenuItem {
-  label: string
-  onClick: () => void
-  disabled?: boolean
-  divider?: boolean
-}
 
 interface WindowContextMenuContextValue {
   setContextMenuItems: (items: ContextMenuItem[]) => void

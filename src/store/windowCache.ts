@@ -7,7 +7,7 @@ interface WindowCache {
 
 const CACHE_KEY = 'ahpx-os-window-cache'
 
-export function getWindowCache(): Record<string, WindowCache> {
+function getWindowCache(): Record<string, WindowCache> {
   try {
     const cached = localStorage.getItem(CACHE_KEY)
     return cached ? JSON.parse(cached) : {}

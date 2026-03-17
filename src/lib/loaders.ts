@@ -1,9 +1,6 @@
 import { getBootstrapData } from '@/lib/localData'
-import type { AppBootstrapData } from '@/lib/localData'
 
-export type AppLoaderData = AppBootstrapData
-
-export async function loadAppData(): Promise<AppLoaderData> {
+export async function loadAppData() {
   try {
     return await getBootstrapData()
   } catch (error) {

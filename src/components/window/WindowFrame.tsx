@@ -20,7 +20,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
     [window.id]
   )
   const skipInitial = previousIsMaximized !== window.isMaximized
-  const isProfileWindow = window.id.startsWith('profile-') || window.id === 'new-profile'
+  const isProfileWindow = window.id.startsWith('profile-')
   const isActive = activeWindowId === window.id && isVisible
 
   useEffect(() => {

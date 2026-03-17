@@ -1,48 +1,12 @@
 import { useCallback, useMemo, useRef, useEffect } from 'react'
-import type { ComponentType } from 'react'
 import { LayoutGroup } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
-import { useAllProfiles } from '@/hooks/useAllProfiles'
 import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { DesktopIcon } from './DesktopIcon'
 import { WindowFrame } from '@/components/window/WindowFrame'
 import { ContextMenu } from './ContextMenu'
-import { BlogsApp } from '@/apps/BlogsApp'
-import { ClockApp } from '@/apps/ClockApp'
-import { TerminalApp } from '@/apps/TerminalApp'
-import { ProfileApp } from '@/apps/ProfileApp'
-import { NewProfileApp } from '@/apps/NewProfileApp'
-
-interface DesktopApp {
-  id: string
-  title: string
-  icon: string
-  component: ComponentType
-  initialSize?: { width: number; height: number }
-}
-
-const staticApps: DesktopApp[] = [
-  {
-    id: 'blogs',
-    title: 'Blogs',
-    icon: '/places/document-open-recent.png',
-    component: BlogsApp,
-  },
-  {
-    id: 'clock',
-    title: 'Clock',
-    icon: '/apps/config-date.png',
-    component: ClockApp,
-    initialSize: { width: 600, height: 550 },
-  },
-  {
-    id: 'terminal',
-    title: 'Terminal',
-    icon: '/apps/utilities-terminal.png',
-    component: TerminalApp,
-    initialSize: { width: 700, height: 450 },
-  },
-]
+import type { ContextMenuItem } from './ContextMenu'
+import { desktopApps, getDesktopApp } from '@/lib/desktopApps'
 
 const ICON_WIDTH = 72
 const ICON_HEIGHT = 68
@@ -69,24 +33,10 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     setSelectedIcons,
     clearSelectedIcons,
   } = useOS()
-  const { profiles } = useAllProfiles()
   const [contextMenu, setContextMenu] = useLocalAtom<{ x: number; y: number } | null>(() => null, [])
   const [selectionBox, setSelectionBox] = useLocalAtom<SelectionBox | null>(() => null, [])
   const desktopRef = useRef<HTMLDivElement>(null)
   const hasOpenedInitialApp = useRef(false)
-
-  const profileApps: DesktopApp[] = useMemo(
-    () =>
-      profiles.map((profile) => ({
-        id: `profile-${profile.slug}`,
-        title: profile.id === 'profile-ahpx' ? profile.name : `${profile.name}.exe`,
-        icon: profile.icon,
-        component: () => <ProfileApp profileId={profile.id} />,
-      })),
-    [profiles]
-  )
-
-  const desktopApps = useMemo(() => [...profileApps, ...staticApps], [profileApps])
 
   const defaultPositions = useMemo(() => {
     return desktopApps.reduce(
@@ -96,7 +46,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       },
       {} as Record<string, { x: number; y: number }>
     )
-  }, [desktopApps])
+  }, [])
 
   const mergedPositions = useMemo(() => {
     return { ...defaultPositions, ...iconPositions }
@@ -104,19 +54,13 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
 
   useEffect(() => {
     if (initialOpenApp && !hasOpenedInitialApp.current && desktopApps.length > 0) {
-      const app = desktopApps.find((entry) => entry.id === initialOpenApp)
+      const app = getDesktopApp(initialOpenApp)
       if (app) {
-        openWindow({
-          id: app.id,
-          title: app.title,
-          icon: app.icon,
-          component: app.component,
-          initialSize: 'initialSize' in app ? app.initialSize : undefined,
-        })
+        openWindow(app)
         hasOpenedInitialApp.current = true
       }
     }
-  }, [initialOpenApp, desktopApps, openWindow])
+  }, [initialOpenApp, openWindow])
 
   const getIconsInSelection = useCallback(
     (box: SelectionBox) => {
@@ -143,7 +87,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
 
       return selected
     },
-    [mergedPositions, desktopApps]
+    [mergedPositions]
   )
 
   const handleMouseDown = useCallback(
@@ -220,32 +164,15 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     [clearSelectedIcons]
   )
 
-  const handleNewProfile = useCallback(() => {
-    openWindow({
-      id: 'new-profile',
-      title: 'New Profile',
-      icon: '/apps/vcard.png',
-      component: NewProfileApp,
-      initialSize: { width: 500, height: 400 },
-    })
-    closeContextMenu()
-  }, [openWindow, closeContextMenu])
-
-  const contextMenuItems = useMemo(() => {
+  const contextMenuItems = useMemo<ContextMenuItem[]>(() => {
     return [
       {
         label: 'Sort Icons',
         onClick: () => {
           resetIconPositions()
-          closeContextMenu()
         },
       },
-      { divider: true, label: '', onClick: () => {} },
-      {
-        label: 'New Profile',
-        onClick: handleNewProfile,
-      },
-      { divider: true, label: '', onClick: () => {} },
+      { divider: true },
       {
         label: 'Refresh',
         onClick: () => {
@@ -253,7 +180,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         },
       },
     ]
-  }, [resetIconPositions, closeContextMenu, handleNewProfile])
+  }, [resetIconPositions])
 
   const selectionBoxStyle = selectionBox
     ? {
@@ -280,22 +207,13 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         {desktopApps.map((app) => (
           <DesktopIcon
             key={app.id}
-            id={app.id}
             title={app.title}
             icon={app.icon}
             position={mergedPositions[app.id]}
             isSelected={selectedIcons.has(app.id)}
             onSelect={() => setSelectedIcons(new Set([app.id]))}
             onPositionChange={(position) => updateIconPosition({ iconId: app.id, position })}
-            onOpen={() =>
-              openWindow({
-                id: app.id,
-                title: app.title,
-                icon: app.icon,
-                component: app.component,
-                initialSize: 'initialSize' in app ? app.initialSize : undefined,
-              })
-            }
+            onOpen={() => openWindow(app)}
           />
         ))}
       </div>

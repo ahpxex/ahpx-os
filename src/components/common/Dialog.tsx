@@ -6,7 +6,7 @@ export interface DialogAction {
   variant?: 'primary' | 'danger' | 'secondary'
 }
 
-export interface DialogProps {
+interface DialogProps {
   title: string
   message: string
   actions: DialogAction[]

@@ -3,14 +3,21 @@ import type { WindowState } from '@/types/window'
 import { useOS } from '@/hooks/useOS'
 import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { Clock } from '@/components/topbar/Clock'
+import { getDesktopApp } from '@/lib/desktopApps'
+import { SYSTEM_PROFILE_ID } from '@/lib/localData'
 import { StartButton } from './StartButton'
 
-interface StartMenuItem {
+interface StartMenuActionItem {
   label: string
-  onClick?: () => void
+  onClick: () => void
   disabled?: boolean
-  divider?: boolean
 }
+
+interface StartMenuDividerItem {
+  divider: true
+}
+
+type StartMenuItem = StartMenuActionItem | StartMenuDividerItem
 
 export function Taskbar() {
   const { windows, activeWindowId, openWindow, focusWindow, minimizeWindow } = useOS()
@@ -19,17 +26,25 @@ export function Taskbar() {
   const startMenuRef = useRef<HTMLDivElement>(null)
 
   const taskbarWindows = useMemo(() => windows.filter((window) => window.isOpen), [windows])
+  const myComputerApp = useMemo(() => getDesktopApp(SYSTEM_PROFILE_ID), [])
 
   const startMenuItems: StartMenuItem[] = useMemo(
     () => [
-      { label: 'About ahpx-os', onClick: () => console.log('About') },
-      { divider: true, label: '' },
+      ...(myComputerApp
+        ? [
+            {
+              label: 'My Computer',
+              onClick: () => openWindow(myComputerApp),
+            },
+          ]
+        : []),
+      { divider: true },
       { label: 'Show Desktop', onClick: () => taskbarWindows.forEach((window) => minimizeWindow(window.id)) },
-      { divider: true, label: '' },
+      { divider: true },
       { label: 'Restart', onClick: () => window.location.reload() },
-      { label: 'Shut Down', disabled: true },
+      { label: 'Shut Down', onClick: () => {}, disabled: true },
     ],
-    [minimizeWindow, taskbarWindows]
+    [minimizeWindow, myComputerApp, openWindow, taskbarWindows]
   )
 
   useEffect(() => {
@@ -99,7 +114,7 @@ export function Taskbar() {
           </div>
           <div className="window-body">
             {startMenuItems.map((item, index) =>
-              item.divider ? (
+              'divider' in item ? (
                 <div key={index} className="my-1 h-px bg-black/10" />
               ) : (
                 <button
@@ -108,7 +123,7 @@ export function Taskbar() {
                   disabled={item.disabled}
                   onClick={() => {
                     if (item.disabled) return
-                    item.onClick?.()
+                    item.onClick()
                     setIsStartOpen(false)
                   }}
                   className={`xp-reset-button bg-none min-h-0 min-w-0 border-0 bg-transparent shadow-none flex w-full items-center px-3 py-1.5 text-left text-sm ${

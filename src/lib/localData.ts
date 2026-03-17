@@ -3,13 +3,13 @@ import type { BlogPost, Profile, SystemInfo } from '@/types/database'
 import type { ProfileContent } from '@/types/profile'
 import { titleToUrl } from '@/lib/urlHelpers'
 
-export interface AppBootstrapData {
+interface AppBootstrapData {
   profiles: Profile[]
   systemInfo: SystemInfo | null
   blogPosts: BlogPost[]
 }
 
-export interface CreateBlogPostInput {
+interface CreateBlogPostInput {
   title: string
   summary: string
   date: string
@@ -18,20 +18,12 @@ export interface CreateBlogPostInput {
   published?: boolean
 }
 
-export interface UpdateBlogPostInput {
+interface UpdateBlogPostInput {
   id: string
   updates: Partial<CreateBlogPostInput>
 }
 
-export interface CreateProfileInput {
-  name: string
-  slug: string
-  icon?: string
-  content?: ProfileContent
-  avatar_url?: string
-}
-
-export interface UpdateProfileInput {
+interface UpdateProfileInput {
   id: string
   updates: Partial<{
     name: string
@@ -50,10 +42,9 @@ const STORAGE_KEYS = {
   systemInfo: 'ahpx-os-system-info',
 } as const
 
-const DEFAULT_PROFILE_ICON = '/apps/vcard.png'
-const SYSTEM_PROFILE_ID = 'profile-ahpx'
-const SYSTEM_PROFILE_NAME = 'My Computer'
-const SYSTEM_PROFILE_ICON = '/devices/system.png'
+export const SYSTEM_PROFILE_ID = 'profile-ahpx'
+export const SYSTEM_PROFILE_NAME = 'My Computer'
+export const SYSTEM_PROFILE_ICON = '/devices/system.png'
 
 function now() {
   return new Date().toISOString()
@@ -250,16 +241,12 @@ function uniquePostSlug(title: string, posts: BlogPost[], currentId?: string) {
 export async function getBootstrapData(): Promise<AppBootstrapData> {
   return {
     profiles: await getAllProfiles(),
-    systemInfo: await getSystemInfo(),
+    systemInfo: readSystemInfo(),
     blogPosts: await getBlogPosts(),
   }
 }
 
-export async function getSystemInfo(): Promise<SystemInfo | null> {
-  return readSystemInfo()
-}
-
-export async function getBlogPosts(onlyPublished = false): Promise<BlogPost[]> {
+async function getBlogPosts(onlyPublished = false): Promise<BlogPost[]> {
   const posts = readBlogPosts()
   return onlyPublished ? posts.filter((post) => post.published) : posts
 }
@@ -317,28 +304,8 @@ export async function deleteBlogPost(id: string): Promise<void> {
   writeBlogPosts(posts.filter((post) => post.id !== id))
 }
 
-export async function getAllProfiles(): Promise<Profile[]> {
+async function getAllProfiles(): Promise<Profile[]> {
   return readProfiles().filter((profile) => profile.is_active)
-}
-
-export async function createProfile(input: CreateProfileInput): Promise<Profile> {
-  const profiles = readProfiles()
-  const timestamp = now()
-  const nextProfile: Profile = {
-    id: crypto.randomUUID(),
-    created_at: timestamp,
-    updated_at: timestamp,
-    name: input.name.trim(),
-    slug: uniqueProfileSlug(input.slug || input.name, profiles),
-    icon: input.icon || DEFAULT_PROFILE_ICON,
-    date: null,
-    content: input.content || { widgets: [], layout: DEFAULT_LAYOUT },
-    is_active: true,
-    avatar_url: input.avatar_url ?? null,
-  }
-
-  writeProfiles([...profiles, nextProfile])
-  return nextProfile
 }
 
 export async function updateProfile(input: UpdateProfileInput): Promise<Profile> {
@@ -366,21 +333,4 @@ export async function updateProfile(input: UpdateProfileInput): Promise<Profile>
   profiles[index] = updated
   writeProfiles(profiles)
   return updated
-}
-
-export async function deleteProfile(id: string): Promise<void> {
-  const profiles = readProfiles()
-  writeProfiles(profiles.filter((profile) => profile.id !== id))
-}
-
-export async function getProfileById(id: string): Promise<Profile> {
-  const profile = readProfiles().find((entry) => entry.id === id)
-  if (!profile) throw new Error('Profile not found')
-  return profile
-}
-
-export async function getProfileBySlug(slug: string): Promise<Profile> {
-  const profile = readProfiles().find((entry) => entry.slug === slug)
-  if (!profile) throw new Error('Profile not found')
-  return profile
 }

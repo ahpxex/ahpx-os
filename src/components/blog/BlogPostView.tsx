@@ -1,8 +1,12 @@
+import { Suspense, lazy } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { format } from 'date-fns'
 import type { BlogPost } from '@/types/database'
+
+const MarkdownCodeBlock = lazy(async () => {
+  const module = await import('@/components/blog/MarkdownCodeBlock')
+  return { default: module.MarkdownCodeBlock }
+})
 
 interface BlogPostViewProps {
   post: BlogPost
@@ -119,18 +123,15 @@ export function BlogPostView({ post, onBack, onEdit, onDelete, canEdit }: BlogPo
 
                   if (match) {
                     return (
-                      <SyntaxHighlighter
-                        style={oneDark}
-                        language={match[1]}
-                        PreTag="div"
-                        customStyle={{
-                          margin: 0,
-                          borderRadius: '4px',
-                          fontSize: '13px',
-                        }}
+                      <Suspense
+                        fallback={
+                          <pre className="overflow-x-auto rounded bg-[#1e1e1e] p-4 text-sm text-white">
+                            <code>{codeString}</code>
+                          </pre>
+                        }
                       >
-                        {codeString}
-                      </SyntaxHighlighter>
+                        <MarkdownCodeBlock code={codeString} language={match[1]} />
+                      </Suspense>
                     )
                   }
 

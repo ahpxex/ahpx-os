@@ -1,11 +1,10 @@
 import { useSetAtom } from 'jotai'
-import { v4 as uuidv4 } from 'uuid'
 import { updateProfileAtom } from '@/store/profileActions'
 import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { WidgetGrid } from './WidgetGrid'
 import type { Profile } from '@/types/database'
 import type { ProfileContent, Widget, WidgetType, ProfileLayout } from '@/types/profile'
-import { DEFAULT_LAYOUT } from '@/types/profile'
+import { DEFAULT_LAYOUT, DEFAULT_WIDGET_SIZES } from '@/types/profile'
 
 interface LayoutItem {
   i: string
@@ -77,13 +76,7 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
   }
 
   const addWidget = (type: WidgetType) => {
-    const defaultSizes: Record<WidgetType, { width: number; height: number }> = {
-      text: { width: 12, height: 4 },
-      image: { width: 6, height: 6 },
-      'link-button': { width: 4, height: 2 },
-    }
-
-    const size = defaultSizes[type]
+    const size = DEFAULT_WIDGET_SIZES[type]
     const maxY = widgets.reduce(
       (max, widget) => Math.max(max, widget.position.y + widget.position.height),
       0
@@ -93,14 +86,14 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
 
     if (type === 'text') {
       newWidget = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: 'text',
         position: { x: 0, y: maxY, ...size },
         content: '',
       }
     } else if (type === 'image') {
       newWidget = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: 'image',
         position: { x: 0, y: maxY, ...size },
         url: '',
@@ -108,7 +101,7 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
       }
     } else {
       newWidget = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: 'link-button',
         position: { x: 0, y: maxY, ...size },
         label: 'Link',

@@ -3,7 +3,6 @@ import { useLocalAtom } from '@/hooks/useLocalAtom'
 import type { Position } from '@/types/window'
 
 interface DesktopIconProps {
-  id: string
   title: string
   icon: string
   position?: Position

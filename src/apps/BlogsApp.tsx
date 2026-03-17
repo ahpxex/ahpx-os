@@ -1,20 +1,28 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { useSetAtom } from 'jotai'
+import { Suspense, lazy, useEffect, useMemo, useRef } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useNavigate } from '@tanstack/react-router'
-import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { useToast } from '@/contexts/ToastContext'
 import { useDialog } from '@/contexts/DialogContext'
 import { useLocalAtom } from '@/hooks/useLocalAtom'
+import { blogPostsAtom } from '@/store/appAtoms'
 import { deleteBlogPostAtom } from '@/store/blogActions'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
-import { BlogPostEditor } from '@/components/blog/BlogPostEditor'
-import { BlogPostView } from '@/components/blog/BlogPostView'
 import { BlogSearch } from '@/components/blog/BlogSearch'
 import { BlogTagFilter } from '@/components/blog/BlogTagFilter'
 import { titleToUrl, urlToTitle } from '@/lib/urlHelpers'
 import { format } from 'date-fns'
 import type { BlogPost } from '@/types/database'
+
+const BlogPostEditor = lazy(async () => {
+  const module = await import('@/components/blog/BlogPostEditor')
+  return { default: module.BlogPostEditor }
+})
+
+const BlogPostView = lazy(async () => {
+  const module = await import('@/components/blog/BlogPostView')
+  return { default: module.BlogPostView }
+})
 
 interface BlogsAppState {
   editingPost: BlogPost | null
@@ -24,8 +32,16 @@ interface BlogsAppState {
   selectedTag: string | null
 }
 
+function BlogPanelFallback() {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <LoadingSpinner />
+    </div>
+  )
+}
+
 export function BlogsApp() {
-  const { posts, loading, refetch } = useBlogPosts()
+  const posts = useAtomValue(blogPostsAtom)
   const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
   const deleteBlogPost = useSetAtom(deleteBlogPostAtom)
   const toast = useToast()
@@ -132,7 +148,6 @@ export function BlogsApp() {
     try {
       await deleteBlogPost(activeViewingPost.id)
       toast.success('Post deleted successfully')
-      refetch()
       navigate({ to: '/' })
     } catch (error) {
       console.error('Failed to delete post:', error)
@@ -140,48 +155,44 @@ export function BlogsApp() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    )
-  }
-
   if (isCreating) {
     return (
-      <BlogPostEditor
-        onSave={() => {
-          setViewState((prev) => ({ ...prev, isCreating: false }))
-          refetch()
-        }}
-        onCancel={() => setViewState((prev) => ({ ...prev, isCreating: false }))}
-      />
+      <Suspense fallback={<BlogPanelFallback />}>
+        <BlogPostEditor
+          onSave={() => {
+            setViewState((prev) => ({ ...prev, isCreating: false }))
+          }}
+          onCancel={() => setViewState((prev) => ({ ...prev, isCreating: false }))}
+        />
+      </Suspense>
     )
   }
 
   if (editingPost) {
     return (
-      <BlogPostEditor
-        post={editingPost}
-        onSave={() => {
-          setViewState((prev) => ({ ...prev, editingPost: null }))
-          refetch()
-        }}
-        onCancel={() => setViewState((prev) => ({ ...prev, editingPost: null }))}
-      />
+      <Suspense fallback={<BlogPanelFallback />}>
+        <BlogPostEditor
+          post={editingPost}
+          onSave={() => {
+            setViewState((prev) => ({ ...prev, editingPost: null }))
+          }}
+          onCancel={() => setViewState((prev) => ({ ...prev, editingPost: null }))}
+        />
+      </Suspense>
     )
   }
 
   if (activeViewingPost) {
     return (
-      <BlogPostView
-        post={activeViewingPost}
-        onBack={handleBackToList}
-        onEdit={handleEditPost}
-        onDelete={handleDeletePost}
-        canEdit
-      />
+      <Suspense fallback={<BlogPanelFallback />}>
+        <BlogPostView
+          post={activeViewingPost}
+          onBack={handleBackToList}
+          onEdit={handleEditPost}
+          onDelete={handleDeletePost}
+          canEdit
+        />
+      </Suspense>
     )
   }
 

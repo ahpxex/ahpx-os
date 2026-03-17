@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'react'
 
-interface ContextMenuItem {
+export interface ContextMenuActionItem {
   label: string
   onClick: () => void
   disabled?: boolean
-  divider?: boolean
 }
+
+export interface ContextMenuDividerItem {
+  divider: true
+}
+
+export type ContextMenuItem = ContextMenuActionItem | ContextMenuDividerItem
 
 interface ContextMenuProps {
   x: number
@@ -39,10 +44,11 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
     }
   }, [onClose])
 
-  // Adjust position to keep menu in viewport
+  const menuHeight =
+    items.reduce((total, item) => total + ('divider' in item ? 9 : 34), 8)
   const adjustedStyle = {
-    left: x,
-    top: y,
+    left: Math.max(8, Math.min(x, window.innerWidth - 188)),
+    top: Math.max(8, Math.min(y, window.innerHeight - menuHeight - 8)),
   }
 
   return (
@@ -52,7 +58,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
       style={adjustedStyle}
     >
       {items.map((item, index) =>
-        item.divider ? (
+        'divider' in item ? (
           <div
             key={index}
             className="my-1 h-px bg-gray-200"

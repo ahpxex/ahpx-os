@@ -3,18 +3,9 @@ import { blogPostsAtom } from './appAtoms'
 import {
   createBlogPost,
   deleteBlogPost,
-  getBlogPosts,
   updateBlogPost,
 } from '@/lib/localData'
 import type { BlogPost } from '@/types/database'
-
-export const fetchBlogPostsAtom = atom(
-  null,
-  async (_get, set, onlyPublished: boolean | undefined = false) => {
-    const data = await getBlogPosts(onlyPublished)
-    set(blogPostsAtom, data)
-  }
-)
 
 export const createBlogPostAtom = atom(
   null,

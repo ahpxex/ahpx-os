@@ -1,13 +1,13 @@
 export type WidgetType = 'text' | 'image' | 'link-button'
 
-export interface WidgetPosition {
+interface WidgetPosition {
   x: number
   y: number
   width: number
   height: number
 }
 
-export interface WidgetBase {
+interface WidgetBase {
   id: string
   type: WidgetType
   position: WidgetPosition

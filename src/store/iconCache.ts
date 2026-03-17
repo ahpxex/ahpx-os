@@ -21,19 +21,6 @@ export function saveIconPosition(iconId: string, position: Position) {
   }
 }
 
-export function getIconPosition(iconId: string): Position | null {
-  const cache = getIconCache()
-  return cache[iconId] || null
-}
-
-export function saveAllIconPositions(positions: Record<string, Position>) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(positions))
-  } catch (error) {
-    console.error('Failed to save icon positions:', error)
-  }
-}
-
 export function clearIconCache() {
   try {
     localStorage.removeItem(CACHE_KEY)

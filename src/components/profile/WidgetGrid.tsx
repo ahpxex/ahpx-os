@@ -1,4 +1,5 @@
 import { useMemo, useRef, useCallback } from 'react'
+import type { RefObject } from 'react'
 import ReactGridLayout, { useContainerWidth, getCompactor } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
@@ -68,6 +69,11 @@ interface DragState {
 }
 
 const freePositionCompactor = getCompactor(null, true, true)
+interface ContainerWidthState {
+  width: number
+  containerRef: RefObject<HTMLDivElement | null>
+  mounted: boolean
+}
 
 export function WidgetGrid({
   widgets,
@@ -77,8 +83,7 @@ export function WidgetGrid({
   onWidgetUpdate,
   onWidgetDelete,
 }: WidgetGridProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { width, containerRef, mounted } = useContainerWidth() as any
+  const { width, containerRef, mounted } = useContainerWidth() as ContainerWidthState
   const dragState = useRef<DragState | null>(null)
   const displacementTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingCollisionId = useRef<string | null>(null)
