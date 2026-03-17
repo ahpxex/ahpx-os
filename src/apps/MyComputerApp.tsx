@@ -531,18 +531,16 @@ export function MyComputerApp() {
           <SectionHeader title="Files Stored on This Computer" />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: 8 }}>
             <ExplorerItem
-              icon="/places/folder-documents.png"
-              label="Shared Documents"
-              selected={selectedItem === 'shared-docs'}
-              onSelect={() => setSelectedItem('shared-docs')}
-              onOpen={() => openApp('blogs')}
+              icon="/devices/stock_briefcase.png"
+              label="My Products"
+              selected={selectedItem === 'products'}
+              onSelect={() => setSelectedItem('products')}
             />
             <ExplorerItem
-              icon="/places/folder_home.png"
-              label="User's Documents"
-              selected={selectedItem === 'user-docs'}
-              onSelect={() => setSelectedItem('user-docs')}
-              onOpen={() => openApp('profile-ahpx')}
+              icon="/apps/xfce-schedule.png"
+              label="Weekly Projects"
+              selected={selectedItem === 'weekly'}
+              onSelect={() => setSelectedItem('weekly')}
             />
           </div>
 
@@ -566,15 +564,7 @@ export function MyComputerApp() {
             />
           </div>
 
-          <SectionHeader title="About Me :)" />
-          <div
-            style={{
-              height: 1,
-              background: 'linear-gradient(to right, #6B89D4, transparent)',
-              marginBottom: 12,
-              marginTop: -8,
-            }}
-          />
+          <SectionHeader title="Links" />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: 8 }}>
             <ExplorerItem
               icon="/places/gnome-fs-web.png"
@@ -584,11 +574,18 @@ export function MyComputerApp() {
               href="https://github.com/ahpx"
             />
             <ExplorerItem
-              icon="/places/user-home.png"
-              label="My Website"
-              selected={selectedItem === 'website'}
-              onSelect={() => setSelectedItem('website')}
-              href="https://ahpx.dev"
+              icon="/apps/internet-mail.png"
+              label="Twitter"
+              selected={selectedItem === 'twitter'}
+              onSelect={() => setSelectedItem('twitter')}
+              href="https://twitter.com/ofshawnfan"
+            />
+            <ExplorerItem
+              icon="/apps/web-browser.png"
+              label="Blog"
+              selected={selectedItem === 'blog'}
+              onSelect={() => setSelectedItem('blog')}
+              href="https://blog.ahpx.me"
             />
           </div>
         </div>
