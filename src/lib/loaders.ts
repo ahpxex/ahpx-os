@@ -8,7 +8,6 @@ export async function loadAppData() {
     return {
       profiles: [],
       systemInfo: null,
-      blogPosts: [],
     }
   }
 }

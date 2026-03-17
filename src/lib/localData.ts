@@ -1,26 +1,10 @@
 import { DEFAULT_LAYOUT } from '@/types/profile'
-import type { BlogPost, Profile, SystemInfo } from '@/types/database'
+import type { Profile, SystemInfo } from '@/types/database'
 import type { ProfileContent } from '@/types/profile'
-import { titleToUrl } from '@/lib/urlHelpers'
 
 interface AppBootstrapData {
   profiles: Profile[]
   systemInfo: SystemInfo | null
-  blogPosts: BlogPost[]
-}
-
-interface CreateBlogPostInput {
-  title: string
-  summary: string
-  date: string
-  tags: string[]
-  content: string
-  published?: boolean
-}
-
-interface UpdateBlogPostInput {
-  id: string
-  updates: Partial<CreateBlogPostInput>
 }
 
 interface UpdateProfileInput {
@@ -37,7 +21,6 @@ interface UpdateProfileInput {
 }
 
 const STORAGE_KEYS = {
-  blogPosts: 'ahpx-os-blog-posts',
   profiles: 'ahpx-os-profiles',
   systemInfo: 'ahpx-os-system-info',
 } as const
@@ -124,7 +107,7 @@ const DEFAULT_SYSTEM_INFO: SystemInfo = {
   updated_at: '2026-03-17T00:00:00.000Z',
   version: 'local-browser-store',
   name: 'ahpx-os',
-  description: 'A frontend-only build with browser storage for profiles and blog posts.',
+  description: 'A frontend-only build with browser storage for profiles.',
   wallpaper: '/xp.png',
   theme: { accent: 'xp-blue', mode: 'light' },
   config: { storage: 'localStorage' },
@@ -145,41 +128,6 @@ const DEFAULT_PROFILES: Profile[] = [
     avatar_url: null,
   },
 ]
-
-const DEFAULT_BLOG_POSTS: BlogPost[] = [
-  {
-    id: 'post-browser-storage',
-    created_at: '2026-03-17T00:00:00.000Z',
-    updated_at: '2026-03-17T00:00:00.000Z',
-    title: 'Browser-stored ahpx-os',
-    summary: 'Profiles and blog posts now live directly in browser storage with no backend required.',
-    date: '2026-03-17',
-    tags: ['browser-storage', 'react', 'vite'],
-    content: [
-      '# Browser-stored ahpx-os',
-      '',
-      'This build runs without any external backend or sign-in flow.',
-      '',
-      '- Profiles are stored in `localStorage`.',
-      '- Blog posts are editable right away.',
-      '- The app boots with a small local seed dataset.',
-    ].join('\n'),
-    slug: 'browser-stored-ahpx-os',
-    published: true,
-  },
-]
-
-function sortBlogPosts(posts: BlogPost[]) {
-  return [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-}
-
-function readBlogPosts() {
-  return sortBlogPosts(readValue(STORAGE_KEYS.blogPosts, DEFAULT_BLOG_POSTS))
-}
-
-function writeBlogPosts(posts: BlogPost[]) {
-  writeValue(STORAGE_KEYS.blogPosts, sortBlogPosts(posts))
-}
 
 function readProfiles() {
   return readValue(STORAGE_KEYS.profiles, DEFAULT_PROFILES).map((profile) =>
@@ -225,83 +173,11 @@ function uniqueProfileSlug(slug: string, profiles: Profile[], currentId?: string
   return candidate
 }
 
-function uniquePostSlug(title: string, posts: BlogPost[], currentId?: string) {
-  const base = normalizeSlug(titleToUrl(title), 'post')
-  let candidate = base
-  let index = 2
-
-  while (posts.some((post) => post.slug === candidate && post.id !== currentId)) {
-    candidate = `${base}-${index}`
-    index += 1
-  }
-
-  return candidate
-}
-
 export async function getBootstrapData(): Promise<AppBootstrapData> {
   return {
     profiles: await getAllProfiles(),
     systemInfo: readSystemInfo(),
-    blogPosts: await getBlogPosts(),
   }
-}
-
-async function getBlogPosts(onlyPublished = false): Promise<BlogPost[]> {
-  const posts = readBlogPosts()
-  return onlyPublished ? posts.filter((post) => post.published) : posts
-}
-
-export async function createBlogPost(input: CreateBlogPostInput): Promise<BlogPost> {
-  const posts = readBlogPosts()
-  const timestamp = now()
-  const nextPost: BlogPost = {
-    id: crypto.randomUUID(),
-    created_at: timestamp,
-    updated_at: timestamp,
-    title: input.title.trim(),
-    summary: input.summary.trim(),
-    date: input.date,
-    tags: [...input.tags],
-    content: input.content,
-    slug: uniquePostSlug(input.title, posts),
-    published: input.published ?? false,
-  }
-
-  writeBlogPosts([nextPost, ...posts])
-  return nextPost
-}
-
-export async function updateBlogPost(input: UpdateBlogPostInput): Promise<BlogPost> {
-  const posts = readBlogPosts()
-  const index = posts.findIndex((post) => post.id === input.id)
-
-  if (index === -1) {
-    throw new Error('Blog post not found')
-  }
-
-  const current = posts[index]
-  const nextTitle = input.updates.title?.trim() || current.title
-  const updated: BlogPost = {
-    ...current,
-    ...input.updates,
-    title: nextTitle,
-    summary: input.updates.summary?.trim() ?? current.summary,
-    tags: input.updates.tags ? [...input.updates.tags] : current.tags,
-    slug:
-      nextTitle === current.title
-        ? current.slug
-        : uniquePostSlug(nextTitle, posts, current.id),
-    updated_at: now(),
-  }
-
-  posts[index] = updated
-  writeBlogPosts(posts)
-  return updated
-}
-
-export async function deleteBlogPost(id: string): Promise<void> {
-  const posts = readBlogPosts()
-  writeBlogPosts(posts.filter((post) => post.id !== id))
 }
 
 async function getAllProfiles(): Promise<Profile[]> {

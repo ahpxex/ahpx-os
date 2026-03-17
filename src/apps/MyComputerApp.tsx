@@ -571,11 +571,6 @@ export function MyComputerApp() {
 
           <TaskPanel title="Other Places" color="blue">
             <SidebarLink
-              icon="/places/folder-documents.png"
-              label="My Documents"
-              onClick={() => openApp('blogs')}
-            />
-            <SidebarLink
               icon="/places/gnome-fs-network.png"
               label="My Network Places"
             />
@@ -728,13 +723,6 @@ export function MyComputerApp() {
               selected={selectedItem === 'twitter'}
               onSelect={() => setSelectedItem('twitter')}
               href="https://twitter.com/ofshawnfan"
-            />
-            <ExplorerItem
-              icon="/apps/web-browser.png"
-              label="Blog"
-              selected={selectedItem === 'blog'}
-              onSelect={() => setSelectedItem('blog')}
-              href="https://blog.ahpx.me"
             />
           </div>
             </>

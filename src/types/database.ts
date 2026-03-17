@@ -8,19 +8,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface BlogPost {
-  id: string
-  created_at: string
-  updated_at: string
-  title: string
-  summary: string
-  date: string
-  tags: string[]
-  content: Json | null
-  slug: string
-  published: boolean
-}
-
 export interface Profile {
   id: string
   created_at: string

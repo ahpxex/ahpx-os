@@ -2,7 +2,7 @@ import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { Provider, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 import { loadAppData } from '@/lib/loaders'
-import { allProfilesAtom, blogPostsAtom, systemInfoAtom } from '@/store/appAtoms'
+import { allProfilesAtom, systemInfoAtom } from '@/store/appAtoms'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { DialogProvider } from '@/contexts/DialogContext'
 
@@ -45,13 +45,11 @@ interface DataHydratorProps {
 function DataHydrator({ data, children }: DataHydratorProps) {
   const setSystemInfo = useSetAtom(systemInfoAtom)
   const setAllProfiles = useSetAtom(allProfilesAtom)
-  const setBlogPosts = useSetAtom(blogPostsAtom)
 
   useEffect(() => {
     setSystemInfo(data.systemInfo)
     setAllProfiles(data.profiles)
-    setBlogPosts(data.blogPosts)
-  }, [data, setAllProfiles, setBlogPosts, setSystemInfo])
+  }, [data, setAllProfiles, setSystemInfo])
 
   return <>{children}</>
 }

@@ -40,15 +40,6 @@ export const desktopApps: WindowConfig[] = [
     initialSize: { width: 750, height: 550 },
   },
   {
-    id: 'blogs',
-    title: 'Blogs',
-    icon: '/places/document-open-recent.png',
-    component: createLazyWindow(async () => {
-      const { BlogsApp } = await import('@/apps/BlogsApp')
-      return { default: BlogsApp }
-    }),
-  },
-  {
     id: 'clock',
     title: 'Clock',
     icon: '/apps/config-date.png',
