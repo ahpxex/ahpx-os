@@ -120,14 +120,13 @@ function MenuItemRow({ item, onClose }: { item: MenuItem; onClose: () => void })
 interface TaskPanelProps {
   title: string
   color: 'blue' | 'green' | 'purple'
-  defaultOpen?: boolean
   children: React.ReactNode
 }
 
 const panelColors = {
   blue: {
-    header: 'linear-gradient(to bottom, #728ED9, #4565C4)',
-    headerText: '#fff',
+    header: 'linear-gradient(to right, #f1f1fe 70%, #a9b8f3)',
+    headerText: '#173179',
     bg: 'linear-gradient(to bottom, #C1D0F0, #D8E2F5)',
     border: '#6F8AD7',
   },
@@ -145,8 +144,7 @@ const panelColors = {
   },
 }
 
-function TaskPanel({ title, color, defaultOpen = true, children }: TaskPanelProps) {
-  const [open, setOpen] = useState(defaultOpen)
+function TaskPanel({ title, color, children }: TaskPanelProps) {
   const c = panelColors[color]
 
   return (
@@ -157,8 +155,7 @@ function TaskPanel({ title, color, defaultOpen = true, children }: TaskPanelProp
         marginBottom: 10,
       }}
     >
-      <button
-        onClick={() => setOpen(!open)}
+      <div
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -167,8 +164,6 @@ function TaskPanel({ title, color, defaultOpen = true, children }: TaskPanelProp
           padding: '6px 10px',
           background: c.header,
           color: c.headerText,
-          border: 'none',
-          cursor: 'pointer',
           fontWeight: 'bold',
           fontSize: 11,
           fontFamily: 'Tahoma, Verdana, Arial, sans-serif',
@@ -176,27 +171,11 @@ function TaskPanel({ title, color, defaultOpen = true, children }: TaskPanelProp
         }}
       >
         <span>{title}</span>
-        <ChevronIcon open={open} />
-      </button>
-      {open && (
-        <div style={{ background: c.bg, padding: '8px 12px' }}>
-          {children}
-        </div>
-      )}
+      </div>
+      <div style={{ background: c.bg, padding: '8px 12px' }}>
+        {children}
+      </div>
     </div>
-  )
-}
-
-function ChevronIcon({ open }: { open: boolean }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18">
-      <circle cx="9" cy="9" r="8" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
-      {open ? (
-        <path d="M5.5 11 L9 7 L12.5 11" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      ) : (
-        <path d="M5.5 7 L9 11 L12.5 7" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      )}
-    </svg>
   )
 }
 
@@ -406,7 +385,7 @@ export function MyComputerApp() {
           display: 'flex',
           alignItems: 'center',
           gap: 2,
-          padding: '2px 4px',
+          padding: '4px 4px',
           background: 'linear-gradient(to bottom, #F6F8FB, #E8ECF4)',
           borderBottom: '1px solid #ACA899',
           fontSize: 11,
@@ -414,20 +393,20 @@ export function MyComputerApp() {
         }}
       >
         <ToolbarButton label="Back" disabled>
-          <NavArrow direction="left" />
+          <img src="/xp-icons/Back.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
         <ToolbarButton disabled>
-          <NavArrow direction="right" />
+          <img src="/xp-icons/Forward.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
         <ToolbarButton>
-          <NavArrow direction="up" />
+          <img src="/xp-icons/Up.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
         <div style={{ width: 1, height: 22, background: '#ACA899', margin: '0 4px' }} />
         <ToolbarButton label="Search">
-          <img src="/apps/system-search.png" alt="" style={{ width: 20, height: 20 }} />
+          <img src="/xp-icons/Search.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
         <ToolbarButton label="Folders">
-          <img src="/places/folder.png" alt="" style={{ width: 20, height: 20 }} />
+          <img src="/xp-icons/FolderView.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
       </div>
 
@@ -602,16 +581,6 @@ export function MyComputerApp() {
   )
 }
 
-function NavArrow({ direction }: { direction: 'left' | 'right' | 'up' }) {
-  const rotation = direction === 'left' ? '90deg' : direction === 'right' ? '-90deg' : '0deg'
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" style={{ transform: `rotate(${rotation})` }}>
-      <circle cx="10" cy="10" r="9" fill="#3C8A3F" stroke="#2D6B2F" strokeWidth="1" />
-      <path d="M6 12 L10 6 L14 12" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 function ToolbarButton({
   label,
   disabled,
@@ -639,6 +608,10 @@ function ToolbarButton({
         fontSize: 11,
         fontFamily: 'Tahoma, Verdana, Arial, sans-serif',
         color: '#000',
+        boxShadow: 'none',
+        outline: 'none',
+        minWidth: 0,
+        minHeight: 0,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
