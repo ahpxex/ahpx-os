@@ -165,3 +165,50 @@ textarea,
 .xp-icon-selected img {
   filter: brightness(0.6) sepia(1) saturate(5) hue-rotate(200deg);
 }
+
+/* Windows XP Context Menu */
+.xp-context-menu {
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid #808080;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.25);
+  padding: 2px 0;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+}
+
+.xp-context-divider {
+  height: 0;
+  margin: 3px 2px;
+  border-top: 1px solid #c0c0c0;
+  border-bottom: 1px solid #fff;
+}
+
+.xp-context-item {
+  display: flex;
+  align-items: center;
+  padding: 3px 22px 3px 28px;
+  cursor: default;
+  position: relative;
+  white-space: nowrap;
+  color: #000;
+}
+
+.xp-context-item:hover:not(.disabled) {
+  background: #316ac5;
+  color: #fff;
+}
+
+.xp-context-item.disabled {
+  color: #808080;
+}
+
+.xp-context-item-label {
+  flex: 1;
+}
+
+.xp-context-item-arrow {
+  margin-left: 12px;
+  font-size: 8px;
+  line-height: 1;
+}

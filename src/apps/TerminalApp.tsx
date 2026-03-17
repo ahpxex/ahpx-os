@@ -13,7 +13,7 @@ interface TerminalState {
 
 const PROMPT = 'C:\\Users\\AHpx>'
 
-const WELCOME = `Microsoft Windows XP [Version 5.1.2600]
+const WELCOME = `Microsoft Aindows XP [Version 5.1.2600]
 (C) Copyright 1985-2001 Microsoft Corp.`
 
 const COMMANDS: Record<string, string | (() => string)> = {
@@ -30,7 +30,7 @@ const COMMANDS: Record<string, string | (() => string)> = {
   skills: 'TypeScript, React, Node.js, Python, Go, PostgreSQL, Docker',
   contact: `Email: hello@ahpx.dev
 GitHub: github.com/ahpx`,
-  projects: `1. ahpx-os - Web-based OS interface
+  projects: `1. aindows-xp - Web-based OS interface
 2. Project Two - Description here
 3. Project Three - Description here`,
   whoami: () => 'Guest',

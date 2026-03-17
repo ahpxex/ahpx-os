@@ -106,7 +106,7 @@ const DEFAULT_SYSTEM_INFO: SystemInfo = {
   created_at: '2026-03-17T00:00:00.000Z',
   updated_at: '2026-03-17T00:00:00.000Z',
   version: 'local-browser-store',
-  name: 'ahpx-os',
+  name: 'aindows-xp',
   description: 'A frontend-only build with browser storage for profiles.',
   wallpaper: '/xp.png',
   theme: { accent: 'xp-blue', mode: 'light' },

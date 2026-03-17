@@ -110,7 +110,7 @@ export function Taskbar() {
       {isStartOpen && (
         <div ref={startMenuRef} className="window absolute bottom-full left-0 z-[3000] mb-1 w-72">
           <div className="title-bar">
-            <div className="title-bar-text">ahpx-os</div>
+            <div className="title-bar-text">Aindows XP</div>
           </div>
           <div className="window-body">
             {startMenuItems.map((item, index) =>

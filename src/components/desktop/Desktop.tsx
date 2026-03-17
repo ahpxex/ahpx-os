@@ -160,10 +160,51 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   const contextMenuItems = useMemo<ContextMenuItem[]>(() => {
     return [
       {
+        label: 'Arrange Icons By',
+        onClick: () => {},
+        children: [
+          { label: 'Name', onClick: () => {} },
+          { label: 'Size', onClick: () => {} },
+          { label: 'Type', onClick: () => {} },
+          { label: 'Modified', onClick: () => {} },
+          { divider: true },
+          { label: 'Auto Arrange', onClick: () => {}, disabled: true },
+          { label: 'Align to Grid', onClick: () => {}, disabled: true },
+        ],
+      },
+      {
         label: 'Refresh',
         onClick: () => {
           window.location.reload()
         },
+      },
+      { divider: true },
+      {
+        label: 'Paste',
+        onClick: () => {},
+        disabled: true,
+      },
+      {
+        label: 'Paste Shortcut',
+        onClick: () => {},
+        disabled: true,
+      },
+      { divider: true },
+      {
+        label: 'New',
+        onClick: () => {},
+        children: [
+          { label: 'Folder', onClick: () => {}, disabled: true },
+          { label: 'Shortcut', onClick: () => {}, disabled: true },
+          { divider: true },
+          { label: 'Text Document', onClick: () => {}, disabled: true },
+        ],
+      },
+      { divider: true },
+      {
+        label: 'Properties',
+        onClick: () => {},
+        disabled: true,
       },
     ]
   }, [])

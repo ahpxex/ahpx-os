@@ -454,7 +454,7 @@ export function MyComputerApp() {
             items: [
               { label: 'Help and Support Center', disabled: true },
               { divider: true, label: '' },
-              { label: 'About ahpx-os', onClick: () => openApp('clock') },
+              { label: 'About Aindows XP', onClick: () => openApp('clock') },
             ],
           },
         ]}
@@ -583,7 +583,7 @@ export function MyComputerApp() {
           <TaskPanel title="Details" color="blue">
             <div style={{ fontSize: 11, fontFamily: 'Tahoma, Verdana, Arial, sans-serif', color: '#000' }}>
               <div style={{ marginBottom: 6 }}>
-                <strong>ahpx-os</strong>
+                <strong>Aindows XP</strong>
               </div>
               <div style={{ color: '#444', lineHeight: 1.5 }}>
                 Web OS interface running in the browser. Built with React + Vite.
