@@ -304,7 +304,7 @@ function SectionHeader({ title }: { title: string }) {
 export function MyComputerApp() {
   const openWindow = useSetAtom(openWindowAtom)
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
-  const [currentPath, setCurrentPath] = useState<'root' | 'my-products'>('root')
+  const [currentPath, setCurrentPath] = useState<'root' | 'my-products' | 'weekly-projects'>('root')
 
   const openApp = useCallback(
     (appId: string) => {
@@ -316,7 +316,7 @@ export function MyComputerApp() {
 
   const clearSelection = () => setSelectedItem(null)
 
-  const navigateTo = (path: 'root' | 'my-products') => {
+  const navigateTo = (path: 'root' | 'my-products' | 'weekly-projects') => {
     setCurrentPath(path)
     setSelectedItem(null)
   }
@@ -447,7 +447,7 @@ export function MyComputerApp() {
           }}
         >
           <img src="/devices/system.png" alt="" style={{ width: 16, height: 16 }} />
-          <span>{currentPath === 'root' ? 'My Computer' : 'My Computer > My Products'}</span>
+          <span>{currentPath === 'root' ? 'My Computer' : currentPath === 'my-products' ? 'My Computer > My Products' : 'My Computer > Weekly Projects'}</span>
         </div>
         <button
           style={{
@@ -561,6 +561,89 @@ export function MyComputerApp() {
                 />
               </div>
             </>
+          ) : currentPath === 'weekly-projects' ? (
+            <>
+              <SectionHeader title="Weekly Projects" />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: 8 }}>
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="01. resume-cli (2026-03-14)"
+                  selected={selectedItem === 'wp-01'}
+                  onSelect={() => setSelectedItem('wp-01')}
+                  href="https://github.com/ahpxex/resume-cli"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="02. llm-evolution (2026-03-05)"
+                  selected={selectedItem === 'wp-02'}
+                  onSelect={() => setSelectedItem('wp-02')}
+                  href="https://github.com/ahpxex/llm-evolution"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="03. resume-native (2026-03-02)"
+                  selected={selectedItem === 'wp-03'}
+                  onSelect={() => setSelectedItem('wp-03')}
+                  href="https://github.com/ahpxex/resume-native"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="04. brick-breaker-customize (2026-02-22)"
+                  selected={selectedItem === 'wp-04'}
+                  onSelect={() => setSelectedItem('wp-04')}
+                  href="https://github.com/ahpxex/brick-breaker-customize"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="05. tools-farm (2026-02-15)"
+                  selected={selectedItem === 'wp-05'}
+                  onSelect={() => setSelectedItem('wp-05')}
+                  href="https://github.com/ahpxex/tools-farm"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="06. jitter-check (2026-02-08)"
+                  selected={selectedItem === 'wp-06'}
+                  onSelect={() => setSelectedItem('wp-06')}
+                  href="https://github.com/ahpxex/jitter-check"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="07. text-slicer (2026-02-01)"
+                  selected={selectedItem === 'wp-07'}
+                  onSelect={() => setSelectedItem('wp-07')}
+                  href="https://github.com/ahpxex/text-slicer"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="08. markdown2pdf (2026-01-24)"
+                  selected={selectedItem === 'wp-08'}
+                  onSelect={() => setSelectedItem('wp-08')}
+                  href="https://github.com/ahpxex/markdown2pdf"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="09. what-movie-2-watch (2026-01-18)"
+                  selected={selectedItem === 'wp-09'}
+                  onSelect={() => setSelectedItem('wp-09')}
+                  href="https://github.com/ahpxex/what-movie-2-watch"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="10. reply-guy-indicator (2026-01-06)"
+                  selected={selectedItem === 'wp-10'}
+                  onSelect={() => setSelectedItem('wp-10')}
+                  href="https://github.com/ahpxex/reply-guy-indicator"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="11. timesense (2026-01-01)"
+                  selected={selectedItem === 'wp-11'}
+                  onSelect={() => setSelectedItem('wp-11')}
+                  href="https://github.com/ahpxex/timesense"
+                />
+              </div>
+            </>
           ) : (
             <>
               <SectionHeader title="Files Stored on This Computer" />
@@ -577,6 +660,7 @@ export function MyComputerApp() {
               label="Weekly Projects"
               selected={selectedItem === 'weekly'}
               onSelect={() => setSelectedItem('weekly')}
+              onOpen={() => navigateTo('weekly-projects')}
             />
             <ExplorerItem
               icon="/places/gnome-fs-network.png"
