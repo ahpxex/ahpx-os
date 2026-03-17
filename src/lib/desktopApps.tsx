@@ -26,7 +26,7 @@ export const desktopApps: WindowConfig[] = [
   {
     id: 'terminal',
     title: 'Command Prompt',
-    icon: '/apps/utilities-terminal.png',
+    icon: '/apps/windows-command-prompt.png',
     component: TerminalApp,
     initialSize: { width: 700, height: 450 },
   },

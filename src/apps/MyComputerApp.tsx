@@ -563,7 +563,7 @@ export function MyComputerApp() {
               onClick={() => openApp('clock')}
             />
             <SidebarLink
-              icon="/apps/utilities-terminal.png"
+              icon="/apps/windows-command-prompt.png"
               label="Open terminal"
               onClick={() => openApp('terminal')}
             />
