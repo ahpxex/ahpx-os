@@ -126,21 +126,21 @@ interface TaskPanelProps {
 
 const panelColors = {
   blue: {
-    header: 'linear-gradient(to right, #2B5EA7, #6BA0E0)',
+    header: 'linear-gradient(to bottom, #728ED9, #4565C4)',
     headerText: '#fff',
-    bg: '#D6DFF7',
-    border: '#85ABE0',
+    bg: 'linear-gradient(to bottom, #C1D0F0, #D8E2F5)',
+    border: '#6F8AD7',
   },
   green: {
-    header: 'linear-gradient(to right, #3C8A3F, #7CC47F)',
+    header: 'linear-gradient(to bottom, #8DB88D, #5A9A5A)',
     headerText: '#fff',
-    bg: '#D6F7D6',
-    border: '#85E085',
+    bg: 'linear-gradient(to bottom, #C1E0C1, #D8F0D8)',
+    border: '#85C085',
   },
   purple: {
-    header: 'linear-gradient(to right, #7B5EA7, #B09CD2)',
+    header: 'linear-gradient(to bottom, #9B86C2, #7B5EA7)',
     headerText: '#fff',
-    bg: '#E8DFF7',
+    bg: 'linear-gradient(to bottom, #D8CDE8, #E8DFF7)',
     border: '#B09CD2',
   },
 }
@@ -152,10 +152,9 @@ function TaskPanel({ title, color, defaultOpen = true, children }: TaskPanelProp
   return (
     <div
       style={{
-        borderRadius: 5,
+        borderRadius: '5px 5px 0 0',
         overflow: 'hidden',
-        border: `1px solid ${c.border}`,
-        marginBottom: 8,
+        marginBottom: 10,
       }}
     >
       <button
@@ -173,17 +172,31 @@ function TaskPanel({ title, color, defaultOpen = true, children }: TaskPanelProp
           fontWeight: 'bold',
           fontSize: 11,
           fontFamily: 'Tahoma, Verdana, Arial, sans-serif',
+          borderRadius: '5px 5px 0 0',
         }}
       >
         <span>{title}</span>
-        <span style={{ fontSize: 10 }}>{open ? '\u25B2' : '\u25BC'}</span>
+        <ChevronIcon open={open} />
       </button>
       {open && (
-        <div style={{ background: c.bg, padding: '8px 10px' }}>
+        <div style={{ background: c.bg, padding: '8px 12px' }}>
           {children}
         </div>
       )}
     </div>
+  )
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18">
+      <circle cx="9" cy="9" r="8" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+      {open ? (
+        <path d="M5.5 11 L9 7 L12.5 11" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      ) : (
+        <path d="M5.5 7 L9 11 L12.5 7" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      )}
+    </svg>
   )
 }
 
@@ -470,8 +483,8 @@ export function MyComputerApp() {
           style={{
             width: 200,
             minWidth: 200,
-            background: 'linear-gradient(to bottom, #6B89D4, #3C6ECF)',
-            padding: 8,
+            background: 'linear-gradient(to bottom, #7889f7, #4758cd)',
+            padding: 10,
             overflowY: 'auto',
           }}
         >
