@@ -375,7 +375,7 @@ function ExplorerListView({
 export function MyComputerApp() {
   const openWindow = useSetAtom(openWindowAtom)
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
-  const [currentPath, setCurrentPath] = useState<'root' | 'my-products' | 'weekly-projects'>('root')
+  const [currentPath, setCurrentPath] = useState<'root' | 'my-products' | 'weekly-projects' | 'open-source-projects'>('root')
 
   const openApp = useCallback(
     (appId: string) => {
@@ -387,7 +387,7 @@ export function MyComputerApp() {
 
   const clearSelection = () => setSelectedItem(null)
 
-  const navigateTo = (path: 'root' | 'my-products' | 'weekly-projects') => {
+  const navigateTo = (path: 'root' | 'my-products' | 'weekly-projects' | 'open-source-projects') => {
     setCurrentPath(path)
     setSelectedItem(null)
   }
@@ -518,7 +518,15 @@ export function MyComputerApp() {
           }}
         >
           <img src="/devices/system.png" alt="" style={{ width: 16, height: 16 }} />
-          <span>{currentPath === 'root' ? 'My Computer' : currentPath === 'my-products' ? 'My Computer > My Products' : 'My Computer > Weekly Projects'}</span>
+          <span>
+            {currentPath === 'root'
+              ? 'My Computer'
+              : currentPath === 'my-products'
+                ? 'My Computer > My Products'
+                : currentPath === 'weekly-projects'
+                  ? 'My Computer > Weekly Projects'
+                  : 'My Computer > Open Source Projects'}
+          </span>
         </div>
         <button
           style={{
@@ -632,6 +640,26 @@ export function MyComputerApp() {
                 />
               </div>
             </>
+          ) : currentPath === 'open-source-projects' ? (
+            <>
+              <SectionHeader title="Open Source Projects" />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: 8 }}>
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="open-dictionary"
+                  selected={selectedItem === 'open-dictionary'}
+                  onSelect={() => setSelectedItem('open-dictionary')}
+                  href="https://github.com/ahpxex/open-dictionary"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="Aictionary"
+                  selected={selectedItem === 'aictionary'}
+                  onSelect={() => setSelectedItem('aictionary')}
+                  href="https://github.com/ahpxex/Aictionary"
+                />
+              </div>
+            </>
           ) : currentPath === 'weekly-projects' ? (
             <ExplorerListView
                 selectedItem={selectedItem}
@@ -661,6 +689,7 @@ export function MyComputerApp() {
               label="Open Source Projects"
               selected={selectedItem === 'oss'}
               onSelect={() => setSelectedItem('oss')}
+              onOpen={() => navigateTo('open-source-projects')}
             />
           </div>
 
