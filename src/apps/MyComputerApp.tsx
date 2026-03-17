@@ -226,57 +226,55 @@ function SidebarLink({ icon, label, onClick, href }: SidebarLinkProps) {
 interface ExplorerItemProps {
   icon: string
   label: string
-  onClick?: () => void
+  selected?: boolean
+  onSelect?: () => void
+  onOpen?: () => void
   href?: string
 }
 
-function ExplorerItem({ icon, label, onClick, href }: ExplorerItemProps) {
-  const [hovered, setHovered] = useState(false)
+function ExplorerItem({ icon, label, selected, onSelect, onOpen, href }: ExplorerItemProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onSelect?.()
+  }
 
-  const inner = (
+  const handleDoubleClick = () => {
+    if (href) {
+      window.open(href, '_blank', 'noopener,noreferrer')
+    } else {
+      onOpen?.()
+    }
+  }
+
+  return (
     <div
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: 10,
         padding: '4px 8px',
-        borderRadius: 3,
-        cursor: 'pointer',
-        background: hovered ? '#E8E8E8' : 'transparent',
+        cursor: 'default',
         minWidth: 180,
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
     >
-      <img src={icon} alt="" style={{ width: 48, height: 48 }} />
+      <div className={selected ? 'xp-icon-selected' : ''}>
+        <img src={icon} alt="" style={{ width: 48, height: 48 }} draggable={false} />
+      </div>
       <span
         style={{
           fontSize: 11,
           fontFamily: 'Tahoma, Verdana, Arial, sans-serif',
-          color: href ? '#1555B0' : '#000',
-          textDecoration: href && hovered ? 'underline' : 'none',
+          color: selected ? '#fff' : '#000',
+          background: selected ? '#2b60f6' : 'transparent',
+          padding: '1px 2px',
         }}
       >
         {label}
       </span>
     </div>
   )
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ textDecoration: 'none' }}
-        onClick={onClick}
-      >
-        {inner}
-      </a>
-    )
-  }
-
-  return <div onClick={onClick}>{inner}</div>
 }
 
 function SectionHeader({ title }: { title: string }) {
@@ -305,6 +303,7 @@ function SectionHeader({ title }: { title: string }) {
 
 export function MyComputerApp() {
   const openWindow = useSetAtom(openWindowAtom)
+  const [selectedItem, setSelectedItem] = useState<string | null>(null)
 
   const openApp = useCallback(
     (appId: string) => {
@@ -314,8 +313,13 @@ export function MyComputerApp() {
     [openWindow]
   )
 
+  const clearSelection = () => setSelectedItem(null)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff' }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff' }}
+      onClick={clearSelection}
+    >
       {/* Menu bar */}
       <MenuBar
         menus={[
@@ -529,12 +533,16 @@ export function MyComputerApp() {
             <ExplorerItem
               icon="/places/folder-documents.png"
               label="Shared Documents"
-              onClick={() => openApp('blogs')}
+              selected={selectedItem === 'shared-docs'}
+              onSelect={() => setSelectedItem('shared-docs')}
+              onOpen={() => openApp('blogs')}
             />
             <ExplorerItem
               icon="/places/folder_home.png"
               label="User's Documents"
-              onClick={() => openApp('profile-ahpx')}
+              selected={selectedItem === 'user-docs'}
+              onSelect={() => setSelectedItem('user-docs')}
+              onOpen={() => openApp('profile-ahpx')}
             />
           </div>
 
@@ -543,6 +551,8 @@ export function MyComputerApp() {
             <ExplorerItem
               icon="/devices/gnome-dev-harddisk.png"
               label="Local Disk (C:)"
+              selected={selectedItem === 'disk-c'}
+              onSelect={() => setSelectedItem('disk-c')}
             />
           </div>
 
@@ -551,6 +561,8 @@ export function MyComputerApp() {
             <ExplorerItem
               icon="/devices/drive-optical.png"
               label="CD Drive (D:)"
+              selected={selectedItem === 'cd-drive'}
+              onSelect={() => setSelectedItem('cd-drive')}
             />
           </div>
 
@@ -567,11 +579,15 @@ export function MyComputerApp() {
             <ExplorerItem
               icon="/places/gnome-fs-web.png"
               label="GitHub"
+              selected={selectedItem === 'github'}
+              onSelect={() => setSelectedItem('github')}
               href="https://github.com/ahpx"
             />
             <ExplorerItem
               icon="/places/user-home.png"
               label="My Website"
+              selected={selectedItem === 'website'}
+              onSelect={() => setSelectedItem('website')}
               href="https://ahpx.dev"
             />
           </div>
