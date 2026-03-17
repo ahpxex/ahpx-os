@@ -13,20 +13,13 @@ export const StartButton = forwardRef<HTMLButtonElement, StartButtonProps>(funct
     <button
       ref={ref}
       type="button"
+      aria-label="Start"
       aria-haspopup="menu"
       aria-expanded={isOpen}
-      className={`xp-reset-button xp-start-button-luna min-h-0 min-w-0 m-0 flex h-full w-[96px] items-center justify-start rounded-r-[6px] rounded-l-none border border-black/35 border-l-0 p-0 text-white hover:brightness-[1.03] active:brightness-[0.98] ${className}`}
+      className={`xp-reset-button xp-start-button-luna min-h-0 min-w-0 m-0 flex h-full w-[96px] items-center justify-start rounded-r-[6px] rounded-l-none p-0 text-white ${className}`}
       {...props}
     >
-      <div className="flex items-center gap-1 pl-2 pr-4">
-        <img src="/places/distributor-logo.png" alt="" className="h-5 w-5" draggable={false} />
-        <span
-          className="text-[13px] font-bold italic leading-none tracking-wide"
-          style={{ textShadow: '1px 1px 0 rgba(0, 0, 0, 0.45)' }}
-        >
-          start
-        </span>
-      </div>
+      <span className="sr-only">Start</span>
     </button>
   )
 })
