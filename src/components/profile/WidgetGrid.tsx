@@ -1,7 +1,8 @@
-import { useMemo, useRef, useCallback, useState } from 'react'
+import { useMemo, useRef, useCallback } from 'react'
 import ReactGridLayout, { useContainerWidth, getCompactor } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import type { Widget, ProfileLayout } from '@/types/profile'
 import { TextWidget, ImageWidget, LinkButtonWidget, WidgetWrapper } from './widgets'
 
@@ -24,7 +25,6 @@ interface WidgetGridProps {
   onWidgetDelete?: (widgetId: string) => void
 }
 
-// Check if two layout items overlap
 function itemsOverlap(a: LayoutItem, b: LayoutItem): boolean {
   return !(
     a.x + a.w <= b.x ||
@@ -34,17 +34,13 @@ function itemsOverlap(a: LayoutItem, b: LayoutItem): boolean {
   )
 }
 
-// Calculate displacement based on drag direction
 function calculateDisplacement(
   draggedItem: LayoutItem,
   targetItem: LayoutItem,
   dragStartPos: { x: number; y: number }
 ): { x: number; y: number } {
-  // Direction vector from dragged item's start to current position
   const dragDirX = draggedItem.x - dragStartPos.x
   const dragDirY = draggedItem.y - dragStartPos.y
-
-  // Determine primary direction based on drag movement
   const absDirX = Math.abs(dragDirX)
   const absDirY = Math.abs(dragDirY)
 
@@ -52,26 +48,11 @@ function calculateDisplacement(
   let newY = targetItem.y
 
   if (absDirX > absDirY) {
-    // Horizontal drag - push left or right
-    if (dragDirX > 0) {
-      // Dragging right, push target right
-      newX = draggedItem.x + draggedItem.w
-    } else {
-      // Dragging left, push target left
-      newX = draggedItem.x - targetItem.w
-    }
+    newX = dragDirX > 0 ? draggedItem.x + draggedItem.w : draggedItem.x - targetItem.w
   } else {
-    // Vertical drag - push up or down
-    if (dragDirY > 0) {
-      // Dragging down, push target down
-      newY = draggedItem.y + draggedItem.h
-    } else {
-      // Dragging up, push target up
-      newY = draggedItem.y - targetItem.h
-    }
+    newY = dragDirY > 0 ? draggedItem.y + draggedItem.h : draggedItem.y - targetItem.h
   }
 
-  // Ensure non-negative positions
   return {
     x: Math.max(0, newX),
     y: Math.max(0, newY),
@@ -86,7 +67,6 @@ interface DragState {
   displacedToPos: { x: number; y: number } | null
 }
 
-// Compactor that prevents all collision handling - we'll do it ourselves
 const freePositionCompactor = getCompactor(null, true, true)
 
 export function WidgetGrid({
@@ -99,18 +79,11 @@ export function WidgetGrid({
 }: WidgetGridProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { width, containerRef, mounted } = useContainerWidth() as any
-
-  // Track drag state for live swap preview
   const dragState = useRef<DragState | null>(null)
-
-  // Delay timer for displacement (prevents accidental swaps when passing over)
   const displacementTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingCollisionId = useRef<string | null>(null)
-
-  // Preview layout during drag (shows displaced items in real-time)
-  const [previewLayout, setPreviewLayout] = useState<LayoutItem[] | null>(null)
-
-  // Delay in ms before displacement triggers (adjust as needed)
+  const currentDraggedItem = useRef<LayoutItem | null>(null)
+  const [previewLayout, setPreviewLayout] = useLocalAtom<LayoutItem[] | null>(() => null, [])
   const DISPLACEMENT_DELAY = 2000
 
   const baseLayout = useMemo(
@@ -127,10 +100,8 @@ export function WidgetGrid({
     [widgets]
   )
 
-  // Use preview layout during drag, otherwise use base layout
   const gridLayout = previewLayout || baseLayout
 
-  // Handle drag start - store all original positions
   const handleDragStart = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_layout: any, oldItem: any) => {
@@ -150,18 +121,12 @@ export function WidgetGrid({
     [baseLayout]
   )
 
-  // Track current dragged item for building preview
-  const currentDraggedItem = useRef<LayoutItem | null>(null)
-
-  // Handle drag - live preview of displacement with delay
   const handleDrag = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_currentLayout: any, _oldItem: any, newItem: any) => {
       if (!dragState.current) return
 
       const state = dragState.current
-
-      // Build current dragged item
       const draggedItemBase = baseLayout.find((item) => item.i === state.draggedId)
       if (!draggedItemBase) return
 
@@ -172,24 +137,28 @@ export function WidgetGrid({
       }
       currentDraggedItem.current = draggedItem
 
-      // Find collision with any other item at their original positions
       let collidingItem: LayoutItem | null = null
       for (const item of baseLayout) {
-        if (item.i !== state.draggedId) {
-          const origPos = state.originalPositions.get(item.i)!
-          const itemAtOriginal: LayoutItem = { ...item, x: origPos.x, y: origPos.y }
-          if (itemsOverlap(draggedItem, itemAtOriginal)) {
-            collidingItem = itemAtOriginal
-            break
-          }
+        if (item.i === state.draggedId) continue
+
+        const originalPosition = state.originalPositions.get(item.i)
+        if (!originalPosition) continue
+
+        const itemAtOriginal: LayoutItem = {
+          ...item,
+          x: originalPosition.x,
+          y: originalPosition.y,
+        }
+
+        if (itemsOverlap(draggedItem, itemAtOriginal)) {
+          collidingItem = itemAtOriginal
+          break
         }
       }
 
       const collidingId = collidingItem?.i || null
 
-      // Check if collision target changed
       if (collidingId !== pendingCollisionId.current) {
-        // Clear any existing timer
         if (displacementTimer.current) {
           clearTimeout(displacementTimer.current)
           displacementTimer.current = null
@@ -198,17 +167,18 @@ export function WidgetGrid({
         pendingCollisionId.current = collidingId
 
         if (collidingId === null) {
-          // Moved away - immediately revert
           if (state.currentlyDisplacedId !== null) {
             state.currentlyDisplacedId = null
             state.displacedToPos = null
           }
         } else if (collidingId !== state.currentlyDisplacedId) {
-          // Start delay timer for new collision
           const targetItem = collidingItem!
           displacementTimer.current = setTimeout(() => {
-            if (dragState.current && pendingCollisionId.current === collidingId && currentDraggedItem.current) {
-              // Calculate displacement based on drag direction
+            if (
+              dragState.current &&
+              pendingCollisionId.current === collidingId &&
+              currentDraggedItem.current
+            ) {
               const displacedPos = calculateDisplacement(
                 currentDraggedItem.current,
                 targetItem,
@@ -216,7 +186,6 @@ export function WidgetGrid({
               )
               dragState.current.currentlyDisplacedId = collidingId
               dragState.current.displacedToPos = displacedPos
-              // Force re-render
               setPreviewLayout([])
             }
             displacementTimer.current = null
@@ -224,26 +193,28 @@ export function WidgetGrid({
         }
       }
 
-      // Build preview layout
-      const preview = baseLayout.map((item) => {
+      const nextPreview = baseLayout.map((item) => {
         if (item.i === state.draggedId) {
           return { ...item, x: newItem.x, y: newItem.y }
         }
-        if (state.currentlyDisplacedId && item.i === state.currentlyDisplacedId && state.displacedToPos) {
+        if (
+          state.currentlyDisplacedId &&
+          item.i === state.currentlyDisplacedId &&
+          state.displacedToPos
+        ) {
           return { ...item, ...state.displacedToPos }
         }
         return item
       })
-      setPreviewLayout(preview)
+
+      setPreviewLayout(nextPreview)
     },
-    [baseLayout, DISPLACEMENT_DELAY]
+    [DISPLACEMENT_DELAY, baseLayout, setPreviewLayout]
   )
 
-  // Handle drag stop - commit the layout
   const handleDragStop = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_currentLayout: any, _oldItem: any, newItem: any) => {
-      // Clear timer
       if (displacementTimer.current) {
         clearTimeout(displacementTimer.current)
         displacementTimer.current = null
@@ -254,13 +225,15 @@ export function WidgetGrid({
       if (!dragState.current) return
 
       const state = dragState.current
-
-      // Build final layout
       const finalLayout = baseLayout.map((item) => {
         if (item.i === state.draggedId) {
           return { ...item, x: newItem.x, y: newItem.y }
         }
-        if (state.currentlyDisplacedId && item.i === state.currentlyDisplacedId && state.displacedToPos) {
+        if (
+          state.currentlyDisplacedId &&
+          item.i === state.currentlyDisplacedId &&
+          state.displacedToPos
+        ) {
           return { ...item, ...state.displacedToPos }
         }
         return item
@@ -270,10 +243,9 @@ export function WidgetGrid({
       dragState.current = null
       setPreviewLayout(null)
     },
-    [onLayoutChange, baseLayout]
+    [baseLayout, onLayoutChange, setPreviewLayout]
   )
 
-  // Ignore layout changes from grid during drag
   const handleLayoutChange = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (newLayout: any) => {
@@ -291,9 +263,7 @@ export function WidgetGrid({
           <TextWidget
             widget={widget}
             isEditing={isEditing}
-            onContentChange={(content) =>
-              onWidgetUpdate?.(widget.id, { content } as Partial<Widget>)
-            }
+            onContentChange={(content) => onWidgetUpdate?.(widget.id, { content } as Partial<Widget>)}
           />
         )
       case 'image':
@@ -301,9 +271,7 @@ export function WidgetGrid({
           <ImageWidget
             widget={widget}
             isEditing={isEditing}
-            onUrlChange={(url) =>
-              onWidgetUpdate?.(widget.id, { url } as Partial<Widget>)
-            }
+            onUrlChange={(url) => onWidgetUpdate?.(widget.id, { url } as Partial<Widget>)}
           />
         )
       case 'link-button':
@@ -311,12 +279,8 @@ export function WidgetGrid({
           <LinkButtonWidget
             widget={widget}
             isEditing={isEditing}
-            onLabelChange={(label) =>
-              onWidgetUpdate?.(widget.id, { label } as Partial<Widget>)
-            }
-            onUrlChange={(url) =>
-              onWidgetUpdate?.(widget.id, { url } as Partial<Widget>)
-            }
+            onLabelChange={(label) => onWidgetUpdate?.(widget.id, { label } as Partial<Widget>)}
+            onUrlChange={(url) => onWidgetUpdate?.(widget.id, { url } as Partial<Widget>)}
           />
         )
       default:
@@ -325,11 +289,7 @@ export function WidgetGrid({
   }
 
   if (widgets.length === 0 && !isEditing) {
-    return (
-      <div className="flex h-32 items-center justify-center text-gray-400">
-        No widgets yet
-      </div>
-    )
+    return <div className="flex h-32 items-center justify-center text-gray-400">No widgets yet</div>
   }
 
   return (
@@ -339,7 +299,12 @@ export function WidgetGrid({
           className="layout"
           layout={gridLayout}
           width={width}
-          gridConfig={{ cols: layout.columns, rowHeight: layout.rowHeight, margin: [8, 8], containerPadding: [0, 0] }}
+          gridConfig={{
+            cols: layout.columns,
+            rowHeight: layout.rowHeight,
+            margin: [8, 8],
+            containerPadding: [0, 0],
+          }}
           dragConfig={{ enabled: isEditing, handle: '.widget-drag-handle' }}
           resizeConfig={{ enabled: isEditing }}
           onLayoutChange={handleLayoutChange}

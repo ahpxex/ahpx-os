@@ -1,47 +1,72 @@
-import { useState } from 'react'
 import { useSetAtom } from 'jotai'
 import { createProfileAtom } from '@/store/profileActions'
 import { useOS } from '@/hooks/useOS'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 const DEFAULT_ICON = '/apps/vcard.png'
 
+interface NewProfileDraft {
+  name: string
+  slug: string
+  icon: string
+  saving: boolean
+  error: string | null
+}
+
 export function NewProfileApp() {
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
-  const [icon, setIcon] = useState(DEFAULT_ICON)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [draft, setDraft] = useLocalAtom<NewProfileDraft>(
+    () => ({
+      name: '',
+      slug: '',
+      icon: DEFAULT_ICON,
+      saving: false,
+      error: null,
+    }),
+    []
+  )
 
   const createProfile = useSetAtom(createProfileAtom)
   const { closeWindow } = useOS()
+  const { name, slug, icon, saving, error } = draft
+
+  const updateDraft = (updates: Partial<NewProfileDraft>) => {
+    setDraft((prev) => ({ ...prev, ...updates }))
+  }
 
   const handleNameChange = (value: string) => {
-    setName(value)
-    if (!slug || slug === name.toLowerCase().replace(/\s+/g, '-')) {
-      setSlug(value.toLowerCase().replace(/\s+/g, '-'))
-    }
+    setDraft((prev) => {
+      const previousAutoSlug = prev.name.toLowerCase().replace(/\s+/g, '-')
+      return {
+        ...prev,
+        name: value,
+        slug:
+          !prev.slug || prev.slug === previousAutoSlug
+            ? value.toLowerCase().replace(/\s+/g, '-')
+            : prev.slug,
+      }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
+    updateDraft({ error: null })
 
     if (!name.trim()) {
-      setError('Name is required')
+      updateDraft({ error: 'Name is required' })
       return
     }
 
     if (!slug.trim()) {
-      setError('Slug is required')
+      updateDraft({ error: 'Slug is required' })
       return
     }
 
     if (!/^[a-z0-9-]+$/.test(slug)) {
-      setError('Slug can only contain lowercase letters, numbers, and hyphens')
+      updateDraft({ error: 'Slug can only contain lowercase letters, numbers, and hyphens' })
       return
     }
 
-    setSaving(true)
+    updateDraft({ saving: true })
 
     try {
       await createProfile({
@@ -53,9 +78,11 @@ export function NewProfileApp() {
       closeWindow('new-profile')
     } catch (err) {
       console.error('Failed to create profile:', err)
-      setError(err instanceof Error ? err.message : 'Failed to create profile')
+      updateDraft({
+        error: err instanceof Error ? err.message : 'Failed to create profile',
+      })
     } finally {
-      setSaving(false)
+      updateDraft({ saving: false })
     }
   }
 
@@ -97,7 +124,7 @@ export function NewProfileApp() {
             id="slug"
             type="text"
             value={slug}
-            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+            onChange={(e) => updateDraft({ slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
             placeholder="e.g., john-doe"
             className="w-full border border-[var(--color-border)] px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />
@@ -113,7 +140,7 @@ export function NewProfileApp() {
               <button
                 key={option.value}
                 type="button"
-                onClick={() => setIcon(option.value)}
+                onClick={() => updateDraft({ icon: option.value })}
                 className={`flex h-10 w-10 min-h-0 min-w-0 items-center justify-center border p-0 shadow-none ${
                   icon === option.value
                     ? 'border-[var(--color-primary)] bg-[var(--color-primary-bg)]'

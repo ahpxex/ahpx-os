@@ -1,11 +1,16 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useCallback, type ReactNode } from 'react'
 import { Dialog, type DialogAction } from '@/components/common/Dialog'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 interface DialogOptions {
   title: string
   message: string
   actions?: DialogAction[]
+}
+
+interface ManagedDialog extends DialogOptions {
+  resolve?: (value: boolean) => void
 }
 
 interface DialogContextValue {
@@ -21,62 +26,71 @@ interface DialogProviderProps {
 }
 
 export function DialogProvider({ children }: DialogProviderProps) {
-  const [dialog, setDialog] = useState<(DialogOptions & { resolve?: (value: boolean) => void }) | null>(null)
+  const [dialog, setDialog] = useLocalAtom<ManagedDialog | null>(() => null, [])
 
   const closeDialog = useCallback(() => {
     setDialog(null)
-  }, [])
+  }, [setDialog])
 
-  const showDialog = useCallback((options: DialogOptions) => {
-    setDialog(options)
-  }, [])
+  const showDialog = useCallback(
+    (options: DialogOptions) => {
+      setDialog(options)
+    },
+    [setDialog]
+  )
 
-  const confirm = useCallback((title: string, message: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setDialog({
-        title,
-        message,
-        resolve,
-        actions: [
-          {
-            label: 'Cancel',
-            variant: 'secondary',
-            onClick: () => {
-              resolve(false)
-              closeDialog()
+  const confirm = useCallback(
+    (title: string, message: string): Promise<boolean> => {
+      return new Promise((resolve) => {
+        setDialog({
+          title,
+          message,
+          resolve,
+          actions: [
+            {
+              label: 'Cancel',
+              variant: 'secondary',
+              onClick: () => {
+                resolve(false)
+                closeDialog()
+              },
             },
-          },
-          {
-            label: 'Confirm',
-            variant: 'danger',
-            onClick: () => {
-              resolve(true)
-              closeDialog()
+            {
+              label: 'Confirm',
+              variant: 'danger',
+              onClick: () => {
+                resolve(true)
+                closeDialog()
+              },
             },
-          },
-        ],
+          ],
+        })
       })
-    })
-  }, [closeDialog])
+    },
+    [closeDialog, setDialog]
+  )
 
-  const alert = useCallback((title: string, message: string): Promise<void> => {
-    return new Promise((resolve) => {
-      setDialog({
-        title,
-        message,
-        actions: [
-          {
-            label: 'OK',
-            variant: 'primary',
-            onClick: () => {
-              resolve()
-              closeDialog()
+  const alert = useCallback(
+    (title: string, message: string): Promise<void> => {
+      return new Promise((resolve) => {
+        setDialog({
+          title,
+          message,
+          actions: [
+            {
+              label: 'OK',
+              variant: 'primary',
+              onClick: () => {
+                resolve()
+                closeDialog()
+              },
             },
-          },
-        ],
+          ],
+        })
       })
-    })
-  }, [closeDialog])
+    },
+    [closeDialog, setDialog]
+  )
 
   const handleClose = useCallback(() => {
     if (dialog?.resolve) {

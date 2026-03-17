@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useCallback, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { ContextMenu } from '@/components/desktop/ContextMenu'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 export interface ContextMenuItem {
   label: string
@@ -22,42 +23,52 @@ interface WindowContextMenuProviderProps {
 }
 
 export function WindowContextMenuProvider({ children }: WindowContextMenuProviderProps) {
-  const [menuItems, setMenuItems] = useState<ContextMenuItem[]>([])
-  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
+  const [menuItems, setMenuItems] = useLocalAtom<ContextMenuItem[]>(() => [], [])
+  const [menuPosition, setMenuPosition] = useLocalAtom<{ x: number; y: number } | null>(
+    () => null,
+    []
+  )
 
-  const setContextMenuItems = useCallback((items: ContextMenuItem[]) => {
-    setMenuItems(items)
-  }, [])
+  const setContextMenuItems = useCallback(
+    (items: ContextMenuItem[]) => {
+      setMenuItems(items)
+    },
+    [setMenuItems]
+  )
 
   const clearContextMenuItems = useCallback(() => {
     setMenuItems([])
-  }, [])
+  }, [setMenuItems])
 
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    if (menuItems.length === 0) return
-    e.preventDefault()
-    e.stopPropagation()
-    setMenuPosition({ x: e.clientX, y: e.clientY })
-  }, [menuItems])
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (menuItems.length === 0) return
+      e.preventDefault()
+      e.stopPropagation()
+      setMenuPosition({ x: e.clientX, y: e.clientY })
+    },
+    [menuItems.length, setMenuPosition]
+  )
 
   const closeMenu = useCallback(() => {
     setMenuPosition(null)
-  }, [])
+  }, [setMenuPosition])
 
   return (
     <WindowContextMenuContext.Provider value={{ setContextMenuItems, clearContextMenuItems }}>
       <div className="h-full" onContextMenu={handleContextMenu}>
         {children}
       </div>
-      {menuPosition && menuItems.length > 0 && createPortal(
-        <ContextMenu
-          x={menuPosition.x}
-          y={menuPosition.y}
-          items={menuItems}
-          onClose={closeMenu}
-        />,
-        document.body
-      )}
+      {menuPosition && menuItems.length > 0 &&
+        createPortal(
+          <ContextMenu
+            x={menuPosition.x}
+            y={menuPosition.y}
+            items={menuItems}
+            onClose={closeMenu}
+          />,
+          document.body
+        )}
     </WindowContextMenuContext.Provider>
   )
 }

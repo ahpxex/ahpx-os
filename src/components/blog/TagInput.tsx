@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 interface TagInputProps {
   tags: string[]
@@ -7,7 +7,7 @@ interface TagInputProps {
 }
 
 export function TagInput({ tags, onChange, placeholder = 'Add tag...' }: TagInputProps) {
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useLocalAtom(() => '', [])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -18,7 +18,6 @@ export function TagInput({ tags, onChange, placeholder = 'Add tag...' }: TagInpu
       }
       setInputValue('')
     } else if (e.key === 'Backspace' && !inputValue && tags.length > 0) {
-      // Remove last tag on backspace when input is empty
       onChange(tags.slice(0, -1))
     }
   }

@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useSetAtom } from 'jotai'
 import { useNavigate } from '@tanstack/react-router'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { useToast } from '@/contexts/ToastContext'
 import { useDialog } from '@/contexts/DialogContext'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { deleteBlogPostAtom } from '@/store/blogActions'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { BlogPostEditor } from '@/components/blog/BlogPostEditor'
@@ -15,6 +16,14 @@ import { titleToUrl, urlToTitle } from '@/lib/urlHelpers'
 import { format } from 'date-fns'
 import type { BlogPost } from '@/types/database'
 
+interface BlogsAppState {
+  editingPost: BlogPost | null
+  isCreating: boolean
+  viewingPost: BlogPost | null
+  searchQuery: string
+  selectedTag: string | null
+}
+
 export function BlogsApp() {
   const { posts, loading, refetch } = useBlogPosts()
   const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
@@ -22,16 +31,21 @@ export function BlogsApp() {
   const toast = useToast()
   const dialog = useDialog()
   const navigate = useNavigate()
+  const [viewState, setViewState] = useLocalAtom<BlogsAppState>(
+    () => ({
+      editingPost: null,
+      isCreating: false,
+      viewingPost: null,
+      searchQuery: '',
+      selectedTag: null,
+    }),
+    []
+  )
 
-  const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
-  const [isCreating, setIsCreating] = useState(false)
-  const [viewingPost, setViewingPost] = useState<BlogPost | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTag, setSelectedTag] = useState<string | null>(null)
-
+  const { editingPost, isCreating, viewingPost, searchQuery, selectedTag } = viewState
   const scrollRef = useRef<HTMLDivElement>(null)
-
   const initialIdentifier = sessionStorage.getItem('initialPostIdentifier')
+
   const pendingViewingPost = useMemo(() => {
     if (!initialIdentifier || viewingPost) return null
 
@@ -75,7 +89,7 @@ export function BlogsApp() {
       setContextMenuItems([
         {
           label: 'Create Post',
-          onClick: () => setIsCreating(true),
+          onClick: () => setViewState((prev) => ({ ...prev, isCreating: true })),
         },
       ])
     } else {
@@ -85,7 +99,7 @@ export function BlogsApp() {
     return () => {
       clearContextMenuItems()
     }
-  }, [isCreating, editingPost, activeViewingPost, setContextMenuItems, clearContextMenuItems])
+  }, [isCreating, editingPost, activeViewingPost, setContextMenuItems, clearContextMenuItems, setViewState])
 
   const handleOpenPost = (post: BlogPost) => {
     const urlIdentifier = titleToUrl(post.title)
@@ -96,19 +110,14 @@ export function BlogsApp() {
     navigate({ to: '/' })
   }
 
-  if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    )
-  }
-
   const handleEditPost = () => {
-    if (activeViewingPost) {
-      setEditingPost(activeViewingPost)
-      setViewingPost(null)
-    }
+    if (!activeViewingPost) return
+
+    setViewState((prev) => ({
+      ...prev,
+      editingPost: activeViewingPost,
+      viewingPost: null,
+    }))
   }
 
   const handleDeletePost = async () => {
@@ -131,14 +140,22 @@ export function BlogsApp() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
   if (isCreating) {
     return (
       <BlogPostEditor
         onSave={() => {
-          setIsCreating(false)
+          setViewState((prev) => ({ ...prev, isCreating: false }))
           refetch()
         }}
-        onCancel={() => setIsCreating(false)}
+        onCancel={() => setViewState((prev) => ({ ...prev, isCreating: false }))}
       />
     )
   }
@@ -148,10 +165,10 @@ export function BlogsApp() {
       <BlogPostEditor
         post={editingPost}
         onSave={() => {
-          setEditingPost(null)
+          setViewState((prev) => ({ ...prev, editingPost: null }))
           refetch()
         }}
-        onCancel={() => setEditingPost(null)}
+        onCancel={() => setViewState((prev) => ({ ...prev, editingPost: null }))}
       />
     )
   }
@@ -173,7 +190,10 @@ export function BlogsApp() {
       <div className="border-b border-[var(--color-border)] p-4">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-xl font-bold">Blogs</h1>
-          <BlogSearch value={searchQuery} onChange={setSearchQuery} />
+          <BlogSearch
+            value={searchQuery}
+            onChange={(value) => setViewState((prev) => ({ ...prev, searchQuery: value }))}
+          />
         </div>
 
         {allTags.length > 0 && (
@@ -181,7 +201,7 @@ export function BlogsApp() {
             <BlogTagFilter
               tags={allTags}
               selectedTag={selectedTag}
-              onSelectTag={setSelectedTag}
+              onSelectTag={(tag) => setViewState((prev) => ({ ...prev, selectedTag: tag }))}
             />
           </div>
         )}

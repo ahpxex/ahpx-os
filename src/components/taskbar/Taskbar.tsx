@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { WindowState } from '@/types/window'
 import { useOS } from '@/hooks/useOS'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { Clock } from '@/components/topbar/Clock'
 import { StartButton } from './StartButton'
 
@@ -13,17 +14,17 @@ interface StartMenuItem {
 
 export function Taskbar() {
   const { windows, activeWindowId, openWindow, focusWindow, minimizeWindow } = useOS()
-  const [isStartOpen, setIsStartOpen] = useState(false)
+  const [isStartOpen, setIsStartOpen] = useLocalAtom(() => false, [])
   const startButtonRef = useRef<HTMLButtonElement>(null)
   const startMenuRef = useRef<HTMLDivElement>(null)
 
-  const taskbarWindows = useMemo(() => windows.filter((w) => w.isOpen), [windows])
+  const taskbarWindows = useMemo(() => windows.filter((window) => window.isOpen), [windows])
 
   const startMenuItems: StartMenuItem[] = useMemo(
     () => [
       { label: 'About ahpx-os', onClick: () => console.log('About') },
       { divider: true, label: '' },
-      { label: 'Show Desktop', onClick: () => taskbarWindows.forEach((w) => minimizeWindow(w.id)) },
+      { label: 'Show Desktop', onClick: () => taskbarWindows.forEach((window) => minimizeWindow(window.id)) },
       { divider: true, label: '' },
       { label: 'Restart', onClick: () => window.location.reload() },
       { label: 'Shut Down', disabled: true },
@@ -57,7 +58,7 @@ export function Taskbar() {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [isStartOpen])
+  }, [isStartOpen, setIsStartOpen])
 
   const handleTaskClick = useCallback(
     (windowState: WindowState) => {
@@ -88,7 +89,7 @@ export function Taskbar() {
       <StartButton
         ref={startButtonRef}
         isOpen={isStartOpen}
-        onClick={() => setIsStartOpen((v) => !v)}
+        onClick={() => setIsStartOpen((open) => !open)}
       />
 
       {isStartOpen && (
@@ -141,15 +142,8 @@ export function Taskbar() {
               }`}
               title={windowState.title}
             >
-              <img
-                src={windowState.icon}
-                alt=""
-                className="h-4 w-4 shrink-0"
-                draggable={false}
-              />
-              <span className="min-w-0 flex-1 truncate font-medium">
-                {windowState.title}
-              </span>
+              <img src={windowState.icon} alt="" className="h-4 w-4 shrink-0" draggable={false} />
+              <span className="min-w-0 flex-1 truncate font-medium">{windowState.title}</span>
             </button>
           )
         })}

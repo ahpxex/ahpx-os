@@ -1,8 +1,9 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useCallback, useMemo, useRef, useEffect } from 'react'
 import type { ComponentType } from 'react'
 import { LayoutGroup } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
 import { useAllProfiles } from '@/hooks/useAllProfiles'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { DesktopIcon } from './DesktopIcon'
 import { WindowFrame } from '@/components/window/WindowFrame'
 import { ContextMenu } from './ContextMenu'
@@ -69,8 +70,8 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     clearSelectedIcons,
   } = useOS()
   const { profiles } = useAllProfiles()
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
-  const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null)
+  const [contextMenu, setContextMenu] = useLocalAtom<{ x: number; y: number } | null>(() => null, [])
+  const [selectionBox, setSelectionBox] = useLocalAtom<SelectionBox | null>(() => null, [])
   const desktopRef = useRef<HTMLDivElement>(null)
   const hasOpenedInitialApp = useRef(false)
 
@@ -135,12 +136,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         const iconTop = pos.y
         const iconBottom = pos.y + ICON_HEIGHT
 
-        if (
-          iconLeft < right &&
-          iconRight > left &&
-          iconTop < bottom &&
-          iconBottom > top
-        ) {
+        if (iconLeft < right && iconRight > left && iconTop < bottom && iconBottom > top) {
           selected.add(app.id)
         }
       }
@@ -172,7 +168,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       })
       clearSelectedIcons()
     },
-    [clearSelectedIcons]
+    [clearSelectedIcons, setSelectionBox]
   )
 
   const handleMouseMove = useCallback(
@@ -193,23 +189,26 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       setSelectionBox(nextBox)
       setSelectedIcons(getIconsInSelection(nextBox))
     },
-    [selectionBox, getIconsInSelection, setSelectedIcons]
+    [selectionBox, getIconsInSelection, setSelectedIcons, setSelectionBox]
   )
 
   const handleMouseUp = useCallback(() => {
     setSelectionBox(null)
-  }, [])
+  }, [setSelectionBox])
 
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.desktop-background')) {
-      e.preventDefault()
-      setContextMenu({ x: e.clientX, y: e.clientY })
-    }
-  }, [])
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.desktop-background')) {
+        e.preventDefault()
+        setContextMenu({ x: e.clientX, y: e.clientY })
+      }
+    },
+    [setContextMenu]
+  )
 
   const closeContextMenu = useCallback(() => {
     setContextMenu(null)
-  }, [])
+  }, [setContextMenu])
 
   const handleDesktopClick = useCallback(
     (e: React.MouseEvent) => {

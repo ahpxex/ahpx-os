@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Rnd } from 'react-rnd'
 import { AnimatePresence, motion } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { TitleBar } from './TitleBar'
 import { WindowContextMenuProvider } from '@/contexts/WindowContextMenuContext'
 import type { WindowState } from '@/types/window'
@@ -14,8 +14,11 @@ interface WindowFrameProps {
 export function WindowFrame({ window }: WindowFrameProps) {
   const { focusWindow, updateWindowPosition, updateWindowSize, finalizeCloseWindow, activeWindowId } = useOS()
   const isVisible = window.isOpen && !window.isMinimized
-  const [shouldRender, setShouldRender] = useState(isVisible)
-  const [previousIsMaximized, setPreviousIsMaximized] = useState(window.isMaximized)
+  const [shouldRender, setShouldRender] = useLocalAtom(() => isVisible, [window.id])
+  const [previousIsMaximized, setPreviousIsMaximized] = useLocalAtom(
+    () => window.isMaximized,
+    [window.id]
+  )
   const skipInitial = previousIsMaximized !== window.isMaximized
   const isProfileWindow = window.id.startsWith('profile-') || window.id === 'new-profile'
   const isActive = activeWindowId === window.id && isVisible
@@ -24,11 +27,11 @@ export function WindowFrame({ window }: WindowFrameProps) {
     if (isVisible) {
       setShouldRender(true)
     }
-  }, [isVisible])
+  }, [isVisible, setShouldRender])
 
   useEffect(() => {
     setPreviousIsMaximized(window.isMaximized)
-  }, [window.isMaximized])
+  }, [window.isMaximized, setPreviousIsMaximized])
 
   const handleExitComplete = () => {
     if (!window.isOpen) {
@@ -148,9 +151,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
           : false
       }
     >
-      <AnimatePresence onExitComplete={handleExitComplete}>
-        {isVisible ? windowBody : null}
-      </AnimatePresence>
+      <AnimatePresence onExitComplete={handleExitComplete}>{isVisible ? windowBody : null}</AnimatePresence>
     </Rnd>
   )
 }

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 interface BlogSearchProps {
   value: string
@@ -6,21 +7,19 @@ interface BlogSearchProps {
 }
 
 export function BlogSearch({ value, onChange }: BlogSearchProps) {
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useLocalAtom(() => value, [value])
 
-  // Debounce the search
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (localValue === value) return
+
+    const timer = window.setTimeout(() => {
       onChange(localValue)
     }, 300)
 
-    return () => clearTimeout(timer)
-  }, [localValue, onChange])
-
-  // Sync external value changes
-  useEffect(() => {
-    setLocalValue(value)
-  }, [value])
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [localValue, onChange, value])
 
   return (
     <input

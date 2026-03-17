@@ -1,15 +1,20 @@
-import { useState, useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 interface HistoryEntry {
   command: string
   output: string
 }
 
+interface TerminalState {
+  history: HistoryEntry[]
+  input: string
+}
+
 const PROMPT_USER = 'guest'
 
-export function TerminalApp() {
-  const COMMANDS: Record<string, string | (() => string)> = {
-    help: `Available commands:
+const COMMANDS: Record<string, string | (() => string)> = {
+  help: `Available commands:
   help     - Show this help message
   about    - About me
   skills   - List my skills
@@ -18,24 +23,28 @@ export function TerminalApp() {
   clear    - Clear terminal
   date     - Show current date
   whoami   - Display current user`,
-    about:
-      'Hi! I am ahpx, a software developer who enjoys building things for the web.',
-    skills: 'TypeScript, React, Node.js, Python, Go, PostgreSQL, Docker',
-    contact: `Email: hello@ahpx.dev
+  about: 'Hi! I am ahpx, a software developer who enjoys building things for the web.',
+  skills: 'TypeScript, React, Node.js, Python, Go, PostgreSQL, Docker',
+  contact: `Email: hello@ahpx.dev
 GitHub: github.com/ahpx`,
-    projects: `1. ahpx-os - Web-based OS interface
+  projects: `1. ahpx-os - Web-based OS interface
 2. Project Two - Description here
 3. Project Three - Description here`,
-    whoami: () => 'guest (local mode)',
-    date: () => new Date().toString(),
-  }
+  whoami: () => 'guest (local mode)',
+  date: () => new Date().toString(),
+}
 
-  const [history, setHistory] = useState<HistoryEntry[]>([
-    { command: '', output: 'Welcome to ahpx-os terminal. Type "help" for commands.' },
-  ])
-  const [input, setInput] = useState('')
+export function TerminalApp() {
+  const [terminalState, setTerminalState] = useLocalAtom<TerminalState>(
+    () => ({
+      history: [{ command: '', output: 'Welcome to ahpx-os terminal. Type "help" for commands.' }],
+      input: '',
+    }),
+    []
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { history, input } = terminalState
 
   useEffect(() => {
     containerRef.current?.scrollTo(0, containerRef.current.scrollHeight)
@@ -46,14 +55,15 @@ GitHub: github.com/ahpx`,
     const trimmedInput = input.trim()
     const [cmd] = trimmedInput.split(' ')
 
+    if (cmd === 'clear') {
+      setTerminalState({ history: [], input: '' })
+      return
+    }
+
     let output = ''
 
     if (cmd === '') {
       output = ''
-    } else if (cmd === 'clear') {
-      setHistory([])
-      setInput('')
-      return
     } else if (cmd in COMMANDS) {
       const result = COMMANDS[cmd]
       output = typeof result === 'function' ? result() : result
@@ -61,8 +71,10 @@ GitHub: github.com/ahpx`,
       output = `Command not found: ${cmd}. Type "help" for available commands.`
     }
 
-    setHistory((prev) => [...prev, { command: trimmedInput, output }])
-    setInput('')
+    setTerminalState((prev) => ({
+      history: [...prev.history, { command: trimmedInput, output }],
+      input: '',
+    }))
   }
 
   const handleContainerClick = () => {
@@ -86,11 +98,7 @@ GitHub: github.com/ahpx`,
               <span>{entry.command}</span>
             </div>
           )}
-          {entry.output && (
-            <pre className="whitespace-pre-wrap text-green-400">
-              {entry.output}
-            </pre>
-          )}
+          {entry.output && <pre className="whitespace-pre-wrap text-green-400">{entry.output}</pre>}
         </div>
       ))}
 
@@ -103,7 +111,7 @@ GitHub: github.com/ahpx`,
           ref={inputRef}
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => setTerminalState((prev) => ({ ...prev, input: e.target.value }))}
           className="flex-1 bg-transparent text-green-400 outline-none"
           autoFocus
         />

@@ -1,4 +1,5 @@
-import { useRef, useCallback, useState } from 'react'
+import { useRef, useCallback } from 'react'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import type { Position } from '@/types/window'
 
 interface DesktopIconProps {
@@ -19,18 +20,19 @@ export function DesktopIcon({
   onOpen,
   onPositionChange,
 }: DesktopIconProps) {
-  const [isDragging, setIsDragging] = useState(false)
+  const [isDragging, setIsDragging] = useLocalAtom(() => false, [])
   const didDragRef = useRef(false)
   const dragRef = useRef<{
     startX: number
     startY: number
     initialX: number
     initialY: number
+    active: boolean
   } | null>(null)
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (e.button !== 0) return // Only left click
+      if (e.button !== 0) return
       e.preventDefault()
       didDragRef.current = false
 
@@ -42,6 +44,7 @@ export function DesktopIcon({
         startY: e.clientY,
         initialX: currentX,
         initialY: currentY,
+        active: false,
       }
 
       const handleMouseMove = (moveEvent: MouseEvent) => {
@@ -49,14 +52,14 @@ export function DesktopIcon({
 
         const deltaX = moveEvent.clientX - dragRef.current.startX
         const deltaY = moveEvent.clientY - dragRef.current.startY
-
-        // Only start dragging after moving 5px to prevent accidental drags
         const movedEnough = Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5
-        if (!isDragging && movedEnough) {
+
+        if (!dragRef.current.active && movedEnough) {
+          dragRef.current.active = true
           setIsDragging(true)
         }
 
-        if (isDragging || movedEnough) {
+        if (dragRef.current.active || movedEnough) {
           didDragRef.current = true
           const newX = Math.max(0, dragRef.current.initialX + deltaX)
           const newY = Math.max(0, dragRef.current.initialY + deltaY)
@@ -74,7 +77,7 @@ export function DesktopIcon({
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
     },
-    [position, isDragging, onPositionChange]
+    [position, onPositionChange, setIsDragging]
   )
 
   const handleClick = useCallback(() => {

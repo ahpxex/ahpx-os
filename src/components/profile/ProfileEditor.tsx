@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { useSetAtom } from 'jotai'
 import { v4 as uuidv4 } from 'uuid'
 import { updateProfileAtom } from '@/store/profileActions'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import { WidgetGrid } from './WidgetGrid'
 import type { Profile } from '@/types/database'
 import type { ProfileContent, Widget, WidgetType, ProfileLayout } from '@/types/profile'
@@ -21,48 +21,59 @@ interface ProfileEditorProps {
   onCancel: () => void
 }
 
+interface ProfileEditorState {
+  saving: boolean
+  widgets: Widget[]
+  layout: ProfileLayout
+}
+
 export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps) {
-  const [saving, setSaving] = useState(false)
-
   const updateProfile = useSetAtom(updateProfileAtom)
-
-  // Initialize draft content from profile
   const initialContent = profile.content as ProfileContent | null
-  const [widgets, setWidgets] = useState<Widget[]>(initialContent?.widgets || [])
-  const [layout] = useState<ProfileLayout>(initialContent?.layout || DEFAULT_LAYOUT)
+  const [editorState, setEditorState] = useLocalAtom<ProfileEditorState>(
+    () => ({
+      saving: false,
+      widgets: initialContent?.widgets || [],
+      layout: initialContent?.layout || DEFAULT_LAYOUT,
+    }),
+    [profile.id]
+  )
+  const { saving, widgets, layout } = editorState
 
   const handleLayoutChange = (newLayout: LayoutItem[]) => {
-    setWidgets((prev) =>
-      prev.map((widget) => {
-        const layoutItem = newLayout.find((l) => l.i === widget.id)
-        if (layoutItem) {
-          return {
-            ...widget,
-            position: {
-              x: layoutItem.x,
-              y: layoutItem.y,
-              width: layoutItem.w,
-              height: layoutItem.h,
-            },
-          }
+    setEditorState((prev) => ({
+      ...prev,
+      widgets: prev.widgets.map((widget) => {
+        const layoutItem = newLayout.find((entry) => entry.i === widget.id)
+        if (!layoutItem) return widget
+
+        return {
+          ...widget,
+          position: {
+            x: layoutItem.x,
+            y: layoutItem.y,
+            width: layoutItem.w,
+            height: layoutItem.h,
+          },
         }
-        return widget
-      })
-    )
+      }),
+    }))
   }
 
   const handleWidgetUpdate = (widgetId: string, updates: Partial<Widget>) => {
-    setWidgets((prev) =>
-      prev.map((w) => {
-        if (w.id !== widgetId) return w
-        // Merge updates while preserving the widget type
-        return { ...w, ...updates } as Widget
-      })
-    )
+    setEditorState((prev) => ({
+      ...prev,
+      widgets: prev.widgets.map((widget) =>
+        widget.id === widgetId ? ({ ...widget, ...updates } as Widget) : widget
+      ),
+    }))
   }
 
   const handleWidgetDelete = (widgetId: string) => {
-    setWidgets((prev) => prev.filter((w) => w.id !== widgetId))
+    setEditorState((prev) => ({
+      ...prev,
+      widgets: prev.widgets.filter((widget) => widget.id !== widgetId),
+    }))
   }
 
   const addWidget = (type: WidgetType) => {
@@ -73,9 +84,10 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
     }
 
     const size = defaultSizes[type]
-
-    // Find next available y position
-    const maxY = widgets.reduce((max, w) => Math.max(max, w.position.y + w.position.height), 0)
+    const maxY = widgets.reduce(
+      (max, widget) => Math.max(max, widget.position.y + widget.position.height),
+      0
+    )
 
     let newWidget: Widget
 
@@ -105,11 +117,15 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
       }
     }
 
-    setWidgets((prev) => [...prev, newWidget])
+    setEditorState((prev) => ({
+      ...prev,
+      widgets: [...prev.widgets, newWidget],
+    }))
   }
 
   const handleSave = async () => {
-    setSaving(true)
+    setEditorState((prev) => ({ ...prev, saving: true }))
+
     try {
       const newContent: ProfileContent = {
         widgets,
@@ -126,13 +142,12 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
       console.error('Failed to save profile:', error)
       alert('Failed to save profile. Please try again.')
     } finally {
-      setSaving(false)
+      setEditorState((prev) => ({ ...prev, saving: false }))
     }
   }
 
   return (
     <div className="relative flex h-full flex-col">
-      {/* Editor Content - Scrollable Area */}
       <div className="flex-1 overflow-auto pb-16">
         <WidgetGrid
           widgets={widgets}
@@ -144,9 +159,7 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
         />
       </div>
 
-      {/* Sticky Bottom Toolbar */}
       <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4 border border-[var(--color-border)] bg-white px-4 py-2 shadow-md">
-        {/* Add Widget Buttons */}
         <div className="flex gap-2">
           <button
             type="button"
@@ -171,10 +184,8 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
           </button>
         </div>
 
-        {/* Divider */}
         <div className="h-6 w-px bg-gray-300" />
 
-        {/* Save/Cancel Buttons */}
         <div className="flex gap-2">
           <button
             type="button"

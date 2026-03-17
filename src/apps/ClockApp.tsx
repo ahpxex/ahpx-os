@@ -1,17 +1,8 @@
-import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
+import { useCurrentTime } from '@/hooks/useCurrentTime'
 
 export function ClockApp() {
-  const [time, setTime] = useState(new Date())
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date())
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
-
+  const time = useCurrentTime(1000)
   const year = time.getFullYear()
   const startOfYear = new Date(year, 0, 1, 0, 0, 0, 0)
   const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999)
@@ -35,7 +26,7 @@ export function ClockApp() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-8 bg-white p-8">
       <div className="text-center">
-        <div className="text-xl text-gray-600 mb-2">Year {year} Progress</div>
+        <div className="mb-2 text-xl text-gray-600">Year {year} Progress</div>
         <div className="text-5xl font-bold tabular-nums tracking-wider text-[var(--color-primary)]">
           {yearProgress.toFixed(6)}%
         </div>
@@ -51,36 +42,28 @@ export function ClockApp() {
       </div>
 
       <div className="border-t border-gray-200 pt-8 text-center">
-        <div className="text-xl text-gray-600 mb-4">Time Remaining in {year}</div>
+        <div className="mb-4 text-xl text-gray-600">Time Remaining in {year}</div>
 
-        <div className="text-6xl font-bold tabular-nums tracking-wider mb-4 text-gray-900">
+        <div className="mb-4 text-6xl font-bold tabular-nums tracking-wider text-gray-900">
           {formatLargeNumber(secondsRemaining)}
         </div>
-        <div className="text-sm text-gray-500 mb-6">seconds</div>
+        <div className="mb-6 text-sm text-gray-500">seconds</div>
 
-        <div className="flex gap-6 justify-center text-sm">
+        <div className="flex justify-center gap-6 text-sm">
           <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--color-primary)]">
-              {days}
-            </div>
+            <div className="text-3xl font-bold text-[var(--color-primary)]">{days}</div>
             <div className="text-gray-600">Days</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--color-primary)]">
-              {hours}
-            </div>
+            <div className="text-3xl font-bold text-[var(--color-primary)]">{hours}</div>
             <div className="text-gray-600">Hours</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--color-primary)]">
-              {minutes}
-            </div>
+            <div className="text-3xl font-bold text-[var(--color-primary)]">{minutes}</div>
             <div className="text-gray-600">Minutes</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-[var(--color-primary)]">
-              {seconds}
-            </div>
+            <div className="text-3xl font-bold text-[var(--color-primary)]">{seconds}</div>
             <div className="text-gray-600">Seconds</div>
           </div>
         </div>

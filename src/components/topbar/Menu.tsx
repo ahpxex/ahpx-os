@@ -1,4 +1,5 @@
-import { useRef, useEffect, createContext, useContext, useState } from 'react'
+import { useRef, useEffect, createContext, useContext } from 'react'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 type MenuItem =
   | {
@@ -33,7 +34,7 @@ interface MenuBarProps {
 }
 
 export function MenuBar({ children }: MenuBarProps) {
-  const [activeMenu, setActiveMenu] = useState<string | null>(null)
+  const [activeMenu, setActiveMenu] = useLocalAtom<string | null>(() => null, [])
   const menuBarRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export function MenuBar({ children }: MenuBarProps) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [activeMenu])
+  }, [activeMenu, setActiveMenu])
 
   return (
     <MenuBarContext.Provider
@@ -124,11 +125,7 @@ export function Menu({ id, label, items, isLogo }: MenuProps) {
                 }`}
               >
                 <span>{item.label}</span>
-                {item.shortcut && (
-                  <span className="ml-4 text-xs text-gray-400">
-                    {item.shortcut}
-                  </span>
-                )}
+                {item.shortcut && <span className="ml-4 text-xs text-gray-400">{item.shortcut}</span>}
               </button>
             )
           )}

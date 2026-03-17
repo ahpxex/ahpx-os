@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useCallback, type ReactNode } from 'react'
 import { ToastContainer, type ToastData, type ToastType } from '@/components/common/Toast'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 
 interface ToastContextValue {
   showToast: (type: ToastType, message: string, duration?: number) => void
@@ -15,16 +16,22 @@ const ToastContext = createContext<ToastContextValue | null>(null)
 let toastId = 0
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<ToastData[]>([])
+  const [toasts, setToasts] = useLocalAtom<ToastData[]>(() => [], [])
 
-  const showToast = useCallback((type: ToastType, message: string, duration?: number) => {
-    const id = `toast-${++toastId}`
-    setToasts((prev) => [...prev, { id, type, message, duration }])
-  }, [])
+  const showToast = useCallback(
+    (type: ToastType, message: string, duration?: number) => {
+      const id = `toast-${++toastId}`
+      setToasts((prev) => [...prev, { id, type, message, duration }])
+    },
+    [setToasts]
+  )
 
-  const dismissToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
-  }, [])
+  const dismissToast = useCallback(
+    (id: string) => {
+      setToasts((prev) => prev.filter((toast) => toast.id !== id))
+    },
+    [setToasts]
+  )
 
   const success = useCallback((message: string) => showToast('success', message), [showToast])
   const error = useCallback((message: string) => showToast('error', message), [showToast])

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { allProfilesAtom } from '@/store/appAtoms'
 import { getProfileByIdAtom } from '@/store/profileActions'
@@ -6,56 +6,80 @@ import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { ProfileView } from '@/components/profile/ProfileView'
 import { ProfileEditor } from '@/components/profile/ProfileEditor'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { useLocalAtom } from '@/hooks/useLocalAtom'
 import type { Profile as DBProfile } from '@/types/database'
 
 interface ProfileAppProps {
   profileId: string
 }
 
-export function ProfileApp({ profileId }: ProfileAppProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [profile, setProfile] = useState<DBProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
+interface ProfileAppState {
+  isEditing: boolean
+  profile: DBProfile | null
+  loading: boolean
+}
 
+export function ProfileApp({ profileId }: ProfileAppProps) {
   const allProfiles = useAtomValue(allProfilesAtom)
   const getProfileById = useSetAtom(getProfileByIdAtom)
+  const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
+  const [profileState, setProfileState] = useLocalAtom<ProfileAppState>(
+    () => {
+      const cachedProfile = allProfiles.find((entry) => entry.id === profileId) ?? null
+      return {
+        isEditing: false,
+        profile: cachedProfile,
+        loading: cachedProfile === null,
+      }
+    },
+    [profileId]
+  )
+
+  const { isEditing, profile, loading } = profileState
 
   useEffect(() => {
     const cachedProfile = allProfiles.find((entry) => entry.id === profileId)
     if (cachedProfile) {
-      setProfile(cachedProfile)
-      setLoading(false)
+      setProfileState((prev) => ({ ...prev, profile: cachedProfile, loading: false }))
       return
     }
+
+    let cancelled = false
 
     const fetchProfile = async () => {
       try {
         const data = await getProfileById(profileId)
-        setProfile(data)
+        if (!cancelled) {
+          setProfileState((prev) => ({ ...prev, profile: data, loading: false }))
+        }
       } catch (error) {
         console.error('Failed to fetch profile:', error)
-      } finally {
-        setLoading(false)
+        if (!cancelled) {
+          setProfileState((prev) => ({ ...prev, loading: false }))
+        }
       }
     }
 
     fetchProfile()
-  }, [profileId, allProfiles, getProfileById])
+
+    return () => {
+      cancelled = true
+    }
+  }, [profileId, allProfiles, getProfileById, setProfileState])
 
   useEffect(() => {
     const cachedProfile = allProfiles.find((entry) => entry.id === profileId)
     if (cachedProfile) {
-      setProfile(cachedProfile)
+      setProfileState((prev) => ({ ...prev, profile: cachedProfile }))
     }
-  }, [allProfiles, profileId])
+  }, [allProfiles, profileId, setProfileState])
 
   useEffect(() => {
     if (!isEditing) {
       setContextMenuItems([
         {
           label: 'Edit Widgets',
-          onClick: () => setIsEditing(true),
+          onClick: () => setProfileState((prev) => ({ ...prev, isEditing: true })),
         },
       ])
     } else {
@@ -65,7 +89,7 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     return () => {
       clearContextMenuItems()
     }
-  }, [isEditing, setContextMenuItems, clearContextMenuItems])
+  }, [isEditing, setContextMenuItems, clearContextMenuItems, setProfileState])
 
   if (loading) {
     return (
@@ -87,8 +111,8 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     return (
       <ProfileEditor
         profile={profile}
-        onSave={() => setIsEditing(false)}
-        onCancel={() => setIsEditing(false)}
+        onSave={() => setProfileState((prev) => ({ ...prev, isEditing: false }))}
+        onCancel={() => setProfileState((prev) => ({ ...prev, isEditing: false }))}
       />
     )
   }
