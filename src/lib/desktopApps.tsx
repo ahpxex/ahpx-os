@@ -34,13 +34,10 @@ export const desktopApps: WindowConfig[] = [
     title: SYSTEM_PROFILE_NAME,
     icon: SYSTEM_PROFILE_ICON,
     component: createLazyWindow(async () => {
-      const { ProfileApp } = await import('@/apps/ProfileApp')
-      return {
-        default: function MyComputerWindow() {
-          return <ProfileApp profileId={SYSTEM_PROFILE_ID} />
-        },
-      }
+      const { MyComputerApp } = await import('@/apps/MyComputerApp')
+      return { default: MyComputerApp }
     }),
+    initialSize: { width: 750, height: 550 },
   },
   {
     id: 'blogs',

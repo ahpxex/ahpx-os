@@ -20,7 +20,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
     [window.id]
   )
   const skipInitial = previousIsMaximized !== window.isMaximized
-  const isProfileWindow = window.id.startsWith('profile-')
+  const isProfileWindow = window.id.startsWith('profile-') && window.id !== 'profile-ahpx'
   const isActive = activeWindowId === window.id && isVisible
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
           : { opacity: 0, scale: 0.98, y: 10, filter: 'blur(2px)' }
       }
       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-      className={`window flex h-full flex-col overflow-hidden ${window.isMaximized ? 'xp-window-maximized' : ''} ${isProfileWindow ? '' : 'p-0'}`}
+      className={`window flex h-full flex-col overflow-hidden ${window.isMaximized ? 'xp-window-maximized' : ''}`}
     >
       <TitleBar window={window} isActive={isActive} />
       <div className={`window-body flex-1 overflow-auto ${isProfileWindow ? '' : 'm-0 p-0'}`}>
