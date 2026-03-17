@@ -304,6 +304,7 @@ function SectionHeader({ title }: { title: string }) {
 export function MyComputerApp() {
   const openWindow = useSetAtom(openWindowAtom)
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
+  const [currentPath, setCurrentPath] = useState<'root' | 'my-products'>('root')
 
   const openApp = useCallback(
     (appId: string) => {
@@ -314,6 +315,11 @@ export function MyComputerApp() {
   )
 
   const clearSelection = () => setSelectedItem(null)
+
+  const navigateTo = (path: 'root' | 'my-products') => {
+    setCurrentPath(path)
+    setSelectedItem(null)
+  }
 
   return (
     <div
@@ -396,13 +402,13 @@ export function MyComputerApp() {
           fontFamily: 'Tahoma, Verdana, Arial, sans-serif',
         }}
       >
-        <ToolbarButton label="Back" disabled>
+        <ToolbarButton label="Back" disabled={currentPath === 'root'} onPress={() => navigateTo('root')}>
           <img src="/xp-icons/Back.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
         <ToolbarButton disabled>
           <img src="/xp-icons/Forward.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
-        <ToolbarButton>
+        <ToolbarButton disabled={currentPath === 'root'} onPress={() => navigateTo('root')}>
           <img src="/xp-icons/Up.png" alt="" style={{ width: 30, height: 30 }} />
         </ToolbarButton>
         <div style={{ width: 1, height: 22, background: '#ACA899', margin: '0 4px' }} />
@@ -441,7 +447,7 @@ export function MyComputerApp() {
           }}
         >
           <img src="/devices/system.png" alt="" style={{ width: 16, height: 16 }} />
-          <span>My Computer</span>
+          <span>{currentPath === 'root' ? 'My Computer' : 'My Computer > My Products'}</span>
         </div>
         <button
           style={{
@@ -528,19 +534,55 @@ export function MyComputerApp() {
             background: '#fff',
           }}
         >
-          <SectionHeader title="Files Stored on This Computer" />
+          {currentPath === 'my-products' ? (
+            <>
+              <SectionHeader title="My Products" />
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: 8 }}>
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="ContextFlow"
+                  selected={selectedItem === 'contextflow'}
+                  onSelect={() => setSelectedItem('contextflow')}
+                  href="https://getcontextflow.app"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="Taoracle"
+                  selected={selectedItem === 'taoracle'}
+                  onSelect={() => setSelectedItem('taoracle')}
+                  href="https://taoracle.com"
+                />
+                <ExplorerItem
+                  icon="/places/folder.png"
+                  label="readaware"
+                  selected={selectedItem === 'readaware'}
+                  onSelect={() => setSelectedItem('readaware')}
+                  href="https://readaware.app"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <SectionHeader title="Files Stored on This Computer" />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: 8 }}>
             <ExplorerItem
               icon="/devices/stock_briefcase.png"
               label="My Products"
               selected={selectedItem === 'products'}
               onSelect={() => setSelectedItem('products')}
+              onOpen={() => navigateTo('my-products')}
             />
             <ExplorerItem
               icon="/apps/xfce-schedule.png"
               label="Weekly Projects"
               selected={selectedItem === 'weekly'}
               onSelect={() => setSelectedItem('weekly')}
+            />
+            <ExplorerItem
+              icon="/places/gnome-fs-network.png"
+              label="Open Source Projects"
+              selected={selectedItem === 'oss'}
+              onSelect={() => setSelectedItem('oss')}
             />
           </div>
 
@@ -588,6 +630,8 @@ export function MyComputerApp() {
               href="https://blog.ahpx.me"
             />
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -598,16 +642,19 @@ function ToolbarButton({
   label,
   disabled,
   children,
+  onPress,
 }: {
   label?: string
   disabled?: boolean
   children: React.ReactNode
+  onPress?: () => void
 }) {
   const [hovered, setHovered] = useState(false)
 
   return (
     <button
       disabled={disabled}
+      onClick={onPress}
       style={{
         display: 'flex',
         alignItems: 'center',
