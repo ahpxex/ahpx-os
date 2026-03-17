@@ -104,7 +104,7 @@ export function DesktopIcon({
       tabIndex={0}
       aria-label={title}
       className={`
-        absolute flex w-20 flex-col items-center gap-1 rounded p-2
+        absolute flex w-[72px] flex-col items-center gap-0.5 rounded p-1.5
         bg-transparent shadow-none select-none cursor-default
         ${isDragging ? 'opacity-80' : ''}
       `}
@@ -122,16 +122,16 @@ export function DesktopIcon({
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className={`p-1 ${isSelected ? 'xp-icon-selected' : ''}`}>
-        <img src={icon} alt={title} className="h-12 w-12 pointer-events-none" draggable={false} />
+      <div className={isSelected ? 'p-0.5 xp-icon-selected' : 'p-0.5'}>
+        <img src={icon} alt={title} className="h-10 w-10 pointer-events-none" draggable={false} />
       </div>
       <span
-        className={`text-xs pointer-events-none px-[2px] leading-tight text-center
+        className={`pointer-events-none px-[2px] leading-tight text-center
           ${isSelected ? 'bg-[#2b60f6] text-white' : 'text-white'}
         `}
         style={{
           fontFamily: 'Tahoma, Verdana, sans-serif',
-          fontSize: '11px',
+          fontSize: '10px',
           textShadow: isSelected ? 'none' : '1px 1px 1px rgba(0,0,0,0.8)',
         }}
       >

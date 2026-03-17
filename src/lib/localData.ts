@@ -51,6 +51,9 @@ const STORAGE_KEYS = {
 } as const
 
 const DEFAULT_PROFILE_ICON = '/apps/vcard.png'
+const SYSTEM_PROFILE_ID = 'profile-ahpx'
+const SYSTEM_PROFILE_NAME = 'My Computer'
+const SYSTEM_PROFILE_ICON = '/devices/system.png'
 
 function now() {
   return new Date().toISOString()
@@ -139,12 +142,12 @@ const DEFAULT_SYSTEM_INFO: SystemInfo = {
 
 const DEFAULT_PROFILES: Profile[] = [
   {
-    id: 'profile-ahpx',
+    id: SYSTEM_PROFILE_ID,
     created_at: '2026-03-17T00:00:00.000Z',
     updated_at: '2026-03-17T00:00:00.000Z',
-    name: 'About AHPX',
+    name: SYSTEM_PROFILE_NAME,
     slug: 'about-ahpx',
-    icon: DEFAULT_PROFILE_ICON,
+    icon: SYSTEM_PROFILE_ICON,
     date: '2026-03-17',
     content: createDefaultProfileContent(),
     is_active: true,
@@ -188,7 +191,15 @@ function writeBlogPosts(posts: BlogPost[]) {
 }
 
 function readProfiles() {
-  return readValue(STORAGE_KEYS.profiles, DEFAULT_PROFILES)
+  return readValue(STORAGE_KEYS.profiles, DEFAULT_PROFILES).map((profile) =>
+    profile.id === SYSTEM_PROFILE_ID
+      ? {
+          ...profile,
+          name: SYSTEM_PROFILE_NAME,
+          icon: SYSTEM_PROFILE_ICON,
+        }
+      : profile
+  )
 }
 
 function writeProfiles(profiles: Profile[]) {

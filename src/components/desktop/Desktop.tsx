@@ -44,8 +44,8 @@ const staticApps: DesktopApp[] = [
   },
 ]
 
-const ICON_WIDTH = 80
-const ICON_HEIGHT = 76
+const ICON_WIDTH = 72
+const ICON_HEIGHT = 68
 
 interface SelectionBox {
   startX: number
@@ -79,7 +79,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     () =>
       profiles.map((profile) => ({
         id: `profile-${profile.slug}`,
-        title: `${profile.name}.exe`,
+        title: profile.id === 'profile-ahpx' ? profile.name : `${profile.name}.exe`,
         icon: profile.icon,
         component: () => <ProfileApp profileId={profile.id} />,
       })),
