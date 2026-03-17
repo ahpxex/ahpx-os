@@ -16,7 +16,7 @@ This is an OS-alike web app serving as my personal homepage/portfolio.
 - **Utils:** `date-fns` (for Top Bar time formatting).
 - **Styling:** `XP.css` for component look + Tailwind CSS for layout
 - **Icons:** OpenMoji (SVG format)
-- **Database:** Supabase - MUST use `@supabase/supabase-js` SDK only. NO ORMs, NO raw SQL queries.
+- **Storage:** Browser `localStorage` for profiles and blog posts. Keep the app frontend-only unless a future task explicitly adds a backend again.
 
 ## 3. Architecture & Data Model
 

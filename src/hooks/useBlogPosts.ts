@@ -1,22 +1,14 @@
 import { useAtomValue, useSetAtom } from 'jotai'
-import {
-  blogPostsAtom,
-  publishedBlogPostsAtom,
-  isAuthenticatedAtom,
-} from '@/store/supabaseAtoms'
-import { fetchBlogPostsAtom } from '@/store/supabaseActions'
+import { blogPostsAtom } from '@/store/appAtoms'
+import { fetchBlogPostsAtom } from '@/store/blogActions'
 
 export function useBlogPosts() {
   const posts = useAtomValue(blogPostsAtom)
-  const publishedPosts = useAtomValue(publishedBlogPostsAtom)
-  const isAuthenticated = useAtomValue(isAuthenticatedAtom)
   const fetchPosts = useSetAtom(fetchBlogPostsAtom)
 
-  // Posts are preloaded via TanStack Router loader, no need to fetch on mount
-
   return {
-    posts: isAuthenticated ? posts : publishedPosts,
+    posts,
     loading: false,
-    refetch: () => fetchPosts(!isAuthenticated),
+    refetch: () => fetchPosts(false),
   }
 }

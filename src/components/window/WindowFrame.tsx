@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from 'react'
 import { Rnd } from 'react-rnd'
 import { AnimatePresence, motion } from 'motion/react'

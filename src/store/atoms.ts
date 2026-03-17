@@ -20,5 +20,4 @@ export const maxZIndexAtom = atom((get) => {
   return Math.max(...windows.map((w) => w.zIndex))
 })
 
-// Export Supabase atoms
-export * from './supabaseAtoms'
+export * from './appAtoms'

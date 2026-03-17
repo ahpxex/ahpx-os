@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { allProfilesAtom } from '@/store/supabaseAtoms'
+import { allProfilesAtom } from '@/store/appAtoms'
 import { getProfileByIdAtom } from '@/store/profileActions'
-import { useAuth } from '@/hooks/useAuth'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { ProfileView } from '@/components/profile/ProfileView'
 import { ProfileEditor } from '@/components/profile/ProfileEditor'
@@ -17,23 +16,19 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [profile, setProfile] = useState<DBProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  const { isAuthenticated } = useAuth()
   const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
 
-  // Try to get profile from cached state first
   const allProfiles = useAtomValue(allProfilesAtom)
   const getProfileById = useSetAtom(getProfileByIdAtom)
 
   useEffect(() => {
-    // Check if profile is in cache
-    const cachedProfile = allProfiles.find((p) => p.id === profileId)
+    const cachedProfile = allProfiles.find((entry) => entry.id === profileId)
     if (cachedProfile) {
       setProfile(cachedProfile)
       setLoading(false)
       return
     }
 
-    // Otherwise fetch from database
     const fetchProfile = async () => {
       try {
         const data = await getProfileById(profileId)
@@ -48,17 +43,15 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     fetchProfile()
   }, [profileId, allProfiles, getProfileById])
 
-  // Update profile when cache changes
   useEffect(() => {
-    const cachedProfile = allProfiles.find((p) => p.id === profileId)
+    const cachedProfile = allProfiles.find((entry) => entry.id === profileId)
     if (cachedProfile) {
       setProfile(cachedProfile)
     }
   }, [allProfiles, profileId])
 
-  // Set up context menu items when authenticated
   useEffect(() => {
-    if (isAuthenticated && !isEditing) {
+    if (!isEditing) {
       setContextMenuItems([
         {
           label: 'Edit Widgets',
@@ -72,7 +65,7 @@ export function ProfileApp({ profileId }: ProfileAppProps) {
     return () => {
       clearContextMenuItems()
     }
-  }, [isAuthenticated, isEditing, setContextMenuItems, clearContextMenuItems])
+  }, [isEditing, setContextMenuItems, clearContextMenuItems])
 
   if (loading) {
     return (

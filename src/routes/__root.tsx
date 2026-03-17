@@ -2,8 +2,7 @@ import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { Provider, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 import { loadAppData } from '@/lib/loaders'
-import { userAtom, sessionAtom, authLoadingAtom, systemInfoAtom, blogPostsAtom } from '@/store/supabaseAtoms'
-import { allProfilesAtom, allProfilesLoadingAtom } from '@/store/supabaseAtoms'
+import { allProfilesAtom, allProfilesLoadingAtom, blogPostsAtom, systemInfoAtom } from '@/store/appAtoms'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { DialogProvider } from '@/contexts/DialogContext'
 
@@ -44,30 +43,17 @@ interface DataHydratorProps {
 }
 
 function DataHydrator({ data, children }: DataHydratorProps) {
-  const setUser = useSetAtom(userAtom)
-  const setSession = useSetAtom(sessionAtom)
-  const setAuthLoading = useSetAtom(authLoadingAtom)
   const setSystemInfo = useSetAtom(systemInfoAtom)
   const setAllProfiles = useSetAtom(allProfilesAtom)
   const setAllProfilesLoading = useSetAtom(allProfilesLoadingAtom)
   const setBlogPosts = useSetAtom(blogPostsAtom)
 
   useEffect(() => {
-    // Hydrate auth state
-    setUser(data.user)
-    setSession(data.session)
-    setAuthLoading(false)
-
-    // Hydrate system info
     setSystemInfo(data.systemInfo)
-
-    // Hydrate profiles
     setAllProfiles(data.profiles)
     setAllProfilesLoading(false)
-
-    // Hydrate blog posts
     setBlogPosts(data.blogPosts)
-  }, [data, setUser, setSession, setAuthLoading, setSystemInfo, setAllProfiles, setAllProfilesLoading, setBlogPosts])
+  }, [data, setSystemInfo, setAllProfiles, setAllProfilesLoading, setBlogPosts])
 
   return <>{children}</>
 }

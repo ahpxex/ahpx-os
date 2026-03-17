@@ -1,13 +1,48 @@
-import type { Database } from '@/lib/supabase/types'
+import type { ProfileContent } from '@/types/profile'
 
-export type BlogPost = Database['public']['Tables']['blog_posts']['Row']
-export type BlogPostInsert = Database['public']['Tables']['blog_posts']['Insert']
-export type BlogPostUpdate = Database['public']['Tables']['blog_posts']['Update']
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
-export type Profile = Database['public']['Tables']['profiles']['Row']
-export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
-export type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
+export interface BlogPost {
+  id: string
+  created_at: string
+  updated_at: string
+  title: string
+  summary: string
+  date: string
+  tags: string[]
+  content: Json | null
+  slug: string
+  published: boolean
+}
 
-export type SystemInfo = Database['public']['Tables']['system_info']['Row']
-export type SystemInfoInsert = Database['public']['Tables']['system_info']['Insert']
-export type SystemInfoUpdate = Database['public']['Tables']['system_info']['Update']
+export interface Profile {
+  id: string
+  created_at: string
+  updated_at: string
+  name: string
+  slug: string
+  icon: string
+  date: string | null
+  content: ProfileContent
+  is_active: boolean
+  avatar_url: string | null
+}
+
+export interface SystemInfo {
+  id: string
+  created_at: string
+  updated_at: string
+  version: string
+  name: string
+  description: string | null
+  wallpaper: string | null
+  theme: Json
+  config: Json
+  is_active: boolean
+}

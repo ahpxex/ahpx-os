@@ -3,20 +3,20 @@ import { useSetAtom } from 'jotai'
 import { createProfileAtom } from '@/store/profileActions'
 import { useOS } from '@/hooks/useOS'
 
+const DEFAULT_ICON = '/apps/vcard.png'
+
 export function NewProfileApp() {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
-  const [icon, setIcon] = useState('/apps/cs-user.png')
+  const [icon, setIcon] = useState(DEFAULT_ICON)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const createProfile = useSetAtom(createProfileAtom)
   const { closeWindow } = useOS()
 
-  // Auto-generate slug from name
   const handleNameChange = (value: string) => {
     setName(value)
-    // Only auto-generate slug if user hasn't manually edited it
     if (!slug || slug === name.toLowerCase().replace(/\s+/g, '-')) {
       setSlug(value.toLowerCase().replace(/\s+/g, '-'))
     }
@@ -36,7 +36,6 @@ export function NewProfileApp() {
       return
     }
 
-    // Validate slug format
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setError('Slug can only contain lowercase letters, numbers, and hyphens')
       return
@@ -51,7 +50,6 @@ export function NewProfileApp() {
         icon,
       })
 
-      // Close the window after successful creation
       closeWindow('new-profile')
     } catch (err) {
       console.error('Failed to create profile:', err)
@@ -61,18 +59,15 @@ export function NewProfileApp() {
     }
   }
 
-  // Common icon options
   const iconOptions = [
-    { value: '/apps/cs-user.png', label: 'User' },
-    { value: '/apps/web-browser.png', label: 'Internet' },
-    { value: '/apps/terminal.png', label: 'Terminal' },
-    { value: '/apps/accessories-text-editor.png', label: 'Text Editor' },
-    { value: '/apps/accessories-calculator.png', label: 'Calculator' },
-    { value: '/apps/accessories-character-map.png', label: 'Character Map' },
-    { value: '/places/folder.png', label: 'Folder' },
-    { value: '/places/folder-documents.png', label: 'Documents' },
-    { value: '/places/folder-download.png', label: 'Downloads' },
-    { value: '/places/folder-pictures.png', label: 'Pictures' },
+    { value: '/apps/vcard.png', label: 'Profile' },
+    { value: '/apps/firefox.png', label: 'Browser' },
+    { value: '/apps/utilities-terminal.png', label: 'Terminal' },
+    { value: '/apps/ooo-writer.png', label: 'Writer' },
+    { value: '/apps/gnome-calculator.png', label: 'Calculator' },
+    { value: '/apps/books.png', label: 'Books' },
+    { value: '/places/document-open-recent.png', label: 'Document' },
+    { value: '/places/folder-downloads.png', label: 'Downloads' },
   ]
 
   return (

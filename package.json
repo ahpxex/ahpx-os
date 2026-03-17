@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-router": "^1.144.0",
     "date-fns": "^4.1.0",

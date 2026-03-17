@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 
 interface HistoryEntry {
   command: string
   output: string
 }
 
-export function TerminalApp() {
-  const { user, login, logout } = useAuth()
+const PROMPT_USER = 'guest'
 
+export function TerminalApp() {
   const COMMANDS: Record<string, string | (() => string)> = {
     help: `Available commands:
   help     - Show this help message
@@ -18,9 +17,7 @@ export function TerminalApp() {
   projects - List projects
   clear    - Clear terminal
   date     - Show current date
-  whoami   - Display current user
-  login    - Login as admin (usage: login <email> <password>)
-  logout   - Logout`,
+  whoami   - Display current user`,
     about:
       'Hi! I am ahpx, a software developer who enjoys building things for the web.',
     skills: 'TypeScript, React, Node.js, Python, Go, PostgreSQL, Docker',
@@ -29,8 +26,7 @@ GitHub: github.com/ahpx`,
     projects: `1. ahpx-os - Web-based OS interface
 2. Project Two - Description here
 3. Project Three - Description here`,
-    whoami: () =>
-      user?.email ? `Logged in as: ${user.email}` : 'Not logged in',
+    whoami: () => 'guest (local mode)',
     date: () => new Date().toString(),
   }
 
@@ -45,10 +41,10 @@ GitHub: github.com/ahpx`,
     containerRef.current?.scrollTo(0, containerRef.current.scrollHeight)
   }, [history])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const trimmedInput = input.trim()
-    const [cmd, ...args] = trimmedInput.split(' ')
+    const [cmd] = trimmedInput.split(' ')
 
     let output = ''
 
@@ -58,21 +54,6 @@ GitHub: github.com/ahpx`,
       setHistory([])
       setInput('')
       return
-    } else if (cmd === 'login') {
-      const [email, password] = args
-      if (!email || !password) {
-        output = 'Usage: login <email> <password>'
-      } else {
-        try {
-          await login({ email, password })
-          output = 'Login successful. Session expires in 30 days.'
-        } catch (err) {
-          output = `Login failed: ${err instanceof Error ? err.message : 'Invalid credentials'}`
-        }
-      }
-    } else if (cmd === 'logout') {
-      await logout()
-      output = 'Logged out successfully.'
     } else if (cmd in COMMANDS) {
       const result = COMMANDS[cmd]
       output = typeof result === 'function' ? result() : result
@@ -88,8 +69,6 @@ GitHub: github.com/ahpx`,
     inputRef.current?.focus()
   }
 
-  const promptUser = user?.email ? user.email.split('@')[0] : 'guest'
-
   return (
     <div
       ref={containerRef}
@@ -100,7 +79,7 @@ GitHub: github.com/ahpx`,
         <div key={i} className="mb-2">
           {entry.command && (
             <div>
-              <span className="text-[var(--color-primary)]">{promptUser}@ahpx-os</span>
+              <span className="text-[var(--color-primary)]">{PROMPT_USER}@ahpx-os</span>
               <span className="text-white">:</span>
               <span className="text-blue-400">~</span>
               <span className="text-white">$&nbsp;</span>
@@ -116,7 +95,7 @@ GitHub: github.com/ahpx`,
       ))}
 
       <form onSubmit={handleSubmit} className="flex">
-        <span className="text-[var(--color-primary)]">{promptUser}@ahpx-os</span>
+        <span className="text-[var(--color-primary)]">{PROMPT_USER}@ahpx-os</span>
         <span className="text-white">:</span>
         <span className="text-blue-400">~</span>
         <span className="text-white">$&nbsp;</span>

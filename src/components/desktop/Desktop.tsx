@@ -3,7 +3,6 @@ import type { ComponentType } from 'react'
 import { LayoutGroup } from 'motion/react'
 import { useOS } from '@/hooks/useOS'
 import { useAllProfiles } from '@/hooks/useAllProfiles'
-import { useAuth } from '@/hooks/useAuth'
 import { DesktopIcon } from './DesktopIcon'
 import { WindowFrame } from '@/components/window/WindowFrame'
 import { ContextMenu } from './ContextMenu'
@@ -21,7 +20,6 @@ interface DesktopApp {
   initialSize?: { width: number; height: number }
 }
 
-// Static apps (non-profile)
 const staticApps: DesktopApp[] = [
   {
     id: 'blogs',
@@ -45,7 +43,6 @@ const staticApps: DesktopApp[] = [
   },
 ]
 
-// Icon size for hit detection
 const ICON_WIDTH = 80
 const ICON_HEIGHT = 76
 
@@ -72,13 +69,11 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     clearSelectedIcons,
   } = useOS()
   const { profiles } = useAllProfiles()
-  const { isAuthenticated } = useAuth()
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null)
   const desktopRef = useRef<HTMLDivElement>(null)
   const hasOpenedInitialApp = useRef(false)
 
-  // Create dynamic profile apps from database
   const profileApps: DesktopApp[] = useMemo(
     () =>
       profiles.map((profile) => ({
@@ -90,13 +85,8 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     [profiles]
   )
 
-  // Merge static and profile apps
-  const desktopApps = useMemo(
-    () => [...profileApps, ...staticApps],
-    [profileApps]
-  )
+  const desktopApps = useMemo(() => [...profileApps, ...staticApps], [profileApps])
 
-  // Calculate default positions for all apps
   const defaultPositions = useMemo(() => {
     return desktopApps.reduce(
       (acc, app, index) => {
@@ -107,15 +97,13 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     )
   }, [desktopApps])
 
-  // Merge cached positions with defaults
   const mergedPositions = useMemo(() => {
     return { ...defaultPositions, ...iconPositions }
   }, [defaultPositions, iconPositions])
 
-  // Auto-open initial app if specified
   useEffect(() => {
     if (initialOpenApp && !hasOpenedInitialApp.current && desktopApps.length > 0) {
-      const app = desktopApps.find((a) => a.id === initialOpenApp)
+      const app = desktopApps.find((entry) => entry.id === initialOpenApp)
       if (app) {
         openWindow({
           id: app.id,
@@ -129,7 +117,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     }
   }, [initialOpenApp, desktopApps, openWindow])
 
-  // Check if a rectangle intersects with an icon
   const getIconsInSelection = useCallback(
     (box: SelectionBox) => {
       const left = Math.min(box.startX, box.currentX)
@@ -148,7 +135,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         const iconTop = pos.y
         const iconBottom = pos.y + ICON_HEIGHT
 
-        // Check intersection
         if (
           iconLeft < right &&
           iconRight > left &&
@@ -166,7 +152,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      // Only start selection on left click on the desktop background itself
       if (e.button !== 0) return
       const target = e.target as HTMLElement
       if (!target.classList.contains('desktop-background') && !target.classList.contains('icons-container')) {
@@ -200,13 +185,13 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
 
-      const newBox = {
+      const nextBox = {
         ...selectionBox,
         currentX: x,
         currentY: y,
       }
-      setSelectionBox(newBox)
-      setSelectedIcons(getIconsInSelection(newBox))
+      setSelectionBox(nextBox)
+      setSelectedIcons(getIconsInSelection(nextBox))
     },
     [selectionBox, getIconsInSelection, setSelectedIcons]
   )
@@ -216,7 +201,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   }, [])
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    // Only show context menu when clicking on the desktop background
     if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.desktop-background')) {
       e.preventDefault()
       setContextMenu({ x: e.clientX, y: e.clientY })
@@ -241,7 +225,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
     openWindow({
       id: 'new-profile',
       title: 'New Profile',
-      icon: '/apps/cs-user.png',
+      icon: '/apps/vcard.png',
       component: NewProfileApp,
       initialSize: { width: 500, height: 400 },
     })
@@ -249,7 +233,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   }, [openWindow, closeContextMenu])
 
   const contextMenuItems = useMemo(() => {
-    const items = [
+    return [
       {
         label: 'Sort Icons',
         onClick: () => {
@@ -258,28 +242,20 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         },
       },
       { divider: true, label: '', onClick: () => {} },
-    ]
-
-    // Only show "New Profile" for authenticated users
-    if (isAuthenticated) {
-      items.push({
+      {
         label: 'New Profile',
         onClick: handleNewProfile,
-      })
-      items.push({ divider: true, label: '', onClick: () => {} })
-    }
-
-    items.push({
-      label: 'Refresh',
-      onClick: () => {
-        window.location.reload()
       },
-    })
+      { divider: true, label: '', onClick: () => {} },
+      {
+        label: 'Refresh',
+        onClick: () => {
+          window.location.reload()
+        },
+      },
+    ]
+  }, [resetIconPositions, closeContextMenu, handleNewProfile])
 
-    return items
-  }, [isAuthenticated, resetIconPositions, closeContextMenu, handleNewProfile])
-
-  // Calculate selection box styles
   const selectionBoxStyle = selectionBox
     ? {
         left: Math.min(selectionBox.startX, selectionBox.currentX),
@@ -329,7 +305,6 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
         style={{ top: 0, left: -10000, width: 20000, height: 20000 }}
       />
 
-      {/* Selection box */}
       {selectionBox && selectionBoxStyle && (
         <div
           className="absolute border border-[var(--color-primary)] bg-[var(--color-primary)]/10 pointer-events-none z-50"

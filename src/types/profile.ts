@@ -15,7 +15,7 @@ export interface WidgetBase {
 
 export interface TextWidget extends WidgetBase {
   type: 'text'
-  content: string // markdown
+  content: string
 }
 
 export interface ImageWidget extends WidgetBase {
@@ -43,7 +43,6 @@ export interface ProfileLayout {
 export interface ProfileContent {
   widgets: Widget[]
   layout: ProfileLayout
-  // Legacy fields for backward compatibility
   about?: string
   skills?: string[]
   contact?: {
@@ -54,27 +53,11 @@ export interface ProfileContent {
   }
 }
 
-export interface Profile {
-  id: string
-  user_id: string
-  created_at: string
-  updated_at: string
-  name: string
-  slug: string
-  icon: string
-  date: string | null
-  content: ProfileContent
-  is_active: boolean
-  avatar_url: string | null
-}
-
-// Default layout configuration
 export const DEFAULT_LAYOUT: ProfileLayout = {
   columns: 12,
   rowHeight: 30,
 }
 
-// Default widget sizes by type
 export const DEFAULT_WIDGET_SIZES: Record<WidgetType, { width: number; height: number }> = {
   text: { width: 12, height: 4 },
   image: { width: 6, height: 6 },

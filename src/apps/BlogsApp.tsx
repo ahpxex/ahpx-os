@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSetAtom } from 'jotai'
 import { useNavigate } from '@tanstack/react-router'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
-import { useAuth } from '@/hooks/useAuth'
 import { useWindowContextMenu } from '@/contexts/WindowContextMenuContext'
 import { useToast } from '@/contexts/ToastContext'
 import { useDialog } from '@/contexts/DialogContext'
@@ -18,7 +17,6 @@ import type { BlogPost } from '@/types/database'
 
 export function BlogsApp() {
   const { posts, loading, refetch } = useBlogPosts()
-  const { isAuthenticated } = useAuth()
   const { setContextMenuItems, clearContextMenuItems } = useWindowContextMenu()
   const deleteBlogPost = useSetAtom(deleteBlogPostAtom)
   const toast = useToast()
@@ -33,53 +31,47 @@ export function BlogsApp() {
 
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Check for initial post identifier from URL
+  const initialIdentifier = sessionStorage.getItem('initialPostIdentifier')
+  const pendingViewingPost = useMemo(() => {
+    if (!initialIdentifier || viewingPost) return null
+
+    const searchTitle = urlToTitle(initialIdentifier)
+    return (
+      posts.find((entry) => urlToTitle(titleToUrl(entry.title)) === searchTitle) ||
+      posts.find((entry) => entry.slug === initialIdentifier) ||
+      null
+    )
+  }, [initialIdentifier, posts, viewingPost])
+
   useEffect(() => {
-    const initialIdentifier = sessionStorage.getItem('initialPostIdentifier')
-    if (initialIdentifier && posts.length > 0 && !viewingPost) {
-      // Try to match by title first (convert URL format back to match title)
-      const searchTitle = urlToTitle(initialIdentifier)
-      let post = posts.find((p) => urlToTitle(titleToUrl(p.title)) === searchTitle)
-
-      // Fallback to slug if no title match
-      if (!post) {
-        post = posts.find((p) => p.slug === initialIdentifier)
-      }
-
-      if (post) {
-        setViewingPost(post)
-        // Clear the sessionStorage after using it
-        sessionStorage.removeItem('initialPostIdentifier')
-      }
+    if (pendingViewingPost) {
+      sessionStorage.removeItem('initialPostIdentifier')
     }
-  }, [posts, viewingPost])
+  }, [pendingViewingPost])
 
-  // Get all unique tags from posts
+  const activeViewingPost = viewingPost ?? pendingViewingPost
+
   const allTags = useMemo(() => {
     const tagSet = new Set<string>()
     posts.forEach((post) => post.tags.forEach((tag) => tagSet.add(tag)))
     return Array.from(tagSet).sort()
   }, [posts])
 
-  // Filter posts by search and tag
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
-      // Search filter
       const matchesSearch =
         !searchQuery ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.summary.toLowerCase().includes(searchQuery.toLowerCase())
 
-      // Tag filter
       const matchesTag = !selectedTag || post.tags.includes(selectedTag)
 
       return matchesSearch && matchesTag
     })
   }, [posts, searchQuery, selectedTag])
 
-  // Set up context menu
   useEffect(() => {
-    if (isAuthenticated && !isCreating && !editingPost && !viewingPost) {
+    if (!isCreating && !editingPost && !activeViewingPost) {
       setContextMenuItems([
         {
           label: 'Create Post',
@@ -93,19 +85,14 @@ export function BlogsApp() {
     return () => {
       clearContextMenuItems()
     }
-  }, [isAuthenticated, isCreating, editingPost, viewingPost, setContextMenuItems, clearContextMenuItems])
+  }, [isCreating, editingPost, activeViewingPost, setContextMenuItems, clearContextMenuItems])
 
-  // Handle opening a post
   const handleOpenPost = (post: BlogPost) => {
-    // Navigate to the direct URL using title
-    // If there are duplicate titles, we could fall back to slug, but for now use title
     const urlIdentifier = titleToUrl(post.title)
     navigate({ to: '/blog/$postSlug', params: { postSlug: urlIdentifier } })
   }
 
-  // Handle going back to list
   const handleBackToList = () => {
-    // Navigate back to home
     navigate({ to: '/' })
   }
 
@@ -117,17 +104,15 @@ export function BlogsApp() {
     )
   }
 
-  // Handle editing a post from view
   const handleEditPost = () => {
-    if (viewingPost) {
-      setEditingPost(viewingPost)
+    if (activeViewingPost) {
+      setEditingPost(activeViewingPost)
       setViewingPost(null)
     }
   }
 
-  // Handle deleting a post
   const handleDeletePost = async () => {
-    if (!viewingPost) return
+    if (!activeViewingPost) return
 
     const confirmed = await dialog.confirm(
       'Delete Post',
@@ -136,10 +121,9 @@ export function BlogsApp() {
     if (!confirmed) return
 
     try {
-      await deleteBlogPost(viewingPost.id)
+      await deleteBlogPost(activeViewingPost.id)
       toast.success('Post deleted successfully')
       refetch()
-      // Navigate back to home after deletion
       navigate({ to: '/' })
     } catch (error) {
       console.error('Failed to delete post:', error)
@@ -172,21 +156,20 @@ export function BlogsApp() {
     )
   }
 
-  if (viewingPost) {
+  if (activeViewingPost) {
     return (
       <BlogPostView
-        post={viewingPost}
+        post={activeViewingPost}
         onBack={handleBackToList}
         onEdit={handleEditPost}
         onDelete={handleDeletePost}
-        canEdit={isAuthenticated}
+        canEdit
       />
     )
   }
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header with search and filters */}
       <div className="border-b border-[var(--color-border)] p-4">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-xl font-bold">Blogs</h1>
@@ -204,7 +187,6 @@ export function BlogsApp() {
         )}
       </div>
 
-      {/* Post list */}
       <div ref={scrollRef} className="flex-1 overflow-auto p-4">
         <div className="space-y-4">
           {filteredPosts.length === 0 ? (
