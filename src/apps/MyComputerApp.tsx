@@ -592,7 +592,7 @@ export function MyComputerApp() {
                 <SidebarLink
                   icon="/places/gnome-fs-web.png"
                   label="GitHub"
-                  href="https://github.com/nicepkg/nice-xp"
+                  href="https://github.com/ahpxex/ahpx-os"
                 />
               </div>
             </div>
@@ -715,7 +715,14 @@ export function MyComputerApp() {
               label="GitHub"
               selected={selectedItem === 'github'}
               onSelect={() => setSelectedItem('github')}
-              href="https://github.com/ahpx"
+              href="https://github.com/ahpxex"
+            />
+            <ExplorerItem
+              icon="/apps/libreoffice-writer.png"
+              label="Blog"
+              selected={selectedItem === 'blog'}
+              onSelect={() => setSelectedItem('blog')}
+              href="https://blog.ahpx.me"
             />
             <ExplorerItem
               icon="/apps/internet-mail.png"
@@ -723,6 +730,13 @@ export function MyComputerApp() {
               selected={selectedItem === 'twitter'}
               onSelect={() => setSelectedItem('twitter')}
               href="https://twitter.com/ofshawnfan"
+            />
+            <ExplorerItem
+              icon="/apps/internet-mail.png"
+              label="Twitter (CN)"
+              selected={selectedItem === 'twitter-cn'}
+              onSelect={() => setSelectedItem('twitter-cn')}
+              href="https://twitter.com/ahpxex"
             />
           </div>
             </>
