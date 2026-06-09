@@ -23,6 +23,17 @@ export function WindowFrame({ window }: WindowFrameProps) {
   const isProfileWindow = window.id.startsWith('profile-') && window.id !== 'profile-ahpx'
   const isActive = activeWindowId === window.id && isVisible
 
+  // XP.css `.window` reserves its blue Luna frame via the body's margin. Profile
+  // windows keep the default 8px gutter; other apps run closer to the edge but
+  // still need a 3px horizontal inset so the left/right frame stays visible (the
+  // bottom frame comes from `.window`'s own padding-bottom, the top from the
+  // title bar). A maximized window meets the screen edges, so it stays full-bleed.
+  const bodySpacingClass = isProfileWindow
+    ? ''
+    : window.isMaximized
+      ? 'm-0 p-0'
+      : 'mx-[3px] my-0 p-0'
+
   useEffect(() => {
     if (isVisible) {
       setShouldRender(true)
@@ -77,7 +88,7 @@ export function WindowFrame({ window }: WindowFrameProps) {
       className={`window flex h-full flex-col overflow-hidden ${window.isMaximized ? 'xp-window-maximized' : ''}`}
     >
       <TitleBar window={window} isActive={isActive} />
-      <div className={`window-body flex-1 overflow-auto ${isProfileWindow ? '' : 'm-0 p-0'}`}>
+      <div className={`window-body flex-1 overflow-auto ${bodySpacingClass}`}>
         <WindowContextMenuProvider>
           <WindowComponent />
         </WindowContextMenuProvider>
