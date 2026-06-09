@@ -1,6 +1,8 @@
 import { ClockApp } from '@/apps/ClockApp'
 import { MyComputerApp } from '@/apps/MyComputerApp'
+import { NotepadApp } from '@/apps/NotepadApp'
 import { TerminalApp } from '@/apps/TerminalApp'
+import { NOTEPAD_APP_ID } from '@/apps/notepad/shared'
 import {
   SYSTEM_PROFILE_ICON,
   SYSTEM_PROFILE_ID,
@@ -29,6 +31,13 @@ export const desktopApps: WindowConfig[] = [
     icon: '/apps/windows-command-prompt.png',
     component: TerminalApp,
     initialSize: { width: 700, height: 450 },
+  },
+  {
+    id: NOTEPAD_APP_ID,
+    title: 'Untitled - Notepad',
+    icon: '/apps/gedit.png',
+    component: NotepadApp,
+    initialSize: { width: 640, height: 480 },
   },
 ]
 

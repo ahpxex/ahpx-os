@@ -212,3 +212,204 @@ textarea,
   font-size: 8px;
   line-height: 1;
 }
+
+/* ===== Windows XP Notepad ===== */
+.np-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+}
+
+/* Menu bar (File / Edit / Format / View / Help) */
+.np-menubar {
+  display: flex;
+  align-items: center;
+  padding: 1px 0 2px 1px;
+  background: #fff;
+  border-bottom: 1px solid #ECE9D8;
+  user-select: none;
+  flex: none;
+}
+
+.np-menu-trigger {
+  padding: 2px 7px 3px;
+  cursor: default;
+  color: #000;
+  line-height: 1;
+}
+
+.np-menu-trigger.np-open {
+  background: #316AC5;
+  color: #fff;
+}
+
+.np-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 168px;
+  background: #fff;
+  border: 1px solid #808080;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  padding: 2px;
+  z-index: 50;
+}
+
+.np-menu-item {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 8px 3px 0;
+  cursor: default;
+  color: #000;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.np-menu-item:hover:not(.np-disabled) {
+  background: #316AC5;
+  color: #fff;
+}
+
+.np-menu-item.np-disabled {
+  color: #aca899;
+}
+
+.np-menu-check {
+  text-align: center;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.np-menu-shortcut {
+  padding-left: 24px;
+  text-align: right;
+}
+
+.np-menu-divider {
+  height: 0;
+  margin: 3px 1px 3px 19px;
+  border-top: 1px solid #aca899;
+}
+
+/* Editor area */
+.np-textarea {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  resize: none;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 1px 2px;
+  background: #fff;
+  color: #000;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+.np-textarea:disabled {
+  background: #fff;
+  color: #000;
+}
+
+/* Status bar */
+.np-statusbar {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  height: 20px;
+  background: #ECE9D8;
+  border-top: 1px solid #fff;
+  font-size: 11px;
+}
+
+.np-statusbar-cell {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-left: 1px solid #aca899;
+  border-top: 1px solid #aca899;
+  box-shadow: inset 1px 1px 0 #fff;
+  min-width: 120px;
+}
+
+/* ===== Notepad modal dialogs (XP common dialogs) ===== */
+.np-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: transparent;
+}
+
+.np-dialog.window {
+  position: fixed;
+  z-index: 3001;
+  font-size: 11px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.np-dialog .title-bar {
+  cursor: default;
+}
+
+.np-dialog .window-body {
+  font-size: 11px;
+}
+
+.np-field-label {
+  font-size: 11px;
+  color: #000;
+}
+
+.np-text-input {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 1px solid #7F9DB9;
+  background: #fff;
+  color: #000;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.np-text-input:focus {
+  border-color: #316AC5;
+}
+
+.np-list-box {
+  border: 1px solid #7F9DB9;
+  background: #fff;
+  overflow-y: auto;
+}
+
+.np-list-option {
+  padding: 1px 5px;
+  cursor: default;
+  white-space: nowrap;
+  color: #000;
+}
+
+.np-list-option.np-selected {
+  background: #316AC5;
+  color: #fff;
+}
+
+.np-dialog-btn {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  min-width: 73px;
+  padding: 3px 10px;
+}
+
+.np-dialog fieldset {
+  margin: 0;
+}
+
+.np-dialog legend {
+  font-size: 11px;
+}

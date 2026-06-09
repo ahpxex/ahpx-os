@@ -16,6 +16,7 @@ import {
   toggleMaximizeWindowAtom,
   updateWindowPositionAtom,
   updateWindowSizeAtom,
+  updateWindowTitleAtom,
   setSelectedIconsAtom,
   clearSelectedIconsAtom,
 } from '@/store/actions'
@@ -36,6 +37,7 @@ export function useOS() {
   const toggleMaximizeWindow = useSetAtom(toggleMaximizeWindowAtom)
   const updateWindowPosition = useSetAtom(updateWindowPositionAtom)
   const updateWindowSize = useSetAtom(updateWindowSizeAtom)
+  const updateWindowTitle = useSetAtom(updateWindowTitleAtom)
   const setSelectedIcons = useSetAtom(setSelectedIconsAtom)
   const clearSelectedIcons = useSetAtom(clearSelectedIconsAtom)
 
@@ -55,6 +57,7 @@ export function useOS() {
     toggleMaximizeWindow,
     updateWindowPosition,
     updateWindowSize,
+    updateWindowTitle,
     setSelectedIcons,
     clearSelectedIcons,
   }

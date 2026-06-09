@@ -147,6 +147,17 @@ export const updateWindowPositionAtom = atom(
   }
 )
 
+export const updateWindowTitleAtom = atom(
+  null,
+  (get, set, { windowId, title }: { windowId: string; title: string }) => {
+    const windows = get(windowsAtom)
+    set(
+      windowsAtom,
+      windows.map((w) => (w.id === windowId ? { ...w, title } : w))
+    )
+  }
+)
+
 export const updateWindowSizeAtom = atom(
   null,
   (get, set, { windowId, size }: { windowId: string; size: Size }) => {
