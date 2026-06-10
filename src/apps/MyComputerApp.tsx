@@ -309,6 +309,7 @@ function SectionHeader({ title }: { title: string }) {
 
 interface ListItem {
   id: string
+  week: number | null
   name: string
   date: string
   href: string
@@ -342,7 +343,7 @@ function ExplorerListView({
         <div style={{ flex: 1, padding: '3px 8px', fontWeight: 'normal' }}>Type</div>
       </div>
       {/* Rows */}
-      {items.map((item, index) => {
+      {items.map((item) => {
         const isSelected = selectedItem === item.id
         return (
           <div
@@ -356,9 +357,9 @@ function ExplorerListView({
               ...LIST_FONT,
             }}
             onClick={(e) => { e.stopPropagation(); onSelect(item.id) }}
-            onDoubleClick={() => window.open(item.href, '_blank', 'noopener,noreferrer')}
+            onDoubleClick={() => { if (item.href) window.open(item.href, '_blank', 'noopener,noreferrer') }}
           >
-            <div style={{ width: 32, padding: '2px 8px', textAlign: 'center' }}>{index + 1}</div>
+            <div style={{ width: 32, padding: '2px 8px', textAlign: 'center' }}>{item.week ?? '—'}</div>
             <div style={{ flex: 2, padding: '2px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
               <img src="/places/folder.png" alt="" style={{ width: 16, height: 16 }} draggable={false} />
               {item.name}
