@@ -375,14 +375,36 @@ function LandingPage() {
 
         <SectionTitle>4. My Pictures</SectionTitle>
 
-        <p style={{ margin: '0 0 10px' }}>
-          Photographs — film grain, overexposure, the usual. The album lives in{' '}
+        <p style={{ margin: '0 0 12px' }}>
+          Thirty-one photographs, 2024–2026 — overexposure, film grain, the usual.
+          The full album lives in{' '}
           <OldLink onClick={openFolder('my-pictures')}>My Computer &gt; My Pictures</OldLink>.
         </p>
 
-        <p style={{ textAlign: 'center', fontStyle: 'italic', color: '#999', margin: '14px 0' }}>
-          — under construction —
-        </p>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+          {[
+            { src: '/photos/thumb/img_3425.jpg', alt: '车窗里的火山' },
+            { src: '/photos/thumb/apx_8195_dxo.jpg', alt: '回家的弯路' },
+            { src: '/photos/thumb/dsc_3551_dxo.jpg', alt: '港口日落' },
+          ].map((p) => (
+            <img
+              key={p.src}
+              src={p.src}
+              alt={p.alt}
+              title={p.alt}
+              style={{
+                width: 188,
+                height: 125,
+                objectFit: 'cover',
+                border: '1px solid #999',
+                padding: 2,
+                background: '#fff',
+                boxSizing: 'content-box',
+              }}
+              draggable={false}
+            />
+          ))}
+        </div>
 
         <SectionTitle>5. Elsewhere</SectionTitle>
 

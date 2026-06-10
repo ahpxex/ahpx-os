@@ -6,7 +6,13 @@ import { getDesktopApp } from '@/lib/desktopApps'
 import weeklyProjectsData from '@/data/weeklyProjects.json'
 import photosData from '@/data/photos.json'
 
-const photos = photosData as { src: string; caption: string }[]
+const photos = photosData as {
+  src: string
+  thumb: string
+  title: string
+  date: string
+  place: string
+}[]
 
 const weeklyProjects: ListItem[] = weeklyProjectsData.map((item, i) => ({
   id: `wp-${String(i + 1).padStart(2, '0')}`,
@@ -684,10 +690,16 @@ export function MyComputerApp() {
               ) : (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, paddingLeft: 8 }}>
                   {photos.map((photo) => (
-                    <div key={photo.src} style={{ width: 150 }}>
+                    <div
+                      key={photo.src}
+                      style={{ width: 150, cursor: 'default' }}
+                      onDoubleClick={() => window.open(photo.src, '_blank', 'noopener,noreferrer')}
+                      title="Double-click to view full size"
+                    >
                       <img
-                        src={photo.src}
-                        alt={photo.caption}
+                        src={photo.thumb}
+                        alt={photo.title}
+                        loading="lazy"
                         style={{
                           width: 150,
                           height: 112,
@@ -700,7 +712,11 @@ export function MyComputerApp() {
                         draggable={false}
                       />
                       <div style={{ ...LIST_FONT, textAlign: 'center', marginTop: 3 }}>
-                        {photo.caption}
+                        {photo.title}
+                      </div>
+                      <div style={{ ...LIST_FONT, textAlign: 'center', color: '#666', fontSize: 10 }}>
+                        {photo.date}
+                        {photo.place ? ` · ${photo.place}` : ''}
                       </div>
                     </div>
                   ))}
