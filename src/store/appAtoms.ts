@@ -13,3 +13,5 @@ export type MyComputerPath =
   | 'my-pictures'
 
 export const myComputerPathAtom = atom<MyComputerPath>('root')
+
+export const photoViewerIndexAtom = atom(0)

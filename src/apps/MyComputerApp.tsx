@@ -1,18 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { openWindowAtom } from '@/store/actions'
-import { myComputerPathAtom, type MyComputerPath } from '@/store/appAtoms'
+import { myComputerPathAtom, photoViewerIndexAtom } from '@/store/appAtoms'
+import type { MyComputerPath } from '@/store/appAtoms'
 import { getDesktopApp } from '@/lib/desktopApps'
+import { photos } from '@/lib/photos'
+import { PhotoViewerApp, PHOTO_VIEWER_ID } from '@/apps/PhotoViewerApp'
 import weeklyProjectsData from '@/data/weeklyProjects.json'
-import photosData from '@/data/photos.json'
-
-const photos = photosData as {
-  src: string
-  thumb: string
-  title: string
-  date: string
-  place: string
-}[]
 
 const weeklyProjects: ListItem[] = weeklyProjectsData.map((item, i) => ({
   id: `wp-${String(i + 1).padStart(2, '0')}`,
@@ -385,6 +379,7 @@ function ExplorerListView({
 
 export function MyComputerApp() {
   const openWindow = useSetAtom(openWindowAtom)
+  const setPhotoViewerIndex = useSetAtom(photoViewerIndexAtom)
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
   const [currentPath, setCurrentPath] = useAtom(myComputerPathAtom)
 
@@ -401,6 +396,18 @@ export function MyComputerApp() {
   const navigateTo = (path: MyComputerPath) => {
     setCurrentPath(path)
     setSelectedItem(null)
+  }
+
+  const openPhoto = (photoIndex: number) => {
+    setPhotoViewerIndex(photoIndex)
+    openWindow({
+      id: PHOTO_VIEWER_ID,
+      title: `${photos[photoIndex].title} - Windows Picture and Fax Viewer`,
+      icon: '/apps/f-spot.png',
+      component: PhotoViewerApp,
+      initialSize: { width: 720, height: 560 },
+      initialPosition: { x: 180, y: 70 },
+    })
   }
 
   return (
@@ -689,12 +696,12 @@ export function MyComputerApp() {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, paddingLeft: 8 }}>
-                  {photos.map((photo) => (
+                  {photos.map((photo, photoIndex) => (
                     <div
                       key={photo.src}
                       style={{ width: 150, cursor: 'default' }}
-                      onDoubleClick={() => window.open(photo.src, '_blank', 'noopener,noreferrer')}
-                      title="Double-click to view full size"
+                      onDoubleClick={() => openPhoto(photoIndex)}
+                      title="Double-click to view"
                     >
                       <img
                         src={photo.thumb}
