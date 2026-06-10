@@ -1,8 +1,12 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { openWindowAtom } from '@/store/actions'
+import { myComputerPathAtom, type MyComputerPath } from '@/store/appAtoms'
 import { getDesktopApp } from '@/lib/desktopApps'
 import weeklyProjectsData from '@/data/weeklyProjects.json'
+import photosData from '@/data/photos.json'
+
+const photos = photosData as { src: string; caption: string }[]
 
 const weeklyProjects: ListItem[] = weeklyProjectsData.map((item, i) => ({
   id: `wp-${String(i + 1).padStart(2, '0')}`,
@@ -376,7 +380,7 @@ function ExplorerListView({
 export function MyComputerApp() {
   const openWindow = useSetAtom(openWindowAtom)
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
-  const [currentPath, setCurrentPath] = useState<'root' | 'my-products' | 'weekly-projects' | 'open-source-projects'>('root')
+  const [currentPath, setCurrentPath] = useAtom(myComputerPathAtom)
 
   const openApp = useCallback(
     (appId: string) => {
@@ -388,7 +392,7 @@ export function MyComputerApp() {
 
   const clearSelection = () => setSelectedItem(null)
 
-  const navigateTo = (path: 'root' | 'my-products' | 'weekly-projects' | 'open-source-projects') => {
+  const navigateTo = (path: MyComputerPath) => {
     setCurrentPath(path)
     setSelectedItem(null)
   }
@@ -526,7 +530,9 @@ export function MyComputerApp() {
                 ? 'My Computer > My Products'
                 : currentPath === 'weekly-projects'
                   ? 'My Computer > Weekly Projects'
-                  : 'My Computer > Open Source Projects'}
+                  : currentPath === 'my-pictures'
+                    ? 'My Computer > My Pictures'
+                    : 'My Computer > Open Source Projects'}
           </span>
         </div>
         <button
@@ -662,6 +668,45 @@ export function MyComputerApp() {
                 onSelect={setSelectedItem}
                 items={weeklyProjects}
               />
+          ) : currentPath === 'my-pictures' ? (
+            <>
+              <SectionHeader title="My Pictures" />
+              {photos.length === 0 ? (
+                <div
+                  style={{
+                    ...LIST_FONT,
+                    color: '#666',
+                    padding: '24px 8px',
+                  }}
+                >
+                  This folder is empty. Film scans are on their way.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, paddingLeft: 8 }}>
+                  {photos.map((photo) => (
+                    <div key={photo.src} style={{ width: 150 }}>
+                      <img
+                        src={photo.src}
+                        alt={photo.caption}
+                        style={{
+                          width: 150,
+                          height: 112,
+                          objectFit: 'cover',
+                          border: '1px solid #ACA899',
+                          background: '#fff',
+                          padding: 2,
+                          boxSizing: 'border-box',
+                        }}
+                        draggable={false}
+                      />
+                      <div style={{ ...LIST_FONT, textAlign: 'center', marginTop: 3 }}>
+                        {photo.caption}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
             <>
               <SectionHeader title="Files Stored on This Computer" />
@@ -686,6 +731,13 @@ export function MyComputerApp() {
               selected={selectedItem === 'oss'}
               onSelect={() => setSelectedItem('oss')}
               onOpen={() => navigateTo('open-source-projects')}
+            />
+            <ExplorerItem
+              icon="/places/folder-pictures.png"
+              label="My Pictures"
+              selected={selectedItem === 'pictures'}
+              onSelect={() => setSelectedItem('pictures')}
+              onOpen={() => navigateTo('my-pictures')}
             />
           </div>
 

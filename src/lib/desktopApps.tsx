@@ -1,4 +1,5 @@
 import { ClockApp } from '@/apps/ClockApp'
+import { HomepageApp } from '@/apps/HomepageApp'
 import { MyComputerApp } from '@/apps/MyComputerApp'
 import { NotepadApp } from '@/apps/NotepadApp'
 import { TerminalApp } from '@/apps/TerminalApp'
@@ -17,6 +18,14 @@ export const desktopApps: WindowConfig[] = [
     icon: SYSTEM_PROFILE_ICON,
     component: MyComputerApp,
     initialSize: { width: 750, height: 550 },
+  },
+  {
+    id: 'homepage',
+    title: 'homepage',
+    icon: '/apps/internet-explorer.png',
+    component: HomepageApp,
+    initialPosition: { x: 280, y: 40 },
+    initialSize: { width: 860, height: 620 },
   },
   {
     id: 'clock',

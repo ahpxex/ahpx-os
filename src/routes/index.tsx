@@ -11,7 +11,7 @@ function OSHome() {
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden">
       <main className="relative flex-1">
-        <Desktop initialOpenApp={SYSTEM_PROFILE_ID} />
+        <Desktop initialOpenApps={[SYSTEM_PROFILE_ID, 'homepage']} />
       </main>
       <Taskbar />
     </div>

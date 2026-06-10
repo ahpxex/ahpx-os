@@ -19,10 +19,10 @@ interface SelectionBox {
 }
 
 interface DesktopProps {
-  initialOpenApp?: string
+  initialOpenApps?: string[]
 }
 
-export function Desktop({ initialOpenApp }: DesktopProps = {}) {
+export function Desktop({ initialOpenApps }: DesktopProps = {}) {
   const {
     windows,
     openWindow,
@@ -33,7 +33,7 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   const [contextMenu, setContextMenu] = useLocalAtom<{ x: number; y: number } | null>(() => null, [])
   const [selectionBox, setSelectionBox] = useLocalAtom<SelectionBox | null>(() => null, [])
   const desktopRef = useRef<HTMLDivElement>(null)
-  const hasOpenedInitialApp = useRef(false)
+  const hasOpenedInitialApps = useRef(false)
 
   const defaultPositions = useMemo(() => {
     return desktopApps.reduce(
@@ -46,14 +46,14 @@ export function Desktop({ initialOpenApp }: DesktopProps = {}) {
   }, [])
 
   useEffect(() => {
-    if (initialOpenApp && !hasOpenedInitialApp.current && desktopApps.length > 0) {
-      const app = getDesktopApp(initialOpenApp)
-      if (app) {
-        openWindow(app)
-        hasOpenedInitialApp.current = true
+    if (initialOpenApps?.length && !hasOpenedInitialApps.current && desktopApps.length > 0) {
+      for (const appId of initialOpenApps) {
+        const app = getDesktopApp(appId)
+        if (app) openWindow(app)
       }
+      hasOpenedInitialApps.current = true
     }
-  }, [initialOpenApp, openWindow])
+  }, [initialOpenApps, openWindow])
 
   const getIconsInSelection = useCallback(
     (box: SelectionBox) => {
