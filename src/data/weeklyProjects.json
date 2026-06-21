@@ -21,5 +21,6 @@
   { "week": 20, "name": "yet-another-data-cleaner", "date": "2026-05-26", "href": "https://chromewebstore.google.com/detail/yet-another-data-cleaner/ndecighgdgapohcpkfkbnngflglfddmo" },
   { "week": 21, "name": "paperhands", "date": "2026-06-07", "href": "https://github.com/ahpxex/paperhands" },
   { "week": 22, "name": "commit-all", "date": "2026-06-08", "href": "https://github.com/ahpxex/commit-all" },
-  { "week": 23, "name": "notificationer", "date": "2026-06-16", "href": "https://github.com/ahpxex/notificationer" }
+  { "week": 23, "name": "notificationer", "date": "2026-06-16", "href": "https://github.com/ahpxex/notificationer" },
+  { "week": 24, "name": "explorer-filter", "date": "2026-06-21", "href": "https://github.com/ahpxex/explorer-filter" }
 ]
