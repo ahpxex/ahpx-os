@@ -22,5 +22,6 @@
   { "week": 21, "name": "paperhands", "date": "2026-06-07", "href": "https://github.com/ahpxex/paperhands" },
   { "week": 22, "name": "commit-all", "date": "2026-06-08", "href": "https://github.com/ahpxex/commit-all" },
   { "week": 23, "name": "notificationer", "date": "2026-06-16", "href": "https://github.com/ahpxex/notificationer" },
-  { "week": 24, "name": "explorer-filter", "date": "2026-06-21", "href": "https://github.com/ahpxex/explorer-filter" }
+  { "week": 24, "name": "explorer-filter", "date": "2026-06-21", "href": "https://github.com/ahpxex/explorer-filter" },
+  { "week": 25, "name": "open-dashboard", "date": "2026-06-21", "href": "https://github.com/ahpxex/open-dashboard" }
 ]
