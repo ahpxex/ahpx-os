@@ -2,6 +2,17 @@
 @import "xp.css/dist/XP.css" layer(components);
 @plugin "@tailwindcss/typography";
 
+/* Self-hosted VT323 (terminal font). font-display: block + a preload hint in
+   index.html means the glyphs are ready before any window opens, so the Command
+   Prompt no longer flashes the monospace fallback before swapping to VT323. */
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/vt323-latin-400.woff2') format('woff2');
+}
+
 /* Windows XP Design System */
 :root {
   --color-beige: #fbf7f0;
