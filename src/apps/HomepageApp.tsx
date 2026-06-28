@@ -207,49 +207,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-function Thumb({ src, alt }: { src: string; alt: string }) {
-  return (
-    <img
-      src={src}
-      alt={alt}
-      width={200}
-      style={{
-        border: '1px solid #999',
-        padding: 2,
-        background: '#fff',
-        display: 'block',
-        flexShrink: 0,
-        alignSelf: 'flex-start',
-      }}
-      draggable={false}
-    />
-  )
-}
-
-function NoPreview() {
-  return (
-    <div
-      style={{
-        width: 200,
-        height: 125,
-        border: '1px solid #999',
-        padding: 2,
-        background: '#fff',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        alignSelf: 'flex-start',
-        boxSizing: 'content-box',
-      }}
-    >
-      <span style={{ fontFamily: TIMES, fontSize: 13, color: '#999', fontStyle: 'italic' }}>
-        [ preview unavailable ]
-      </span>
-    </div>
-  )
-}
-
 function LandingPage() {
   const openWindow = useSetAtom(openWindowAtom)
   const setMyComputerPath = useSetAtom(myComputerPathAtom)
@@ -290,40 +247,31 @@ function LandingPage() {
           <OldLink onClick={openFolder('root')}>My Computer</OldLink>.
         </p>
 
-        <SectionTitle>1. My Products</SectionTitle>
+        <SectionTitle>My Products</SectionTitle>
 
-        <div style={{ display: 'flex', gap: 14, marginBottom: 16 }}>
-          <Thumb src="/screenshots/contextflow.jpg" alt="ContextFlow" />
-          <div>
-            <b><OldLink href="https://getcontextflow.app">ContextFlow</OldLink></b>
-            <br />
-            A Chrome extension that guards your attention while you read the web.
-            <br />
-            <span style={{ fontSize: 13, color: '#666' }}>getcontextflow.app</span>
-          </div>
+        <div style={{ marginBottom: 16 }}>
+          <b><OldLink href="https://getcontextflow.app">ContextFlow</OldLink></b>
+          <br />
+          A Chrome extension that guards your attention while you read the web.
+          <br />
+          <span style={{ fontSize: 13, color: '#666' }}>getcontextflow.app</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 14, marginBottom: 16 }}>
-          <Thumb src="/screenshots/taoracle.jpg" alt="Taoracle" />
-          <div>
-            <b><OldLink href="https://taoracle.com">Taoracle</OldLink></b>
-            <br />
-            Chinese divination — almanac, Zi Wei, Liu Yao — as one continuous journey.
-            卜以决疑，不疑何卜。
-            <br />
-            <span style={{ fontSize: 13, color: '#666' }}>taoracle.com</span>
-          </div>
+        <div style={{ marginBottom: 16 }}>
+          <b><OldLink href="https://taoracle.com">Taoracle</OldLink></b>
+          <br />
+          Chinese divination — almanac, Zi Wei, Liu Yao — as one continuous journey.
+          卜以决疑，不疑何卜。
+          <br />
+          <span style={{ fontSize: 13, color: '#666' }}>taoracle.com</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 14, marginBottom: 16 }}>
-          <NoPreview />
-          <div>
-            <b><OldLink href="https://readaware.app">ReadAware</OldLink></b>
-            <br />
-            A co-reading companion with memory. It reads with you, not for you.
-            <br />
-            <span style={{ fontSize: 13, color: '#666' }}>readaware.app</span>
-          </div>
+        <div style={{ marginBottom: 16 }}>
+          <b><OldLink href="https://readaware.app">ReadAware</OldLink></b>
+          <br />
+          A co-reading companion with memory. It reads with you, not for you.
+          <br />
+          <span style={{ fontSize: 13, color: '#666' }}>readaware.app</span>
         </div>
 
         <div style={{ fontSize: 14 }}>
@@ -331,19 +279,36 @@ function LandingPage() {
           <OldLink onClick={openFolder('my-products')}>My Computer &gt; My Products</OldLink>
         </div>
 
-        <SectionTitle>2. Weekly Projects</SectionTitle>
+        <SectionTitle>Weekly Projects</SectionTitle>
 
-        <div style={{ display: 'flex', gap: 14, marginBottom: 10 }}>
-          <Thumb src="/screenshots/maily.jpg" alt="maily" />
-          <div>
-            One side project every week since January 2026 — a slow-letter app, a
-            writing room that locks you in for forty-two minutes, a paper-trading
-            terminal, a map-memory trainer. This is week {week}.
-            <br />
-            <span style={{ fontSize: 13, color: '#666' }}>
-              Pictured: maily, week 18 — letters that travel slowly.
-            </span>
-          </div>
+        <p style={{ margin: '0 0 14px' }}>
+          One side project every week since January 2026 — small experiments,
+          shipped on a deadline. This is week {week}. A few I'm fond of:
+        </p>
+
+        <div style={{ marginBottom: 16 }}>
+          <b><OldLink href="https://github.com/ahpxex/open-dashboard">open-dashboard</OldLink></b>
+          <br />
+          A catalogue of copy-ready admin-UI shapes an AI agent installs and composes
+          into a working back-office.
+          <br />
+          <span style={{ fontSize: 13, color: '#666' }}>week 25</span>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <b><OldLink href="https://github.com/ahpxex/paperhands">paperhands</OldLink></b>
+          <br />
+          A quiet crypto paper-trading terminal — simulated money, real prices, no excuses.
+          <br />
+          <span style={{ fontSize: 13, color: '#666' }}>week 21</span>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <b><OldLink href="https://github.com/ahpxex/map-memory">map-memory</OldLink></b>
+          <br />
+          A drill for the shape of the world — countries and Chinese prefectures, from memory.
+          <br />
+          <span style={{ fontSize: 13, color: '#666' }}>week 13</span>
         </div>
 
         <div style={{ fontSize: 14 }}>
@@ -353,7 +318,7 @@ function LandingPage() {
           </OldLink>
         </div>
 
-        <SectionTitle>3. Open Source</SectionTitle>
+        <SectionTitle>Open Source</SectionTitle>
 
         <ul style={{ margin: '0 0 10px', paddingLeft: 24 }}>
           <li style={{ marginBottom: 6 }}>
@@ -373,7 +338,7 @@ function LandingPage() {
           </OldLink>
         </div>
 
-        <SectionTitle>4. My Pictures</SectionTitle>
+        <SectionTitle>My Pictures</SectionTitle>
 
         <p style={{ margin: '0 0 12px' }}>
           Thirty-one photographs, 2024–2026 — overexposure, film grain, the usual.
@@ -406,7 +371,7 @@ function LandingPage() {
           ))}
         </div>
 
-        <SectionTitle>5. Elsewhere</SectionTitle>
+        <SectionTitle>Elsewhere</SectionTitle>
 
         <ul style={{ margin: 0, paddingLeft: 24 }}>
           <li style={{ marginBottom: 4 }}>
@@ -418,8 +383,8 @@ function LandingPage() {
             {' '}<span style={{ fontSize: 13, color: '#666' }}>github.com/ahpxex</span>
           </li>
           <li>
-            <OldLink href="https://twitter.com/ofshawnfan">Twitter</OldLink>
-            {' '}<span style={{ fontSize: 13, color: '#666' }}>@ofshawnfan</span>
+            <OldLink href="https://twitter.com/ahpxex">Twitter</OldLink>
+            {' '}<span style={{ fontSize: 13, color: '#666' }}>@ahpxex</span>
           </li>
         </ul>
 
@@ -494,7 +459,7 @@ export function HomepageApp() {
               { divider: true, label: '' },
               { label: 'Blog', onClick: externalLink('https://blog.ahpx.me') },
               { label: 'GitHub', onClick: externalLink('https://github.com/ahpxex') },
-              { label: 'Twitter', onClick: externalLink('https://twitter.com/ofshawnfan') },
+              { label: 'Twitter', onClick: externalLink('https://twitter.com/ahpxex') },
             ],
           },
           {
