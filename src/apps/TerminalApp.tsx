@@ -13,8 +13,8 @@ interface TerminalState {
 
 const PROMPT = 'C:\\Users\\AHpx>'
 
-const WELCOME = `Microsoft Aindows XP [Version 5.1.2600]
-(C) Copyright 1985-2001 Microsoft Corp.`
+const WELCOME = `AHpx Aindows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 AHpx Corp.`
 
 const COMMANDS: Record<string, string | (() => string)> = {
   help: `Available commands:

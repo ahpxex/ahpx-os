@@ -32,7 +32,6 @@ export const FONT_FAMILIES = [
   'Comic Sans MS',
   'Fixedsys',
   'Georgia',
-  'Microsoft Sans Serif',
   'Segoe UI',
   'Tahoma',
   'Times New Roman',
